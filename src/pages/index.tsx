@@ -1,43 +1,240 @@
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
+import React from 'react';
+import styled from '@emotion/styled';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
-import Heading from '@theme/Heading';
+import Link from '@docusaurus/Link';
+import SearchBar from '@theme/SearchBar';
+import { Info, HelpCircle, BookOpen, ArrowUpRight as LinkIcon } from 'lucide-react';
 
-import styles from './index.module.css';
+const HeaderWrapper = styled.div`
+  width: 100%;
+  position: relative;
+`;
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+const HeaderContent = styled.header`
+  position: relative;
+  padding: 4rem 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: var(--ifm-container-width);
+  margin: 0 auto;
+  color: var(--ifm-font-color-base);
+`;
+
+const Title = styled.h1`
+  font-weight: 600;
+  font-size: 3rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`;
+
+const SearchWrapper = styled.div`
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+`;
+
+const CardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+`;
+
+const Card = styled.div`
+  background: var(--ifm-card-background-color);
+  border-radius: var(--ifm-card-border-radius);
+  box-shadow: var(--ifm-global-shadow-lw);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--ifm-global-shadow-md);
+    transform: translateY(-5px);
+  }
+`;
+
+const CardTitle = styled.h3`
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+const CardDescription = styled.p`
+  margin-bottom: 1rem;
+`;
+
+const StyledLink = styled(Link)`
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+// QuickLinks Component
+const QuickLinksSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+`;
+
+const ColumnWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const Column = styled.div`
+  flex: 1;
+`;
+
+const LinkCard = styled(Link)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  background-color: var(--ifm-background-surface-color);
+  text-decoration: none;
+  color: var(--ifm-font-color-base);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--ifm-color-emphasis-100);
+    text-decoration: none;
+  }
+`;
+
+const LinkTitle = styled.h3`
+  font-size: 1rem;
+  margin: 0;
+`;
+
+const LinkDescription = styled.p`
+  font-size: 0.875rem;
+  color: var(--ifm-color-emphasis-600);
+  margin: 0.25rem 0 0;
+`;
+
+const QuickLinksTitle = styled.h2`
+  font-weight: 600;
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`;
+
+const actions = [
+  {
+    title: 'Get Started',
+    icon: Info,
+    to: '/docs/tutorial-basics/congratulations',
+    text: 'Learn how to set up and run Surge rollup',
+  },
+  {
+    title: 'Run a Prover',
+    icon: HelpCircle,
+    to: '/docs/tutorial-basics/congratulations',
+    text: 'Set up and run Nethermind TEE or RethZk provers',
+  },
+  {
+    title: 'Sequencer Guide',
+    icon: BookOpen,
+    to: '/docs/tutorial-basics/congratulations',
+    text: 'Learn about Surge sequencer operations',
+  },
+];
+
+const itemLinks = [
+  {
+    title: 'Get started',
+    description: 'Step-by-step guide to install and configure the necessary tools',
+    to: '/docs/quickstart/install-guide',
+  },
+  {
+    title: 'Complete Guide',
+    description: 'Follow a comprehensive guide to set up your environment',
+    to: '/docs/quickstart/complete-guide',
+  },
+  {
+    title: 'Check Dependencies',
+    description: 'Check the dependencies required for your setup',
+    to: '/docs/quickstart/dependencies',
+  },
+  {
+    title: 'Keys Management',
+    description: 'Manage your validator keys efficiently',
+    to: '/docs/quickstart/keys-management',
+  },
+  {
+    title: 'Commands',
+    description: 'Learn about advanced commands to manage or set up your node',
+    to: '/docs/commands',
+  },
+];
+
+const QuickLinks = () => (
+  <QuickLinksSection>
+    <ColumnWrapper>
+      <Column>
+        <QuickLinksTitle>Integrate with Sedge</QuickLinksTitle>
+        <p>
+          Explore these guided tutorials to get started with Sedge for your Ethereum staking needs.
+        </p>
+        {itemLinks.map((link) => (
+          <LinkCard key={link.title} to={link.to}>
+            <div>
+              <LinkTitle>{link.title}</LinkTitle>
+              <LinkDescription>{link.description}</LinkDescription>
+            </div>
+            <LinkIcon size={20} />
+          </LinkCard>
+        ))}
+      </Column>
+    </ColumnWrapper>
+  </QuickLinksSection>
+);
+
+const HomePage = () => {
+  const { siteConfig } = useDocusaurusContext();
+
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
-}
+    <Layout title={siteConfig.title} description={siteConfig.tagline}>
+      <HeaderWrapper>
+        <HeaderContent>
+          <Title>{siteConfig.title}</Title>
+          <p>Maximally Aligned, High-Performance Ethereum Rollup</p>
+          <SearchWrapper>
+            <SearchBar />
+          </SearchWrapper>
+        </HeaderContent>
+      </HeaderWrapper>
 
-export default function Home(): JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
-  return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
+      <main className="container">
+        <CardGrid>
+          {actions.map((action, index) => (
+            <Card key={index}>
+              <CardTitle>{action.title}</CardTitle>
+              <CardDescription>{action.text}</CardDescription>
+              <StyledLink to={action.to}>Learn more</StyledLink>
+            </Card>
+          ))}
+        </CardGrid>
+        <QuickLinks />
       </main>
     </Layout>
   );
-}
+};
+
+export default HomePage;
