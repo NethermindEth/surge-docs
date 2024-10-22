@@ -56,7 +56,6 @@ const config: Config = {
           position: 'left',
           label: 'Documentation',
         },
-        { to: '/blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/NethermindEth/surge',
           label: 'GitHub',
