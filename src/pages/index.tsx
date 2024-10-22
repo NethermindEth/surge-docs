@@ -48,12 +48,14 @@ const CardGrid = styled.div`
 const Card = styled.div`
   background: var(--ifm-card-background-color);
   border-radius: var(--ifm-card-border-radius);
-  box-shadow: var(--ifm-global-shadow-lw);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   transition: all 0.2s ease;
 
   &:hover {
-    box-shadow: var(--ifm-global-shadow-md);
+    border-color: var(--ifm-color-emphasis-300);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-5px);
   }
 `;
@@ -158,29 +160,29 @@ const actions = [
 
 const itemLinks = [
   {
-    title: 'Get started',
-    description: 'Step-by-step guide to install and configure the necessary tools',
-    to: '/docs/quickstart/install-guide',
+    title: 'Introduction to Surge',
+    description: 'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup',
+    to: '/docs/tutorial-basics/congratulations',
   },
   {
-    title: 'Complete Guide',
-    description: 'Follow a comprehensive guide to set up your environment',
-    to: '/docs/quickstart/complete-guide',
+    title: 'Run a Node',
+    description: 'Complete guide to setting up and operating a Surge rollup node',
+    to: '/docs/tutorial-basics/congratulations',
   },
   {
-    title: 'Check Dependencies',
-    description: 'Check the dependencies required for your setup',
-    to: '/docs/quickstart/dependencies',
+    title: 'Prover Setup',
+    description: 'Configure Nethermind TEE or RethZk provers for Surge rollup',
+    to: '/docs/tutorial-basics/congratulations',
   },
   {
-    title: 'Keys Management',
-    description: 'Manage your validator keys efficiently',
-    to: '/docs/quickstart/keys-management',
+    title: 'Bridge Operations',
+    description: 'Understanding the native messaging bridge with Ethereum L1',
+    to: '/docs/tutorial-basics/congratulations',
   },
   {
-    title: 'Commands',
-    description: 'Learn about advanced commands to manage or set up your node',
-    to: '/docs/commands',
+    title: 'Core concepts',
+    description: 'Deep dive into zkEVM, block production, and cross-layer composability',
+    to: '/docs/tutorial-basics/congratulations',
   },
 ];
 
@@ -188,7 +190,7 @@ const QuickLinks = () => (
   <QuickLinksSection>
     <ColumnWrapper>
       <Column>
-        <QuickLinksTitle>Integrate with Sedge</QuickLinksTitle>
+        <QuickLinksTitle>Use Surge</QuickLinksTitle>
         <p>
           Explore these guided tutorials to get started with Sedge for your Ethereum staking needs.
         </p>

@@ -27,8 +27,11 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: require.resolve('./sidebars.js'),
+          sidebarPath: require.resolve('./sidebars.ts'),
           editUrl: 'https://github.com/NethermindEth/surge/tree/main/docs/',
+          remarkPlugins: [],
+          rehypePlugins: [],
+          showLastUpdateTime: true,
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
