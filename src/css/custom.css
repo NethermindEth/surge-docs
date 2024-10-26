@@ -4,10 +4,6 @@
  * work well for content-centric websites.
  */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #2e8555;
@@ -33,52 +29,52 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-/* Footer and Navbar shared styles */
-.footer__links,
-.navbar__items {
-  display: flex;
-  flex-wrap: wrap;
-}
+/*!* Footer and Navbar shared styles *!*/
+/*.footer__links,*/
+/*.navbar__items {*/
+/*  display: flex;*/
+/*  flex-wrap: wrap;*/
+/*}*/
 
-.footer__item,
-.navbar__item {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 1rem;
-  white-space: nowrap;
-}
+/*.footer__item,*/
+/*.navbar__item {*/
+/*  display: inline-flex;*/
+/*  align-items: center;*/
+/*  margin-right: 1rem;*/
+/*  white-space: nowrap;*/
+/*}*/
 
-.footer__link-item,
-.navbar__link-item {
-  display: inline-flex;
-  align-items: center;
-}
+/*.footer__link-item,*/
+/*.navbar__link-item {*/
+/*  display: inline-flex;*/
+/*  align-items: center;*/
+/*}*/
 
-.footer__link-item svg,
-.navbar__link-item svg {
-  margin-right: 0.5rem;
-}
+/*.footer__link-item svg,*/
+/*.navbar__link-item svg {*/
+/*  margin-right: 0.5rem;*/
+/*}*/
 
-/* Footer specific styles */
-.footer__links {
-  justify-content: space-between;
-}
+/*!* Footer specific styles *!*/
+/*.footer__links {*/
+/*  justify-content: space-between;*/
+/*}*/
 
-.footer__col {
-  flex: 1 1 auto;
-  margin-bottom: 1rem;
-}
+/*.footer__col {*/
+/*  flex: 1 1 auto;*/
+/*  margin-bottom: 1rem;*/
+/*}*/
 
-/* Responsive design */
-@media screen and (max-width: 996px) {
-  .footer__links,
-  .navbar__items {
-    flex-direction: column;
-  }
+/*!* Responsive design *!*/
+/*@media screen and (max-width: 996px) {*/
+/*  .footer__links,*/
+/*  .navbar__items {*/
+/*    flex-direction: column;*/
+/*  }*/
 
-  .footer__item,
-  .navbar__item {
-    margin-right: 0;
-    margin-bottom: 0.5rem;
-  }
-}
+/*  .footer__item,*/
+/*  .navbar__item {*/
+/*    margin-right: 0;*/
+/*    margin-bottom: 0.5rem;*/
+/*  }*/
+/*}*/

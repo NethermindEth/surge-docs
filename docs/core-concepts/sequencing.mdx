@@ -1,0 +1,69 @@
+---
+sidebar_position: 3
+---
+
+# Sequencer Guide
+
+The Surge sequencer is responsible for processing transactions and managing block production on the L2 network. This guide explains how the sequencer works and its fee structure.
+
+## Overview
+
+The sequencer:
+
+- Orders and executes user transactions
+- Manages block production
+- Handles fee distribution
+- Maintains L2 chain efficiency
+
+## Fee Structure
+
+### Base Fee Distribution
+
+- 75% goes to the coinbase address
+- 25% goes to the treasury
+- Distribution is handled through the proving mechanism
+
+### Priority Fees
+
+- 100% of priority fees go to the coinbase
+- Proposers can provide additional tips during block proposal on L1
+
+### Fee Components
+
+1. **Base Fee**: Automatically adjusted based on network congestion
+2. **Priority Fee**: Optional tip to incentivize faster inclusion
+3. **Extra Tips**: Additional proposer incentives for L2 PBS (Proposer Builder Separation)
+
+:::note
+Fee distribution is built into the proving mechanism rather than handled by smart contracts.
+:::
+
+## Block Production
+
+The sequencer manages block production with the following parameters:
+
+- Configurable target gas per block
+- Adjustable base fee calculations
+- Flexible fee distribution ratios
+
+## Configuration
+
+Sequencer operators can adjust various parameters including:
+
+- Target gas limits
+- Fee sharing percentages
+- Block production rates
+- Priority fee minimums
+
+:::tip
+Always monitor system metrics when adjusting sequencer parameters to maintain optimal performance.
+:::
+
+## Advanced Features
+
+- Custom executor implementation
+- Configurable base fee sharing
+- Support for proposer builder separation
+- Flexible treasury management
+
+For detailed technical specifications and deployment instructions, please contact the Surge team.

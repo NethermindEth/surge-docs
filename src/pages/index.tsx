@@ -141,19 +141,19 @@ const actions = [
   {
     title: 'Get Started',
     icon: Info,
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/getting-started',
     text: 'Learn how to set up and run Surge rollup',
   },
   {
     title: 'Run a Prover',
     icon: HelpCircle,
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/Guides/prover-setup',
     text: 'Set up and run Nethermind TEE or RethZk provers',
   },
   {
     title: 'Sequencer Guide',
     icon: BookOpen,
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/core-concepts/sequencing',
     text: 'Learn about Surge sequencer operations',
   },
 ];
@@ -162,27 +162,27 @@ const itemLinks = [
   {
     title: 'Introduction to Surge',
     description: 'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup',
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/intro',
   },
   {
     title: 'Run a Node',
     description: 'Complete guide to setting up and operating a Surge rollup node',
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/Guides/run-a-node',
   },
   {
     title: 'Prover Setup',
     description: 'Configure Nethermind TEE or RethZk provers for Surge rollup',
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/Guides/prover-setup',
   },
   {
     title: 'Bridge Operations',
     description: 'Understanding the native messaging bridge with Ethereum L1',
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/core-concepts/bridging',
   },
   {
     title: 'Core concepts',
     description: 'Deep dive into zkEVM, block production, and cross-layer composability',
-    to: '/docs/tutorial-basics/congratulations',
+    to: '/docs/core-concepts',
   },
 ];
 

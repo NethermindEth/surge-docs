@@ -1,0 +1,61 @@
+---
+sidebar_position: 2
+---
+
+# Prover Setup
+
+Surge supports two types of provers for block verification:
+
+## Nethermind TEE Prover
+
+The Nethermind TEE (Trusted Execution Environment) Prover leverages secure hardware enclaves for block verification. This prover is currently in development with the following features:
+
+- Attestation extraction and verification
+- RPC snooping for payload execution interception
+- TD (Transaction Data) attestations for block verification
+- Smart contract integration for attestation verification
+
+### Components
+
+1. **RPC Snooper**: Intercepts payload executions between CL-EL
+2. **Attestation System**: Stores and verifies payload executions
+3. **TDX Verifier**: Integrates with core rollup contracts
+4. **Cloud Deployment**: Supports both Azure and GCP environments
+
+### Setup Requirements
+
+- Intel TDX-compatible hardware
+- Secure enclave configuration
+- Network connectivity to L1 and L2 nodes
+
+:::note
+Detailed setup instructions will be provided once the TEE prover development is complete.
+:::
+
+## RethZk Prover
+
+The RethZk Prover is an alternative proving system based on zero-knowledge proofs. This system is designed to provide:
+
+- High performance block verification
+- Compatible with Ethereum's execution environment
+- Efficient proof generation and verification
+
+### Key Features
+
+- Zero-knowledge proof generation
+- Optimized for EVM compatibility
+- Scalable proof verification
+
+:::note Development Status
+The RethZk Prover is currently under active development. Setup instructions and deployment guides will be provided upon completion.
+:::
+
+## Prover Economics
+
+Provers play a crucial role in the Surge ecosystem and are compensated through:
+
+- A share of base fees from transaction processing
+- Additional rewards for timely proof generation
+- Performance-based incentives
+
+For detailed information about prover compensation and economics, please refer to the [Core Concepts](/docs/core-concepts) section.
