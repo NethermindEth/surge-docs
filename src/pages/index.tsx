@@ -5,6 +5,7 @@ import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import SearchBar from '@theme/SearchBar';
 import { Info, HelpCircle, BookOpen, ArrowUpRight as LinkIcon } from 'lucide-react';
+import ThemedImage from '@theme/ThemedImage';
 
 const HeaderWrapper = styled.div`
   width: 100%;
@@ -215,6 +216,14 @@ const HomePage = () => {
     <Layout title={siteConfig.title} description={siteConfig.tagline}>
       <HeaderWrapper>
         <HeaderContent>
+          <ThemedImage
+            sources={{
+              light: '/img/Surge Vertical Dark.svg',
+              dark: '/img/Surge Vertical Light.svg',
+            }}
+            alt="Surge Logo"
+            sizes={'s'}
+          />
           <Title>{siteConfig.title}</Title>
           <p>Maximally Aligned, High-Performance Ethereum Rollup</p>
           <SearchWrapper>
