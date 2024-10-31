@@ -3,7 +3,7 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Surge documentation',
+  title: 'Documentation',
   tagline: 'Surge was created for high-performance Ethereum node management',
   url: 'https://docs.surge.nethermind.io/',
   baseUrl: '/',
