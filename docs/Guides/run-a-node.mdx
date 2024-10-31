@@ -4,6 +4,101 @@ sidebar_position: 1
 
 # Run a Node
 
-Complete guide for setting up and operating a Surge rollup node.
+This guide will help you start up a Surge RPC node using simple-surge-node.
 
-(Placeholder for node setup instructions)
+## Prerequisites
+
+### Software
+
+Be sure to have the following software installed:
+
+- `git` version 2.x or higher
+- `docker` version 24.0 or higher
+- `docker compose` version 2.x or higher
+
+### Hardware
+
+Any modern computer with 2 cores CPU and 4GB RAM will be sufficient.
+
+## Run a Surge node with simple-surge-node
+
+### 1. Clone simple-surge-node repository
+
+```bash
+git clone https://github.com/NethermindEth/simple-surge-node
+cd simple-surge-node
+```
+
+### 2. Create your .env file
+
+```bash
+cp .env.sample .env
+```
+
+Edit the .env file to set the correct values for your environment.
+
+```bash
+nano .env
+```
+
+The following environment variables need to be configured:
+
+- `L1_ENDPOINT_HTTP`: HTTP endpoint for your L1 node
+- `L1_ENDPOINT_WS`: WebSocket endpoint for your L1 node
+- `L1_BEACON_HTTP`: Beacon chain HTTP endpoint
+
+You need to provide locally running L1 node endpoints or use a public L1 node.
+
+Examples:
+```bash
+# Local L1 node
+L1_ENDPOINT_HTTP=http://192.168.1.10:8545
+L1_ENDPOINT_WS=ws://192.168.1.10:8546
+L1_BEACON_HTTP=http://192.168.1.10:5052
+
+# Using Infura
+L1_ENDPOINT_HTTP=https://mainnet.infura.io/v3/YOUR-PROJECT-ID
+L1_ENDPOINT_WS=wss://mainnet.infura.io/ws/v3/YOUR-PROJECT-ID
+L1_BEACON_HTTP=https://beacon.infura.io
+```
+
+### 3. Run docker compose to start the node
+
+```bash
+docker compose up -d
+```
+
+That's it! The apropriate images will be downloaded and docker services will be started.
+
+### 4. Verify Node Health
+
+You can verify your node is running correctly by:
+
+1. Checking if blocks are being synced:
+```bash
+curl http://localhost:8547 \
+  -X POST \
+  -H "Content-Type: application/json" \
+  --data '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}'
+```
+
+2. Monitoring the dashboard at http://localhost:3001/d/L2ExecutionEngine/l2-execution-engine-overview
+
+3. Checking service logs:
+```bash
+docker compose logs -f
+```
+
+## Stop the node
+
+Stop the node with command:
+
+```bash
+docker compose down
+```
+
+To remove the volumes and start fresh next time:
+
+```bash
+docker compose down -v
+```
