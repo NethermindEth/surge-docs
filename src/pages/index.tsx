@@ -139,18 +139,26 @@ const QuickLinksTitle = styled.h2`
 `;
 
 const actions = [
-  {
-    title: 'Get Started',
-    icon: Info,
-    to: '/docs/getting-started',
-    text: 'Learn how to set up and run Surge rollup',
-  },
-  {
-    title: 'Run a Prover',
+// TODO: do we need this?
+//   {
+//     title: 'Get Started',
+//     icon: Info,
+//     to: '/docs/getting-started',
+//     text: 'Learn how to set up and run Surge rollup',
+//   },
+ {
+    title: 'Run a node',
     icon: HelpCircle,
-    to: '/docs/Guides/prover-setup',
-    text: 'Set up and run Nethermind TEE or RethZk provers',
+    to: '/docs/Guides/run-a-node',
+    text: 'Set up and run surge node with proposer, prover, and blockscout',
   },
+// TODO: do we need this? The prover is run as part of the node setup.
+//   {
+//     title: 'Run a Prover',
+//     icon: HelpCircle,
+//     to: '/docs/Guides/prover-setup',
+//     text: 'Set up and run Nethermind TEE or RethZk provers',
+//   },
   {
     title: 'Sequencer Guide',
     icon: BookOpen,
@@ -170,11 +178,11 @@ const itemLinks = [
     description: 'Complete guide to setting up and operating a Surge rollup node',
     to: '/docs/Guides/run-a-node',
   },
-  {
-    title: 'Prover Setup',
-    description: 'Configure Nethermind TEE or RethZk provers for Surge rollup',
-    to: '/docs/Guides/prover-setup',
-  },
+//   {
+//     title: 'Prover Setup',
+//     description: 'Configure Nethermind TEE or RethZk provers for Surge rollup',
+//     to: '/docs/Guides/prover-setup',
+//   },
   {
     title: 'Bridge Operations',
     description: 'Understanding the native messaging bridge with Ethereum L1',
