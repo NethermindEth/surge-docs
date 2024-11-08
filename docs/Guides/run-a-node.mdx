@@ -65,10 +65,10 @@ L1_BEACON_HTTP=https://beacon.infura.io
 ### 3. Run docker compose to start the node
 
 ```bash
-docker compose up -d
+docker compose --profile proposer --profile prover --profile blockscout up -d
 ```
 
-That's it! The apropriate images will be downloaded and docker services will be started.
+This will start the node with the proposer, prover, and blockscout services. You can exclude any services you don't need by omitting the appropriate `--profile` flag.
 
 ### 4. Verify Node Health
 
@@ -82,7 +82,7 @@ curl http://localhost:8547 \
   --data '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}'
 ```
 
-2. Monitoring the dashboard at http://localhost:3001/d/L2ExecutionEngine/l2-execution-engine-overview
+2. Monitoring the blockscout dashboard at http://localhost:4000/
 
 3. Checking service logs:
 ```bash
@@ -94,11 +94,12 @@ docker compose logs -f
 Stop the node with command:
 
 ```bash
-docker compose down
+docker compose --profile proposer --profile prover --profile blockscout up -d down
 ```
 
 To remove the volumes and start fresh next time:
 
 ```bash
-docker compose down -v
+docker compose --profile proposer --profile prover --profile blockscout up -d down -v
+sudo rm -r execution-data-taiko/ || sudo rm -r blockscout-postgres-data/
 ```
