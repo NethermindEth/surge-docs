@@ -1,9 +1,69 @@
 ---
-sidebar_position: 2
+sidebar_position: 6
 ---
 
 # Set up a Prover
 
 Complete guide for setting up a Surge prover.
 
-(Placeholder for setup instructions)
+## Deploy SGX Prover
+
+### 1. Fetch Collateral Information
+
+First, fetch the collateral information from Intel:
+
+```bash
+FMSPC="00906ED50000"
+
+TCB_FILE="tcb.json"
+QE_IDENTITY_FILE="qe_identity.json"
+
+curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/tcb?fmspc=${FMSPC}" > ${TCB_FILE}
+curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/qe/identity" > ${QE_IDENTITY_FILE}
+
+jq '.tcbInfo.fmspc |= ascii_downcase' ${TCB_FILE} > temp.json && mv temp.json ${TCB_FILE}
+```
+
+### 2. Build and Initialize Image
+
+Follow the instructions at [Raiko Docker and RA Documentation](https://github.com/NethermindEth/raiko/blob/main/docs/README_Docker_and_RA.md) to build and initialize the image.
+
+### 3. Get Quote and Measurement Values
+
+Retrieve the `quote`, `MRENCLAVE`, and `MRSIGNER` values:
+
+```bash
+# Get quote
+cat ~/.config/raiko/config/bootstrap.json | jq -r '.quote'
+
+# Get MRENCLAVE and MRSIGNER
+cat ~/.config/raiko/config/bootstrap.json | jq -r '.quote' | xxd -r -p > quote.bin
+gramine-sgx-quote-view quote.bin
+```
+
+The output will contain important measurement values including:
+
+- MRENCLAVE: `14c4362d5dd0af9721ef9bdea2c92bf84b67fe34a102c892182ce2be7a81f2c5`
+- MRSIGNER: `ca0583a715534a8c981b914589a7f0dc5d60959d9ae79fb5353299a4231673d5`
+
+### 4. Register Collaterals
+
+Use `config_dcap_sgx_verifier.sh` to register the collaterals and the instance. For more information, see [SGX TCB on L1](https://www.notion.so/SGX-TCB-on-L1-139360fc38d080d7a7bad6e0acca8efc?pvs=21).
+
+### 5. Configure and Run Raiko
+
+Set up the following environment variables:
+
+```bash
+export SGX_INSTANCE_ID=0
+export L1_NETWORK=surge_dev_l1
+export NETWORK=surge_dev
+export SGX_VERIFIER_ADDRESS=0x86A0679C7987B5BA9600affA994B78D0660088ff
+export ATTESTATION_ADDRESS=0xdFb2fAc1519eDA2b3ee1Edf578ee0509DC8633f7
+export PEM_CERTCHAIN_ADDRESS=0x86B28E406738f2928bE33D111A0B821BBC5610A2
+export PROVER_PRIVATE_KEY=<your-private-key>
+export PRIVATE_KEY=0x${PROVER_PRIVATE_KEY}
+export FORK_URL='http://185.3.95.99:32002'
+```
+
+Then run Raiko following the configuration instructions in the [Raiko Docker and RA Documentation](https://github.com/NethermindEth/raiko/blob/main/docs/README_Docker_and_RA.md#running-raiko).

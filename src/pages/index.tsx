@@ -1,11 +1,11 @@
 import React from 'react';
-import styled from '@emotion/styled';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import SearchBar from '@theme/SearchBar';
 import { Info, HelpCircle, BookOpen, ArrowUpRight as LinkIcon } from 'lucide-react';
 import ThemedImage from '@theme/ThemedImage';
+import styled from "@emotion/styled";
 
 const HeaderWrapper = styled.div`
   width: 100%;
@@ -166,9 +166,9 @@ const itemLinks = [
     to: '/docs/intro',
   },
   {
-    title: 'Run a Node',
-    description: 'Complete guide to setting up and operating a Surge rollup node',
-    to: '/docs/Guides/run-a-node',
+    title: 'Deploy relay',
+    description: 'Complete guide to setting up and operating a Surge relay',
+    to: '/docs/Guides/deploy-relay',
   },
   {
     title: 'Prover Setup',

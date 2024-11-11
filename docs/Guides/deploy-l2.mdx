@@ -1,0 +1,95 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deploy L2
+
+This guide walks you through the process of deploying the L2 network components using Simple Surge Node.
+
+## Setup Process
+
+### 1. Clone Repository
+
+First, clone the Simple Surge Node repository:
+
+```bash
+git clone https://github.com/NethermindEth/simple-surge-node.git
+```
+
+### 2. Configure Environment
+
+Create and configure your environment file:
+
+```bash
+cp .env.sample .env
+```
+
+:::tip Environment Configuration
+Edit your `.env` file with the appropriate machine address where you deployed the Kurtosis package. Example configuration:
+
+```env
+L1_ENDPOINT_WS=ws://185.3.95.99:32003
+L1_BEACON_HTTP=http://185.3.95.99:33001
+```
+
+Make sure to replace the IP address and ports with your actual deployment values.
+:::
+
+### 3. Start Components
+
+The deployment consists of three main components that need to be started in sequence:
+
+<Tabs>
+    <TabItem value="driver" label="Driver" default>
+
+        ```bash
+        docker compose -f docker-compose.yml --profile nethermind_execution_l2 up -d
+        ```
+
+    </TabItem>
+    <TabItem value="proposer" label="Proposer">
+
+        ```bash
+        docker compose -f docker-compose.yml --profile proposer up -d
+        ```
+
+    </TabItem>
+    <TabItem value="prover" label="Prover Relayer">
+
+        ```bash
+        docker compose -f docker-compose-prover.yml --profile prover up -d
+        ```
+
+    </TabItem>
+
+</Tabs>
+
+## Verification
+
+After starting all components, you should:
+
+1. Check that all Docker containers are running properly
+2. Monitor the logs for any startup errors
+3. Verify network connectivity between components
+
+:::info Component Order
+It's important to start the components in the specified order:
+
+1. Driver
+2. Proposer
+3. Prover Relayer
+
+This sequence ensures proper initialization and communication between components.
+:::
+
+## Troubleshooting
+
+If you encounter issues:
+
+- Verify all environment variables are correctly set
+- Check Docker logs for specific error messages
+- Ensure all required ports are accessible
+- Confirm network connectivity between components

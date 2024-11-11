@@ -1,0 +1,177 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deploy Protocols on L1
+
+:::note Skip if Using Kurtosis
+If you're using the Kurtosis Package to deploy L1, you can skip this section.
+:::
+
+## 1. Deploy Taiko on L1
+
+### Prerequisites
+
+- L2 Chain ID (e.g., 763374)
+- L2 Genesis Hash (e.g., `0xbeced3738f1246571cccabc82a1e6cbd9ed9d5f7ed2b6c7ded28f9722317bd9e`)
+- L1 Account with funds
+- L1 RPC URL
+
+### Deployment Script
+
+```bash
+docker run --rm \
+    -e PRIVATE_KEY=$ACCOUNT_PRIVATE_KEY \
+    -e CONTRACT_OWNER=$ACCOUNT_ADDRESS \
+    -e FORK_URL=$RPC_URL \
+    -e PROPOSER=0x0000000000000000000000000000000000000000 \
+    -e PROPOSER_ONE=0x0000000000000000000000000000000000000000 \
+    -e GUARDIAN_PROVERS=0x1000777700000000000000000000000000000001,0x1000777700000000000000000000000000000002,0x1000777700000000000000000000000000000003,0x1000777700000000000000000000000000000004,0x1000777700000000000000000000000000000005,0x1000777700000000000000000000000000000006,0x1000777700000000000000000000000000000007 \
+    -e TAIKO_L2_ADDRESS=0x7633740000000000000000000000000000010001 \
+    -e L2_SIGNAL_SERVICE=0x7633740000000000000000000000000000000005 \
+    -e SHARED_ADDRESS_MANAGER=0x0000000000000000000000000000000000000000 \
+    -e L2_GENESIS_HASH=$L2_GENESIS_HASH \
+    -e PAUSE_TAIKO_L1=false \
+    -e PAUSE_BRIDGE=false \
+    -e NUM_MIN_MAJORITY_GUARDIANS=7 \
+    -e NUM_MIN_MINORITY_GUARDIANS=2 \
+    -e TIER_PROVIDER=devnet_sgx \
+    -e FOUNDRY_PROFILE=layer1 \
+    nethsurge/taiko-contract:surge-devnet \
+    script/layer1/deploy_protocol_on_l1.sh
+```
+
+## 2. Configure Bridge on L1
+
+### Prerequisites
+
+- L2 Chain ID (763374)
+- L2_BRIDGE (`0x7633740000000000000000000000000000000001`)
+- L1_SHARED_ADDRESS_MANAGER (`0x0643D39D47CF0ea95Dbea69Bf11a7F8C4Bc34968`)
+- L1 Account with funds
+- L1 RPC URL
+
+### Bridge Setup Script
+
+```javascript
+const { ethers } = require('ethers');
+
+const RPC_URL = $RPC_URL;
+const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
+const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
+
+// Contract ABI (Application Binary Interface)
+const contractABI = [
+  {
+    inputs: [
+      { internalType: 'uint64', name: '_chainId', type: 'uint64' },
+      { internalType: 'bytes32', name: '_name', type: 'bytes32' },
+      { internalType: 'address', name: '_newAddress', type: 'address' },
+    ],
+    name: 'setAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+  const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+  const chainId = $CHAIN_ID;
+  const name = ethers.utils.formatBytes32String('bridge');
+  const newAddress = $BRIDGE;
+
+  try {
+    const tx = await contract.setAddress(chainId, name, newAddress);
+    console.log('Transaction hash:', tx.hash);
+
+    const receipt = await tx.wait();
+    console.log('Transaction confirmed in block:', receipt.blockNumber);
+  } catch (error) {
+    console.error('Error calling setAddress:', error);
+  }
+}
+
+main();
+```
+
+## 3. Configure Signal Service on L1
+
+### Prerequisites
+
+- L2 Chain ID (763374)
+- L2_SIGNAL_SERVICE (`0x7633740000000000000000000000000000000005`)
+- L1_SHARED_ADDRESS_MANAGER (`0x0643D39D47CF0ea95Dbea69Bf11a7F8C4Bc34968`)
+- L1 Account with funds
+- L1 RPC URL
+
+### Signal Service Setup Script
+
+```javascript
+const { ethers } = require('ethers');
+
+const RPC_URL = $RPC_URL;
+const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
+const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
+
+const contractABI = [
+  {
+    inputs: [
+      { internalType: 'uint64', name: '_chainId', type: 'uint64' },
+      { internalType: 'bytes32', name: '_name', type: 'bytes32' },
+      { internalType: 'address', name: '_newAddress', type: 'address' },
+    ],
+    name: 'setAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+  const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+  const chainId = $CHAIN_ID;
+  const name = ethers.utils.formatBytes32String('signal_service');
+  const newAddress = $SIGNAL_SERVICE;
+
+  try {
+    const tx = await contract.setAddress(chainId, name, newAddress);
+    console.log('Transaction hash:', tx.hash);
+
+    const receipt = await tx.wait();
+    console.log('Transaction confirmed in block:', receipt.blockNumber);
+  } catch (error) {
+    console.error('Error calling setAddress:', error);
+  }
+}
+
+main();
+```
+
+## 4. Configure SGX TCB on L1
+
+### Prerequisites
+
+- MRENCLAVE: `14c4362d5dd0af9721ef9bdea2c92bf84b67fe34a102c892182ce2be7a81f2c5`
+- MRSIGNER: `ca0583a715534a8c981b914589a7f0dc5d60959d9ae79fb5353299a4231673d5`
+- SGX_VERIFIER_ADDRESS: `0x86A0679C7987B5BA9600affA994B78D0660088ff`
+- ATTESTATION_ADDRESS: `0xdFb2fAc1519eDA2b3ee1Edf578ee0509DC8633f7`
+- PEM_CERTCHAIN_ADDRESS: `0x86B28E406738f2928bE33D111A0B821BBC5610A2`
+- Quote value (see documentation)
+- L1 Account with funds
+- L1 RPC URL
+
+:::info Full Quote Value
+For the complete Quote value required for SGX TCB configuration, please refer to the deployment documentation or contact your system administrator.
+:::

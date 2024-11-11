@@ -1,0 +1,76 @@
+---
+sidebar_position: 1
+---
+
+# Deploy L1
+
+In this guide, we'll walk through the process of deploying the L1 network using Kurtosis. This will also deploy the Taiko protocol on L1.
+
+## Prerequisites
+
+- Git installed on your system
+- Terminal access
+- Basic command line knowledge
+
+## Installation Steps
+
+### 1. Install Kurtosis
+
+First, you'll need to install Kurtosis on your system. Follow the installation guide at:
+
+<div className="flex justify-center my-8">
+    <a
+        className="button button--primary button--lg"
+        href="https://docs.kurtosis.com/quickstart"
+        target="_blank"
+        rel="noopener noreferrer">
+        Kurtosis Installation Guide ↗
+    </a>
+</div>
+
+
+### 2. Clone the Repository
+
+Clone the Preconfirm devnet package repository:
+
+```bash
+git clone https://github.com/NethermindEth/preconfirm-devnet-package.git
+```
+
+### 3. Switch to the Correct Branch
+
+Navigate to the cloned directory and checkout the `surge/devnet` branch:
+
+```bash
+cd preconfirm-devnet-package
+git checkout surge/devnet
+```
+
+### 4. Deploy Using Kurtosis
+
+Run Kurtosis with the following command to deploy the L1 network:
+
+```bash
+kurtosis run --enclave core-rollup . --args-file network_params.yaml
+```
+
+:::tip
+This command will also automatically deploy the Taiko protocol on L1 for you.
+:::
+
+## Verification
+
+After running the deployment command, Kurtosis will start setting up your L1 environment. You should see output in your terminal indicating the progress of the deployment.
+
+:::info What's Next?
+Once your L1 deployment is complete, you can proceed with setting up your prover or configuring additional network parameters.
+:::
+
+## Troubleshooting
+
+If you encounter any issues during deployment:
+
+1. Ensure all prerequisites are properly installed
+2. Verify you're on the correct branch (`surge/devnet`)
+3. Check that the `network_params.yaml` file exists and is properly configured
+4. Make sure Kurtosis is running correctly on your system
