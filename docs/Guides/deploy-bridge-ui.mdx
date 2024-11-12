@@ -1,0 +1,212 @@
+---
+sidebar_position: 7
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deploy Bridge UI
+
+This guide walks you through deploying the Surge Bridge UI, including all necessary configurations and services.
+
+## 1. Clone Repository
+
+First, clone the Surge Taiko Mono repository:
+
+```bash
+git clone https://github.com/NethermindEth/surge-taiko-mono.git
+cd surge-taiko-mono/packages/bridge-ui
+```
+
+## 2. Configure Components
+
+### Configuration Files Setup
+
+You'll need to configure several JSON files before deployment. Each has specific requirements:
+
+<Tabs>
+    <TabItem value="bridges" label="configuredBridges.json" default>
+
+        #### Prerequisites
+        - L1 Chain ID
+        - L1 Contract Addresses:
+        - L1_BRIDGE
+        - L1_ERC20_VAULT
+        - L1_ERC721_VAULT
+        - L1_ERC1155_VAULT
+        - L1_SIGNAL_SERVICE
+        - L2 Chain ID
+        - L2 Contract Addresses:
+        - L2_BRIDGE
+        - L2_ERC20_VAULT
+        - L2_ERC721_VAULT
+        - L2_ERC1155_VAULT
+        - L2_SIGNAL_SERVICE
+
+        Path: `./config/configuredBridges.json`
+
+    </TabItem>
+
+    <TabItem value="chains" label="configuredChains.json">
+
+        #### Prerequisites
+        - L1 Chain ID
+        - L1 RPC URL
+        - L2 Chain ID
+        - L2 RPC URL
+
+        Path: `./config/configuredChains.json`
+
+    </TabItem>
+
+    <TabItem value="relayer" label="configuredRelayer.json">
+
+        #### Prerequisites
+        - L1 Chain ID
+        - L1 to L2 Relayer URL
+        - L2 Chain ID
+        - L2 to L1 Relayer URL
+
+        Path: `./config/configuredRelayer.json`
+
+    </TabItem>
+
+    <TabItem value="other" label="Additional Configs">
+
+        These files also need to be configured:
+        - `./config/configuredCustomTokens.json`
+        - `./config/configuredEventIndexer.json`
+
+        :::tip
+        These files may require minimal or no modification depending on your deployment needs.
+        :::
+
+    </TabItem>
+
+</Tabs>
+
+## 3. SSL Certificate Setup
+
+Generate SSL certificates for nginx:
+
+```bash
+chmod +x ./nginx/generate-certs.sh
+./nginx/generate-certs.sh
+```
+
+## 4. Configure Nginx Reverse Proxy
+
+### Prerequisites
+
+- L1 RPC URL
+- L1 Blockscout URL
+- L1 to L2 Relayer URL
+- L2 RPC URL
+- L2 Blockscout URL
+- L2 to L1 Relayer URL
+
+:::info
+Update the nginx configuration files with your specific URLs and endpoints.
+:::
+
+## 5. Deploy Services
+
+Deploy the Bridge UI and nginx services:
+
+```bash
+# Start Bridge UI
+docker compose --profile bridge-ui up -d --build
+
+# Start Nginx
+docker compose --profile nginx up -d
+```
+
+## Verification Steps
+
+After deployment, verify:
+
+1. Bridge UI Accessibility
+
+- Check if the UI is accessible via the configured domain
+- Verify SSL certificate is working properly
+
+2. Component Connectivity
+
+- Verify connection to L1 and L2 networks
+- Check relayer connectivity
+- Confirm Blockscout integration
+
+3. Service Health
+
+```bash
+# Check running containers
+docker compose ps
+
+# View Bridge UI logs
+docker compose logs bridge-ui -f
+
+# View Nginx logs
+docker compose logs nginx -f
+```
+
+## Configuration Examples
+
+Here are sample structures for the configuration files:
+
+```json title="configuredChains.json"
+{
+  "chains": [
+    {
+      "id": "L1_CHAIN_ID",
+      "rpc": "L1_RPC_URL"
+    },
+    {
+      "id": "L2_CHAIN_ID",
+      "rpc": "L2_RPC_URL"
+    }
+  ]
+}
+```
+
+```json title="configuredRelayer.json"
+{
+  "relayers": [
+    {
+      "fromChainId": "L1_CHAIN_ID",
+      "toChainId": "L2_CHAIN_ID",
+      "url": "L1_TO_L2_RELAYER_URL"
+    },
+    {
+      "fromChainId": "L2_CHAIN_ID",
+      "toChainId": "L1_CHAIN_ID",
+      "url": "L2_TO_L1_RELAYER_URL"
+    }
+  ]
+}
+```
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. **UI Access Issues**
+
+- Check nginx configuration
+- Verify SSL certificate setup
+- Confirm port mappings
+
+2. **Network Connectivity**
+
+- Verify RPC endpoints
+- Check relayer connections
+- Confirm blockchain network access
+
+3. **Configuration Problems**
+
+- Validate JSON syntax in config files
+- Verify contract addresses
+- Check chain IDs match your network
+
+:::warning
+Make sure all URLs in the nginx configuration are accessible and properly secured before deployment.
+:::

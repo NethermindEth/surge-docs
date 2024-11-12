@@ -1,0 +1,152 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deploy Relayer
+
+This guide walks you through the process of deploying and configuring the Surge Relayer.
+
+## Prerequisites
+
+Before you begin, make sure you have the following contract addresses and endpoints:
+
+### L1 Requirements
+
+- L1_BRIDGE
+- L1_ERC20_VAULT
+- L1_ERC721_VAULT
+- L1_ERC1155_VAULT
+- L1_TAIKO
+- L1_SIGNAL_SERVICE
+- L1 RPC URL
+
+### L2 Requirements
+
+- L2_BRIDGE
+- L2_ERC20_VAULT
+- L2_ERC721_VAULT
+- L2_ERC1155_VAULT
+- L2_TAIKO
+- L2_SIGNAL_SERVICE
+- L2 RPC URL
+
+## Deployment Steps
+
+### 1. Clone Repository
+
+First, clone the Surge Taiko Mono repository:
+
+```bash
+git clone https://github.com/NethermindEth/surge-taiko-mono.git
+```
+
+### 2. Configure Environment
+
+Navigate to the relayer package and prepare the configuration:
+
+```bash
+cd surge-taiko-mono/packages/relayer
+```
+
+:::tip Configuration
+Update the `docker-compose.yml` file with your specific RPC URLs and other required configuration values.
+:::
+
+### 3. Deploy Components
+
+Deploy the relayer components in the following sequence:
+
+<Tabs>
+    <TabItem value="init" label="Initialize Components" default>
+
+        ```bash
+        docker compose --profile init up -d
+        ```
+
+        This command starts the relayer database and queue services.
+    </TabItem>
+
+    <TabItem value="migrations" label="Run Migrations">
+
+        ```bash
+        # Wait for services to be ready
+        sleep 20
+
+        # Run migrations
+        docker compose --profile migrations up
+        ```
+
+        This step sets up the necessary database schema and initial configurations.
+    </TabItem>
+
+    <TabItem value="relayer" label="Start Relayer">
+
+        ```bash
+        docker compose --profile relayer up -d
+        ```
+
+        This starts the main relayer service.
+    </TabItem>
+
+</Tabs>
+
+## Verification
+
+After deployment, verify that:
+
+1. Database is properly initialized
+2. Migrations completed successfully
+3. Relayer service is running and connected to both L1 and L2
+
+## Component Health Checks
+
+Monitor the health of your deployment:
+
+```bash
+# Check running containers
+docker compose ps
+
+# View relayer logs
+docker compose logs relayer -f
+
+# Check database status
+docker compose logs db -f
+```
+
+:::warning Important
+Ensure all components are running before proceeding with any network operations. The relayer is a critical component for cross-layer communication.
+:::
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. **Connection Issues**
+
+- Verify L1 and L2 RPC endpoints are accessible
+- Check network connectivity
+- Ensure all contract addresses are correct
+
+2. **Database Issues**
+
+- Verify PostgreSQL is running
+- Check migration logs for errors
+- Ensure database credentials are correct
+
+3. **Service Issues**
+
+- Check container logs for errors
+- Verify all environment variables are set
+- Ensure sufficient system resources
+
+:::tip Need Help?
+If you continue to experience issues, check the logs using:
+
+```bash
+docker compose logs --tail=100
+```
+
+:::

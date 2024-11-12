@@ -1,0 +1,179 @@
+---
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deploy Protocols on L2
+
+This guide explains how to deploy and configure the bridge and signal service protocols on L2.
+
+<Tabs>
+    <TabItem value="bridge" label="1. Configure Bridge" default>
+
+        ### Bridge Configuration
+
+        #### Prerequisites
+        - L1 Chain ID (3151908)
+        - L1_BRIDGE: `0x72bCbB3f339aF622c28a26488Eed9097a2977404`
+        - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
+        - L2 Prefunded Account
+        - L2 RPC URL
+
+        #### Bridge Setup Script
+
+        ```javascript
+        const { ethers } = require("ethers");
+
+        const RPC_URL = $RPC_URL;
+        const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
+        const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
+
+        // Contract ABI (Application Binary Interface)
+        const contractABI = [
+        {
+            "inputs": [
+        { "internalType": "uint64", "name": "_chainId", "type": "uint64" },
+        { "internalType": "bytes32", "name": "_name", "type": "bytes32" },
+        { "internalType": "address", "name": "_newAddress", "type": "address" }
+            ],
+            "name": "setAddress",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+        ];
+
+        async function main() {
+        const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+        const chainId = $CHAIN_ID;
+        const name = ethers.utils.formatBytes32String("bridge");
+        const newAddress = $BRIDGE;
+
+        try {
+        const tx = await contract.setAddress(chainId, name, newAddress);
+        console.log("Transaction hash:", tx.hash);
+
+        const receipt = await tx.wait();
+        console.log("Transaction confirmed in block:", receipt.blockNumber);
+    } catch (error) {
+        console.error("Error calling setAddress:", error);
+    }
+    }
+
+        main();
+        ```
+
+    </TabItem>
+    <TabItem value="signal" label="2. Configure Signal Service">
+
+        ### Signal Service Configuration
+
+        #### Prerequisites
+        - L1 Chain ID (3151908)
+        - L1_SIGNAL_SERVICE: `0x00c042C4D5D913277CE16611a2ce6e9003554aD5`
+        - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
+        - L2 Prefunded Account
+        - L2 RPC URL
+
+        #### Signal Service Setup Script
+
+        ```javascript
+        const { ethers } = require("ethers");
+
+        const RPC_URL = $RPC_URL;
+        const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
+        const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
+
+        // Contract ABI (Application Binary Interface)
+        const contractABI = [
+        {
+            "inputs": [
+        { "internalType": "uint64", "name": "_chainId", "type": "uint64" },
+        { "internalType": "bytes32", "name": "_name", "type": "bytes32" },
+        { "internalType": "address", "name": "_newAddress", "type": "address" }
+            ],
+            "name": "setAddress",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+        ];
+
+        async function main() {
+        const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+        const chainId = $CHAIN_ID;
+        const name = ethers.utils.formatBytes32String("signal_service");
+        const newAddress = $BRIDGE;
+
+        try {
+        const tx = await contract.setAddress(chainId, name, newAddress);
+        console.log("Transaction hash:", tx.hash);
+
+        const receipt = await tx.wait();
+        console.log("Transaction confirmed in block:", receipt.blockNumber);
+    } catch (error) {
+        console.error("Error calling setAddress:", error);
+    }
+    }
+
+        main();
+        ```
+
+    </TabItem>
+
+</Tabs>
+
+## Verification Steps
+
+After deploying both protocols:
+
+1. Verify Bridge Setup
+
+- Confirm the bridge address is correctly set
+- Check transaction confirmation on L2
+- Verify the bridge contract is accessible
+
+2. Verify Signal Service Setup
+
+- Confirm the signal service address is correctly set
+- Check transaction confirmation on L2
+- Verify the signal service contract is accessible
+
+:::tip Environment Variables
+Replace all variables (e.g., `$RPC_URL`, `$ACCOUNT_PRIVATE_KEY`, `$CHAIN_ID`, `$BRIDGE`) with your actual values before running the scripts.
+:::
+
+:::warning Important Note
+Ensure you have sufficient funds in your L2 account before deploying these protocols, as each transaction will require gas fees.
+:::
+
+## Troubleshooting
+
+If you encounter issues during deployment:
+
+1. Check Connectivity
+
+- Verify L2 RPC endpoint is accessible
+- Ensure network connectivity is stable
+
+2. Account Issues
+
+- Confirm account has sufficient funds
+- Verify private key is correct
+- Check account permissions
+
+3. Contract Interactions
+
+- Verify contract addresses are correct
+- Check that ABI matches the deployed contracts
+- Ensure gas limits are sufficient
