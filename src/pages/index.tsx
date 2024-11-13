@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import SearchBar from '@theme/SearchBar';
 import { Info, HelpCircle, BookOpen, ArrowUpRight as LinkIcon } from 'lucide-react';
 import ThemedImage from '@theme/ThemedImage';
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
 
 const HeaderWrapper = styled.div`
   width: 100%;
@@ -162,7 +162,8 @@ const actions = [
 const itemLinks = [
   {
     title: 'Introduction to Surge',
-    description: 'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup.',
+    description:
+      'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup.',
     to: '/docs/intro',
   },
   {
@@ -192,9 +193,7 @@ const QuickLinks = () => (
     <ColumnWrapper>
       <Column>
         <QuickLinksTitle>Use Surge</QuickLinksTitle>
-        <p>
-          Explore these guided tutorials to get started with Sedge.
-        </p>
+        <p>Explore these guided tutorials to get started with Surge.</p>
         {itemLinks.map((link) => (
           <LinkCard key={link.title} to={link.to}>
             <div>

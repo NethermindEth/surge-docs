@@ -17,6 +17,8 @@ First, clone the Simple Surge Node repository:
 
 ```bash
 git clone https://github.com/NethermindEth/simple-surge-node.git
+
+cd simple-surge-node
 ```
 
 ### 2. Configure Environment
@@ -74,6 +76,23 @@ After starting all components, you should:
 1. Check that all Docker containers are running properly
 2. Monitor the logs for any startup errors
 3. Verify network connectivity between components
+4. (Optional) Deploy BlockScout for chain exploration and verification:
+
+```bash
+docker compose -f docker-compose.yml --profile blockscout up -d
+```
+
+Once deployed, you can access BlockScout through these URLs:
+
+- L1 BlockScout: http://localhost:35001
+- L2 BlockScout: http://localhost:4000
+
+BlockScout provides a web interface for:
+
+- Exploring blocks, transactions, and accounts
+- Verifying smart contracts
+- Monitoring network activity
+- Tracking token transfers and balances
 
 :::info Component Order
 It's important to start the components in the specified order:
@@ -81,6 +100,7 @@ It's important to start the components in the specified order:
 1. Driver
 2. Proposer
 3. Prover Relayer
+4. (Optional) BlockScout
 
 This sequence ensures proper initialization and communication between components.
 :::
