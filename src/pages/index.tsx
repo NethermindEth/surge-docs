@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import SearchBar from '@theme/SearchBar';
 import { Info, HelpCircle, BookOpen, ArrowUpRight as LinkIcon } from 'lucide-react';
 import ThemedImage from '@theme/ThemedImage';
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
 
 const HeaderWrapper = styled.div`
   width: 100%;
@@ -143,46 +143,47 @@ const actions = [
     title: 'Get Started',
     icon: Info,
     to: '/docs/getting-started',
-    text: 'Learn how to set up and run Surge rollup',
+    text: 'Learn how to set up and run Surge rollup.',
   },
   {
     title: 'Run a Prover',
     icon: HelpCircle,
     to: '/docs/Guides/prover-setup',
-    text: 'Set up and run Nethermind TEE or RethZk provers',
+    text: 'Set up and run Nethermind TEE or RethZk provers.',
   },
   {
     title: 'Sequencer Guide',
     icon: BookOpen,
     to: '/docs/core-concepts/sequencing',
-    text: 'Learn about Surge sequencer operations',
+    text: 'Learn about Surge sequencer operations.',
   },
 ];
 
 const itemLinks = [
   {
     title: 'Introduction to Surge',
-    description: 'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup',
+    description:
+      'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup.',
     to: '/docs/intro',
   },
   {
     title: 'Deploy relay',
-    description: 'Complete guide to setting up and operating a Surge relay',
+    description: 'Complete guide to setting up and operating a Surge relay.',
     to: '/docs/Guides/deploy-relay',
   },
   {
     title: 'Prover Setup',
-    description: 'Configure Nethermind TEE or RethZk provers for Surge rollup',
+    description: 'Configure Nethermind TEE or RethZk provers for Surge rollup.',
     to: '/docs/Guides/prover-setup',
   },
   {
     title: 'Bridge Operations',
-    description: 'Understanding the native messaging bridge with Ethereum L1',
+    description: 'Understanding the native messaging bridge with Ethereum L1.',
     to: '/docs/core-concepts/bridging',
   },
   {
     title: 'Core concepts',
-    description: 'Deep dive into zkEVM, block production, and cross-layer composability',
+    description: 'Deep dive into zkEVM, block production, and cross-layer composability.',
     to: '/docs/core-concepts',
   },
 ];
@@ -192,9 +193,7 @@ const QuickLinks = () => (
     <ColumnWrapper>
       <Column>
         <QuickLinksTitle>Use Surge</QuickLinksTitle>
-        <p>
-          Explore these guided tutorials to get started with Sedge for your Ethereum staking needs.
-        </p>
+        <p>Explore these guided tutorials to get started with Surge.</p>
         {itemLinks.map((link) => (
           <LinkCard key={link.title} to={link.to}>
             <div>
