@@ -18,56 +18,95 @@ This guide explains how to deploy and configure the bridge and signal service pr
         - L1 Chain ID (3151908)
         - L1_BRIDGE: `0x72bCbB3f339aF622c28a26488Eed9097a2977404`
         - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
-        - L2 Prefunded Account
+        - L2 Prefunded Account private key `0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31`
         - L2 RPC URL
 
-        #### Bridge Setup Script
+        Example environment variables:
 
-        ```javascript
-        const { ethers } = require("ethers");
-
-        const RPC_URL = $RPC_URL;
-        const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
-        const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
-
-        // Contract ABI (Application Binary Interface)
-        const contractABI = [
-        {
-            "inputs": [
-        { "internalType": "uint64", "name": "_chainId", "type": "uint64" },
-        { "internalType": "bytes32", "name": "_name", "type": "bytes32" },
-        { "internalType": "address", "name": "_newAddress", "type": "address" }
-            ],
-            "name": "setAddress",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }
-        ];
-
-        async function main() {
-        const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
-
-        const chainId = $CHAIN_ID;
-        const name = ethers.utils.formatBytes32String("bridge");
-        const newAddress = $BRIDGE;
-
-        try {
-        const tx = await contract.setAddress(chainId, name, newAddress);
-        console.log("Transaction hash:", tx.hash);
-
-        const receipt = await tx.wait();
-        console.log("Transaction confirmed in block:", receipt.blockNumber);
-    } catch (error) {
-        console.error("Error calling setAddress:", error);
-    }
-    }
-
-        main();
+        ```bash
+        export L1_CHAIN_ID=3151908
+        export L1_BRIDGE=0x72bCbB3f339aF622c28a26488Eed9097a2977404
+        export L2_SHARED_ADDRESS_MANAGER=0x7633740000000000000000000000000000000006
+        export L2_PREFUNDED_ACCOUNT_PRIVATE_KEY=0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31
+        export L2_RPC_URL=http://1.2.3.4:8547
         ```
+
+        :::tip Environment Variables
+        Replace `L2_RPC_URL` with the URL of your L2 RPC endpoint. Modify rest variables as needed.
+        :::
+
+
+        #### Bridge Setup
+
+        Choose between running a Docker container or a Node script.
+
+        <Tabs>
+            <TabItem value="Docker" label="Docker container" default>
+                ```bash
+                docker run --rm \
+                -e FOUNDRY_PROFILE=layer1 \
+                -e DOMAIN=$L1_CHAIN_ID \
+                -e ADDRESS=$L1_BRIDGE \
+                -e NAME=0x6272696467650000000000000000000000000000000000000000000000000000 \
+                -e PROXY_ADDRESS=$L2_SHARED_ADDRESS_MANAGER \
+                -e FORK_URL=$L2_RPC_URL \
+                -e PRIVATE_KEY=$L2_PREFUNDED_ACCOUNT_PRIVATE_KEY \
+                -e FORGE_FLAGS="--broadcast -vvv" \
+                nethsurge/protocol:devnet sh -c 'forge script ./script/shared/SetAddress.s.sol --fork-url "$FORK_URL" $FORGE_FLAGS'
+                ```
+            </TabItem>
+            <TabItem value="script" label="Node script">
+                ```javascript
+                const { ethers } = require("ethers");
+
+                // Configuration
+                const RPC_URL = $L2_RPC_URL;
+                const PRIVATE_KEY = $L2_PREFUNDED_ACCOUNT_PRIVATE_KEY;
+                const CONTRACT_ADDRESS = $L2_SHARED_ADDRESS_MANAGER;
+
+                // Contract ABI (Application Binary Interface)
+                const contractABI = [{
+                    "inputs": [
+                        { "internalType": "uint64", "name": "_chainId", "type": "uint64" },
+                        { "internalType": "bytes32", "name": "_name", "type": "bytes32" },
+                        { "internalType": "address", "name": "_newAddress", "type": "address" }
+                    ],
+                    "name": "setAddress",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }];
+
+                async function main() {
+                    // Initialize provider and wallet
+                    const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+                    const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+                    // Create contract instance
+                    const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+                    // Prepare parameters
+                    const chainId = $L1_CHAIN_ID;
+                    const name = ethers.utils.formatBytes32String("bridge");
+                    const newAddress = $L1_BRIDGE;
+
+                    try {
+                        // Send transaction
+                        const tx = await contract.setAddress(chainId, name, newAddress);
+                        console.log("Transaction hash:", tx.hash);
+
+                        // Wait for confirmation
+                        const receipt = await tx.wait();
+                        console.log("Transaction confirmed in block:", receipt.blockNumber);
+                    } catch (error) {
+                        console.error("Error calling setAddress:", error);
+                    }
+                }
+
+                main();
+                ```
+            </TabItem>
+        </Tabs>
 
     </TabItem>
     <TabItem value="signal" label="2. Configure Signal Service">
@@ -78,56 +117,96 @@ This guide explains how to deploy and configure the bridge and signal service pr
         - L1 Chain ID (3151908)
         - L1_SIGNAL_SERVICE: `0x00c042C4D5D913277CE16611a2ce6e9003554aD5`
         - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
-        - L2 Prefunded Account
+        - L2 Prefunded Account private key `0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31`
         - L2 RPC URL
 
-        #### Signal Service Setup Script
+        Example environment variables:
 
-        ```javascript
-        const { ethers } = require("ethers");
-
-        const RPC_URL = $RPC_URL;
-        const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
-        const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
-
-        // Contract ABI (Application Binary Interface)
-        const contractABI = [
-        {
-            "inputs": [
-        { "internalType": "uint64", "name": "_chainId", "type": "uint64" },
-        { "internalType": "bytes32", "name": "_name", "type": "bytes32" },
-        { "internalType": "address", "name": "_newAddress", "type": "address" }
-            ],
-            "name": "setAddress",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }
-        ];
-
-        async function main() {
-        const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
-
-        const chainId = $CHAIN_ID;
-        const name = ethers.utils.formatBytes32String("signal_service");
-        const newAddress = $BRIDGE;
-
-        try {
-        const tx = await contract.setAddress(chainId, name, newAddress);
-        console.log("Transaction hash:", tx.hash);
-
-        const receipt = await tx.wait();
-        console.log("Transaction confirmed in block:", receipt.blockNumber);
-    } catch (error) {
-        console.error("Error calling setAddress:", error);
-    }
-    }
-
-        main();
+        ```bash
+        export L1_CHAIN_ID=3151908
+        export L1_SIGNAL_SERVICE=0x00c042C4D5D913277CE16611a2ce6e9003554aD5
+        export L2_SHARED_ADDRESS_MANAGER=0x7633740000000000000000000000000000000006
+        export L2_PREFUNDED_ACCOUNT_PRIVATE_KEY=0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31
+        export L2_RPC_URL=http://1.2.3.4:8547
         ```
+
+        :::tip Environment Variables
+        Replace `L2_RPC_URL` with the URL of your L2 RPC endpoint. Modify rest variables as needed.
+        :::
+
+
+        #### Signal Service Setup
+
+        Choose between running a Docker container or a Node script.
+
+        <Tabs>
+            <TabItem value="Docker" label="Docker container" default>
+                ```bash
+                docker run --rm \
+                -e FOUNDRY_PROFILE=layer1 \
+                -e DOMAIN=$L1_CHAIN_ID \
+                -e ADDRESS=$L1_SIGNAL_SERVICE \
+                -e NAME=0x7369676e616c5f73657276696365000000000000000000000000000000000000 \
+                -e PROXY_ADDRESS=$L2_SHARED_ADDRESS_MANAGER \
+                -e FORK_URL=$L2_RPC_URL \
+                -e PRIVATE_KEY=$L2_PREFUNDED_ACCOUNT_PRIVATE_KEY \
+                -e FORGE_FLAGS="--broadcast -vvv" \
+                nethsurge/protocol:devnet sh -c 'forge script ./script/shared/SetAddress.s.sol --fork-url "$FORK_URL" $FORGE_FLAGS'
+                ```
+            </TabItem>
+            <TabItem value="script" label="Node script">
+
+                    ```javascript
+                    const { ethers } = require("ethers");
+
+                    // Configuration
+                    const RPC_URL = $L2_RPC_URL;
+                    const PRIVATE_KEY = $L2_PREFUNDED_ACCOUNT_PRIVATE_KEY;
+                    const CONTRACT_ADDRESS = $L2_SHARED_ADDRESS_MANAGER;
+
+                    // Contract ABI (Application Binary Interface)
+                    const contractABI = [{
+                        "inputs": [
+                            { "internalType": "uint64", "name": "_chainId", "type": "uint64" },
+                            { "internalType": "bytes32", "name": "_name", "type": "bytes32" },
+                            { "internalType": "address", "name": "_newAddress", "type": "address" }
+                        ],
+                        "name": "setAddress",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    }];
+
+                    async function main() {
+                        // Initialize provider and wallet
+                        const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+                        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+                        // Create contract instance
+                        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+                        // Prepare parameters
+                        const chainId = $L1_CHAIN_ID;
+                        const name = ethers.utils.formatBytes32String("signal_service");
+                        const newAddress = $L1_SIGNAL_SERVICE;
+
+                        try {
+                            // Send transaction
+                            const tx = await contract.setAddress(chainId, name, newAddress);
+                            console.log("Transaction hash:", tx.hash);
+
+                            // Wait for confirmation
+                            const receipt = await tx.wait();
+                            console.log("Transaction confirmed in block:", receipt.blockNumber);
+                        } catch (error) {
+                            console.error("Error calling setAddress:", error);
+                        }
+                    }
+
+                    main();
+                    ```
+            </TabItem>
+        </Tabs>
 
     </TabItem>
 
@@ -148,10 +227,6 @@ After deploying both protocols:
 - Confirm the signal service address is correctly set
 - Check transaction confirmation on L2
 - Verify the signal service contract is accessible
-
-:::tip Environment Variables
-Replace all variables (e.g., `$RPC_URL`, `$ACCOUNT_PRIVATE_KEY`, `$CHAIN_ID`, `$BRIDGE`) with your actual values before running the scripts.
-:::
 
 :::warning Important Note
 Ensure you have sufficient funds in your L2 account before deploying these protocols, as each transaction will require gas fees.
