@@ -188,6 +188,24 @@ const itemLinks = [
   },
 ];
 
+const proverLinks = [
+  {
+    title: 'SGX',
+    description: 'Configure SGX prover for Surge rollup.',
+    to: '/docs/Guides/sgx-prover',
+  },
+  {
+    title: 'RISC0',
+    description: 'Configure RISC0 prover for Surge rollup.',
+    to: '/docs/Guides/risc0-prover',
+  },
+  {
+    title: 'SP1',
+    description: 'Configure SP1 prover for Surge rollup.',
+    to: '/docs/Guides/sp1-prover',
+  },
+]
+
 const QuickLinks = () => (
   <QuickLinksSection>
     <ColumnWrapper>
