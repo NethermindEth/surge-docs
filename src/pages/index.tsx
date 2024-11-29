@@ -148,8 +148,8 @@ const actions = [
   {
     title: 'Run a Prover',
     icon: HelpCircle,
-    to: '/docs/Guides/prover-setup',
-    text: 'Set up and run Nethermind TEE or RethZk provers.',
+    to: '/docs/Guides/provers',
+    text: 'Set up and run SGX or ZK provers.',
   },
   {
     title: 'Sequencer Guide',
@@ -173,8 +173,8 @@ const itemLinks = [
   },
   {
     title: 'Prover Setup',
-    description: 'Configure Nethermind TEE or RethZk provers for Surge rollup.',
-    to: '/docs/Guides/prover-setup',
+    description: 'Configure SGX or ZK provers for Surge rollup.',
+    to: '/docs/Guides/provers',
   },
   {
     title: 'Bridge Operations',
@@ -187,24 +187,6 @@ const itemLinks = [
     to: '/docs/core-concepts',
   },
 ];
-
-const proverLinks = [
-  {
-    title: 'SGX',
-    description: 'Configure SGX prover for Surge rollup.',
-    to: '/docs/Guides/sgx-prover',
-  },
-  {
-    title: 'RISC0',
-    description: 'Configure RISC0 prover for Surge rollup.',
-    to: '/docs/Guides/risc0-prover',
-  },
-  {
-    title: 'SP1',
-    description: 'Configure SP1 prover for Surge rollup.',
-    to: '/docs/Guides/sp1-prover',
-  },
-]
 
 const QuickLinks = () => (
   <QuickLinksSection>
