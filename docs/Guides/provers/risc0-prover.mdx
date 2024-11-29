@@ -4,4 +4,231 @@ sidebar_position: 2
 
 # Deploy RISC0 Prover
 
-TODO
+## Overview
+Set up Docker, CUDA, and other dependencies to run Risc0 prover on an x86 machine.
+Documentation: [**Risc0 API**](https://dev.risczero.com/api/)
+
+---
+
+## Install Docker
+Follow the [official Docker documentation](https://docs.docker.com/engine/install/ubuntu/) for installation steps.
+#### Allow Running Docker Without `sudo`
+1. Add your user to the `docker` group:
+    ```bash
+    sudo usermod -aG docker $USER
+    ```
+2. Apply the changes to the user group:
+    ```bash
+    newgrp docker
+    ```
+3. Verify that Docker works without sudo:
+    ```bash
+    docker ps
+    ```
+
+## Install Rust
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+sudo reboot
+```
+
+## install sccache
+```bash
+cargo install sccache
+```
+
+## install gcc-12
+```bash
+sudo apt install gcc-12
+cd /usr/bin
+sudo rm gcc
+sudo ln -s gcc-12 gcc
+gcc --version
+```
+
+## install g++-12
+```bash
+sudo apt install g++-12
+sudo rm g++
+sudo ln -s g++-12 g++
+g++ --version
+```
+
+## install openssl
+```bash
+sudo apt-get install libssl-dev
+```
+
+## install package-config
+```bash
+sudo apt install pkg-config
+```
+
+---
+
+## Uninstall Existing CUDA (optional)
+
+Reference: [NVIDIA CUDA Installation Guide - Handle Conflicting Installation Methods](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#handle-conflicting-installation-methods)
+
+### Uninstall a Toolkit runfile installation
+Use the following command to uninstall a Toolkit runfile installation:
+```bash
+sudo /usr/local/cuda-X.Y/bin/cuda-uninstaller
+```
+
+### Steps to Uninstall CUDA
+
+1. Stop NVIDIA Persistenced Service (if running):
+    ```bash
+    sudo service nvidia-persistenced stop
+    ```
+2. Remove CUDA Toolkit:
+    ```bash
+    sudo apt-get --purge remove "*cublas*" "cuda*" "nsight*"
+    ```
+3. Remove NVIDIA Drivers:
+    ```bash
+    sudo apt-get --purge remove "*nvidia*"
+    ```
+4. Remove Source File Installations (if applicable): Assuming the default installation location is /usr/local, remove it using:
+    ```bash
+    sudo rm -rf /usr/local/cuda*
+    ```
+
+## Install CUDA
+
+Refer to the [CUDA Quick Start Guide](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#runfile-installer) for more information.
+
+1. Download the CUDA installer:
+    ```bash
+    wget https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux.run
+    ```
+
+2. Run the installer:
+    ```bash
+    sudo sh cuda_12.6.2_560.35.03_linux.run
+    ```
+
+3. If you encounter an error, the installer will create a file at:
+    ```bash
+    /etc/modprobe.d/nvidia-installer-disable-nouveau.conf
+    ```
+
+4. Reboot the system:
+    ```bash
+    sudo reboot
+    ```
+
+5. After rebooting, rerun the installer:
+    ```bash
+    sudo sh cuda_12.6.2_560.35.03_linux.run
+    ```
+
+6. Verify CUDA installation:
+    ```bash
+    ls /usr/local/ | grep cuda
+    ```
+
+7. Add environment variables:
+   Open the `.bashrc` file:
+    ```bash
+    nano ~/.bashrc
+    ```
+    Append the following lines to the end of the file:
+    ```bash
+    export PATH="/usr/local/cuda/bin:$PATH"
+    export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+    ```
+
+8. Apply the changes:
+    ```bash
+    source ~/.bashrc
+    ```
+
+---
+
+## Pull raiko
+
+```bash
+git clone https://github.com/NethermindEth/raiko.git
+cd raiko
+git checkout risc0-main
+cargo --version
+```
+
+## Install Raiko with RISC0
+
+1. Navigate to the root directory:
+    ```bash
+    cd /
+    ```
+2. Create the required directories:
+    ```bash
+    sudo mkdir -p /opt/riscv
+    sudo chown <USER> /opt/riscv
+    ```
+3.   Switch to the Raiko repository directory:
+        ```bash
+        cd ~/raiko
+        ```
+4. Install Raiko with the RISC0 target:
+    ```bash
+    TARGET=risc0 make install
+    ```
+    *Note: If you encounter an error during this step, run the following command to refresh your environment variables and retry the installation:*
+    ```bashrc
+    source ~/.bashrc
+    TARGET=risc0 make install
+    ```
+
+## Build Risc0 Images
+
+Run the following command:
+```bash
+cargo +nightly-2024-04-18 run --bin risc0-builder -F raiko-tasks/in-memory`
+```
+You will get the image ID from the output of that call.
+
+## Setup Trusted Images for the RISC0 Verifier Contract
+
+Run the following command to set an image as trusted:
+
+```bash
+cast send <RISC0_VERIFIER> "setImageIdTrusted(bytes32,bool)" <IMAGE_ID> true --rpc-url <L1_RPC_URL> --private-key <PRIVATE_KEY>
+```
+
+## Set Chain Spec
+
+Edit the file located at:
+```bash
+raiko/host/config/chain_spec_list_default.json
+```
+Set the values according to your chain configuration.
+
+## Build Raiko
+
+Run the following command:
+```bash
+cargo build --release --features risc0 -F cuda
+```
+
+## Run Raiko
+
+Set the required environment variables:
+
+```bash
+export GROTH16_VERIFIER_ADDRESS=0xA2C4Ef228de6BA701660e75Cb06f1c9b29E53069
+export GROTH16_VERIFIER_RPC_URL=http://139.162.249.67:32002
+export TASKDB=./raiko-tasks/in-memory
+export RISC0_PROVER=local
+```
+Run Raiko in the background:
+```bash
+nohup ./target/release/raiko-host --chain-spec-path=</full/path/to/chain_spec_list_default.json> > ~/log/output.log 2>&1 &
+```
+
+## Check Logs
+View the log output:
+```bash
+cat ~/log/output.log
+```
