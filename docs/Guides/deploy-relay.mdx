@@ -9,30 +9,6 @@ import TabItem from '@theme/TabItem';
 
 This guide walks you through the process of deploying and configuring the Surge Relayer.
 
-## Prerequisites
-
-Before you begin, make sure you have the following contract addresses and endpoints:
-
-### L1 Requirements
-
-- L1_BRIDGE
-- L1_ERC20_VAULT
-- L1_ERC721_VAULT
-- L1_ERC1155_VAULT
-- L1_TAIKO
-- L1_SIGNAL_SERVICE
-- L1 RPC URL
-
-### L2 Requirements
-
-- L2_BRIDGE
-- L2_ERC20_VAULT
-- L2_ERC721_VAULT
-- L2_ERC1155_VAULT
-- L2_TAIKO
-- L2_SIGNAL_SERVICE
-- L2 RPC URL
-
 ## Deployment Steps
 
 ### 1. Clone Repository
@@ -49,11 +25,10 @@ Navigate to the relayer package and prepare the configuration:
 
 ```bash
 cd surge-taiko-mono/packages/relayer
+cp .default.env .env
 ```
 
-:::tip Configuration
-Update the `docker-compose.yml` file with your specific RPC URLs and other required configuration values.
-:::
+Edit `.env`, make sure `L1_RPC_URL` and `L2_RPC_URL` are set correctly.
 
 ### 3. Deploy Components
 
@@ -85,7 +60,7 @@ Deploy the relayer components in the following sequence:
     <TabItem value="relayer" label="Start Relayer">
 
         ```bash
-        docker compose --profile relayer up -d
+        docker compose --profile l1 --profile l2 --profile api up -d
         ```
 
         This starts the main relayer service.
@@ -109,8 +84,8 @@ Monitor the health of your deployment:
 # Check running containers
 docker compose ps
 
-# View relayer logs
-docker compose logs relayer -f
+# View logs of required relayer components, e.g. processor
+docker logs relayer-l1-processor
 
 # Check database status
 docker compose logs db -f

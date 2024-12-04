@@ -18,14 +18,57 @@ git clone https://github.com/NethermindEth/surge-taiko-mono.git
 cd surge-taiko-mono/packages/bridge-ui
 ```
 
-## 2. Configure Components
+## 2. SSL Certificate Setup
+
+Generate SSL certificates for nginx:
+
+```bash
+cd ./nginx
+chmod +x ./generate-certs.sh
+./generate-certs.sh
+cd ..
+```
+
+## 3. Configure Nginx Reverse Proxy
+
+### Prerequisites
+
+- L1 RPC URL
+- L1 Blockscout URL
+- L1 to L2 Relayer URL
+- L2 RPC URL
+- L2 Blockscout URL
+- L2 to L1 Relayer URL
+
+Update the nginx configuration file `./nginx/nginx.conf` with your specific URLs and endpoints.
+
+Example configuration part:
+
+```nginx
+    # L1 RPC endpoint
+    location /l1-rpc/ {
+        proxy_pass http://1.2.3.4:32002/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+```
+
+## 4. Configure Components
 
 ### Configuration Files Setup
 
 You'll need to configure several JSON files before deployment. Each has specific requirements:
 
+:::note
+The ULRs specified in the configuration files must use HTTPS.
+:::
+
 <Tabs>
-    <TabItem value="bridges" label="configuredBridges.json" default>
+    <TabItem value="bridges" label="Bridges" default>
 
         #### Prerequisites
         - L1 Chain ID
@@ -45,9 +88,13 @@ You'll need to configure several JSON files before deployment. Each has specific
 
         Path: `./config/configuredBridges.json`
 
+        :::tip
+        The file contains default addresses used in the tutorial. Replace if necessary.
+        :::
+
     </TabItem>
 
-    <TabItem value="chains" label="configuredChains.json">
+    <TabItem value="chains" label="Chains">
 
         #### Prerequisites
         - L1 Chain ID
@@ -57,9 +104,47 @@ You'll need to configure several JSON files before deployment. Each has specific
 
         Path: `./config/configuredChains.json`
 
+        Modify `rpcUrls` fields to point to the alias specified in the nginx configuration.
+
+        Example configuration parts:
+
+        ```json
+        "3151908": {
+            "name": "Kurtosis",
+            "type": "L1",
+            "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+            "rpcUrls": {
+                "default": {
+                    "http": [
+                    "https://1.2.3.4/l1-rpc/"
+                    ]
+                }
+            },
+
+            ...
+        }
+        ```
+
+        ```json
+        "763374": {
+            "name": "Taiko",
+            "type": "L2",
+            "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+            "rpcUrls": {
+                "default": {
+                    "http": [
+                        "https://1.2.3.4/l2-rpc/"
+                    ]
+                }
+            },
+
+            ...
+        }
+        ```
+
     </TabItem>
 
-    <TabItem value="relayer" label="configuredRelayer.json">
+    <TabItem value="relayer" label="Relayer">
 
         #### Prerequisites
         - L1 Chain ID
@@ -68,6 +153,24 @@ You'll need to configure several JSON files before deployment. Each has specific
         - L2 to L1 Relayer URL
 
         Path: `./config/configuredRelayer.json`
+
+        Example configuration:
+
+        ```json
+        {
+            "configuredRelayer": [
+                {
+                "chainIds": [3151908, 763374],
+                "url": "https://1.2.3.4/l1-relayer/"
+                },
+                {
+                "chainIds": [763374, 3151908],
+                "url": "https://1.2.3.4/l2-relayer/"
+                }
+            ]
+        }
+
+        ```
 
     </TabItem>
 
@@ -84,30 +187,6 @@ You'll need to configure several JSON files before deployment. Each has specific
     </TabItem>
 
 </Tabs>
-
-## 3. SSL Certificate Setup
-
-Generate SSL certificates for nginx:
-
-```bash
-chmod +x ./nginx/generate-certs.sh
-./nginx/generate-certs.sh
-```
-
-## 4. Configure Nginx Reverse Proxy
-
-### Prerequisites
-
-- L1 RPC URL
-- L1 Blockscout URL
-- L1 to L2 Relayer URL
-- L2 RPC URL
-- L2 Blockscout URL
-- L2 to L1 Relayer URL
-
-:::info
-Update the nginx configuration files with your specific URLs and endpoints.
-:::
 
 ## 5. Deploy Services
 
@@ -147,42 +226,6 @@ docker compose logs bridge-ui -f
 
 # View Nginx logs
 docker compose logs nginx -f
-```
-
-## Configuration Examples
-
-Here are sample structures for the configuration files:
-
-```json title="configuredChains.json"
-{
-  "chains": [
-    {
-      "id": "L1_CHAIN_ID",
-      "rpc": "L1_RPC_URL"
-    },
-    {
-      "id": "L2_CHAIN_ID",
-      "rpc": "L2_RPC_URL"
-    }
-  ]
-}
-```
-
-```json title="configuredRelayer.json"
-{
-  "relayers": [
-    {
-      "fromChainId": "L1_CHAIN_ID",
-      "toChainId": "L2_CHAIN_ID",
-      "url": "L1_TO_L2_RELAYER_URL"
-    },
-    {
-      "fromChainId": "L2_CHAIN_ID",
-      "toChainId": "L1_CHAIN_ID",
-      "url": "L2_TO_L1_RELAYER_URL"
-    }
-  ]
-}
 ```
 
 ## Troubleshooting
