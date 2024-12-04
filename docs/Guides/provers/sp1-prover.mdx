@@ -1,0 +1,252 @@
+---
+sidebar_position: 3
+---
+
+# Deploy SP1 Prover
+
+## Overview
+Set up Docker, CUDA, CUDA Container Toolkit and other dependencies to run SP1 prover on an x86 machine.
+For more information, refer to the [**Succinct Documentation**](https://docs.succinct.xyz/introduction.html).
+
+---
+
+## Install Docker
+Follow the [official Docker documentation](https://docs.docker.com/engine/install/ubuntu/) for installation steps.
+#### Allow Running Docker Without `sudo`
+1. Add your user to the `docker` group:
+    ```bash
+    sudo usermod -aG docker $USER
+    ```
+2. Apply the changes to the user group:
+    ```bash
+    newgrp docker
+    ```
+3. Verify that Docker works without sudo:
+    ```bash
+    docker ps
+    ```
+
+## Install Rust
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+sudo reboot
+```
+
+## Install sccache
+```bash
+cargo install sccache
+```
+
+## Install gcc-12
+```bash
+sudo apt install gcc-12
+cd /usr/bin
+sudo rm gcc
+sudo ln -s gcc-12 gcc
+gcc --version
+```
+
+## Install g++-12
+```bash
+sudo apt install g++-12
+sudo rm g++
+sudo ln -s g++-12 g++
+g++ --version
+```
+
+## Install openssl
+```bash
+sudo apt-get install libssl-dev
+```
+
+## Install package-config
+```bash
+sudo apt install pkg-config
+```
+
+---
+
+## Uninstall Existing CUDA (optional)
+
+Reference: [NVIDIA CUDA Installation Guide - Handle Conflicting Installation Methods](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#handle-conflicting-installation-methods)
+
+### Uninstall a Toolkit runfile installation
+Use the following command to uninstall a Toolkit runfile installation:
+```bash
+sudo /usr/local/cuda-X.Y/bin/cuda-uninstaller
+```
+
+### Steps to Uninstall CUDA
+
+1. Stop NVIDIA Persistenced Service (if running):
+    ```bash
+    sudo service nvidia-persistenced stop
+    ```
+2. Remove CUDA Toolkit:
+    ```bash
+    sudo apt-get --purge remove "*cublas*" "cuda*" "nsight*"
+    ```
+3. Remove NVIDIA Drivers:
+    ```bash
+    sudo apt-get --purge remove "*nvidia*"
+    ```
+4. Remove Source File Installations (if applicable): Assuming the default installation location is /usr/local, remove it using:
+    ```bash
+    sudo rm -rf /usr/local/cuda*
+    ```
+
+## Install CUDA
+
+Refer to the [CUDA Quick Start Guide](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#runfile-installer) for more information.
+
+1. Download the CUDA installer:
+    ```bash
+    wget https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux.run
+    ```
+
+2. Run the installer:
+    ```bash
+    sudo sh cuda_12.6.2_560.35.03_linux.run
+    ```
+
+3. If you encounter an error, the installer will create a file at:
+    ```bash
+    /etc/modprobe.d/nvidia-installer-disable-nouveau.conf
+    ```
+
+4. Reboot the system:
+    ```bash
+    sudo reboot
+    ```
+
+5. After rebooting, rerun the installer:
+    ```bash
+    sudo sh cuda_12.6.2_560.35.03_linux.run
+    ```
+
+6. Verify CUDA installation:
+    ```bash
+    ls /usr/local/ | grep cuda
+    ```
+
+7. Add environment variables:
+   Open the `.bashrc` file:
+    ```bash
+    nano ~/.bashrc
+    ```
+    Append the following lines to the end of the file:
+    ```bash
+    export PATH="/usr/local/cuda/bin:$PATH"
+    export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+    ```
+
+8. Apply the changes:
+    ```bash
+    source ~/.bashrc
+    ```
+
+# Installing the NVIDIA Container Toolkit
+
+Refer to the [NVIDIA Documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+### Installing with Apt
+
+1. Configure the production repository:
+   ```bash
+   curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg    && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |      sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |      sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+   ```
+
+2. Optionally, configure the repository to use experimental packages:
+   ```bash
+   sed -i -e '/experimental/ s/^#//g' /etc/apt/sources.list.d/nvidia-container-toolkit.list
+   ```
+
+3. Update the packages list from the repository:
+   ```bash
+   sudo apt-get update
+   ```
+
+4. Install the NVIDIA Container Toolkit packages:
+   ```bash
+   sudo apt-get install -y nvidia-container-toolkit
+   ```
+
+### Configuring Docker
+
+1. Configure the container runtime by using the `nvidia-ctk` command:
+   ```bash
+   sudo nvidia-ctk runtime configure --runtime=docker
+   ```
+
+   The `nvidia-ctk` command modifies the `/etc/docker/daemon.json` file on the host. The file is updated so that Docker can use the NVIDIA Container Runtime.
+
+2. Restart the Docker daemon:
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+
+---
+
+## Pull Raiko
+
+```bash
+git clone https://github.com/NethermindEth/raiko.git
+cd raiko
+git checkout sp1-main
+cargo --version
+```
+
+## Install Raiko with SP1
+Install Raiko with the SP1 target:
+    ```bash
+    TARGET=sp1 make install
+    ```
+
+## Build SP1 Program
+
+Run the following command:
+```bash
+cargo +nightly-2024-04-18 run --release --bin sp1-builder -F raiko-tasks/in-memory
+```
+You will get the `programVKey` from the output of that call.
+
+## Setup Program VK Key for the SP1 Verifier Contract
+
+Run the following command:
+```bash
+cast send <SP1_VERIFIER> "setProgramTrusted(bytes32,bool)" <PROGRAM_VK> true --rpc-url <L1_RPC_URL> --private-key <PRIVATE_KEY>
+```
+
+## Set Chain Spec
+
+Edit the file located at:
+```bash
+raiko/host/config/chain_spec_list_default.json
+```
+Set the values according to your chain configuration.
+
+## Build Raiko
+Run the following command:
+```bash
+cargo +nightly-2024-04-18 build --release --features sp1 -F raiko-tasks/in-memory
+```
+
+## Run Raiko
+
+Set the required environment variables:
+
+```bash
+export SP1_VERIFIER_RPC_URL=http://139.162.249.67:32002
+export SP1_VERIFIER_ADDRESS=0x9c63682FC2d397Aa47471c046cE57b095d7195D7
+```
+Run Raiko in the background:
+```bash
+nohup ./target/release/raiko-host --chain-spec-path=</full/path/to/chain_spec_list_default.json> > ~/log/output.log 2>&1 &
+```
+
+## Check Logs
+View the log output:
+```bash
+cat ~/log/output.log
+```
