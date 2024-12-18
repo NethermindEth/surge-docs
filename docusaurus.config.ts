@@ -74,8 +74,8 @@ const config: Config = {
               href: 'https://discord.com/invite/PaCMRFdvWT',
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/nethermindeth',
+              label: 'X (Twitter)',
+              href: 'https://x.com/nethermindeth',
             },
             {
               label: 'GitHub',
