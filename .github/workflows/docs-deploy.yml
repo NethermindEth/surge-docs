@@ -9,7 +9,11 @@ permissions:
   contents: write
 
 jobs:
+  update-error-codes:
+    uses: ./.github/workflows/error-code-update.yml
+
   deploy:
+    needs: update-error-codes
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
