@@ -1,0 +1,74 @@
+name: Update Error Codes Documentation
+
+on:
+    workflow_call:
+
+permissions:
+    contents: write
+
+jobs:
+  update-error-codes:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout docs repository
+        uses: actions/checkout@v4
+
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          repository: NethermindEth/surge-taiko-mono
+          path: surge-taiko-mono
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install eth-utils
+
+      - name: Generate error codes
+        run: |
+          python static/error_code_scanner.py surge-taiko-mono/packages/protocol/ > temp_error_codes.txt
+
+      - name: Update documentation
+        run: |
+          cat > docs/Troubleshooting/error-codes.mdx << 'EOL'
+          ---
+          sidebar_position: 1
+          ---
+
+          # Error Codes
+
+          This page contains a comprehensive list of error codes used in protocols. These codes are automatically generated from the source code.
+
+          EOL
+
+          current_file=""
+          while IFS= read -r line; do
+            if [[ $line == "In file:"* ]]; then
+              file_path="${line#In file: }"
+              clean_path=$(echo "$file_path" | rev | cut -d'/' -f-3 | rev)
+              echo -e "\n## ${clean_path}\n" >> docs/Troubleshooting/error-codes.mdx
+              echo "| Error | Code |" >> docs/Troubleshooting/error-codes.mdx
+              echo "|-------|------|" >> docs/Troubleshooting/error-codes.mdx
+            elif [[ $line == "Error:"* ]]; then
+              error_name="${line#Error: }"
+            elif [[ $line == "Code:"* ]]; then
+              error_code="${line#Code: }"
+              echo "| \`${error_name}\` | \`${error_code}\` |" >> docs/Troubleshooting/error-codes.mdx
+            fi
+          done < temp_error_codes.txt
+
+      - name: Configure Git User
+        run: |
+            git config --local user.name 'github-actions[bot]'
+            git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          
+      - name: Commit and push if changed
+        run: |
+          git add docs/Troubleshooting/error-codes.mdx
+          git diff --quiet && git diff --staged --quiet || (git commit -m "docs: update error codes [skip ci]" && git push)
