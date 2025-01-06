@@ -4,6 +4,13 @@ sidebar_position: 2
 
 # Deploy RISC0 Prover
 
+### Prerequisites
+
+- Machine with CUDA support
+- L1 Accounts with funds (One for the Prover, One for Prover Registry)
+- L1 RPC URL
+- L1 Account Private Key
+
 ## Overview
 Set up Docker, CUDA, and other dependencies to run Risc0 prover on an x86 machine.
 Documentation: [**Risc0 API**](https://dev.risczero.com/api/)
@@ -185,7 +192,7 @@ cargo --version
 
 Run the following command:
 ```bash
-cargo +nightly-2024-04-18 run --bin risc0-builder -F raiko-tasks/in-memory`
+cargo +nightly-2024-04-18 run --bin risc0-builder -F raiko-tasks/in-memory
 ```
 You will get the image ID from the output of that call.
 

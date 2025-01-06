@@ -15,33 +15,46 @@ If you're using the Kurtosis Package to deploy L1, you can skip this section.
 
 ### Prerequisites
 
-- L2 Chain ID (e.g., 763374)
-- L2 Genesis Hash (e.g., `0xbeced3738f1246571cccabc82a1e6cbd9ed9d5f7ed2b6c7ded28f9722317bd9e`)
+- L2 Chain ID (e.g. 763374)
+- L2 Genesis Hash (e.g. `0xbeced3738f1246571cccabc82a1e6cbd9ed9d5f7ed2b6c7ded28f9722317bd9e`)
 - L1 Account with funds
 - L1 RPC URL
+
+### Set Environment Variables
+
+```bash
+export FOUNDRY_PROFILE=layer1
+export CHAIN_ID=763374
+export GENESIS_HASH=0xbeced3738f1246571cccabc82a1e6cbd9ed9d5f7ed2b6c7ded28f9722317bd9e
+export L1_ACCOUNT_ADDRESS=0x8943545177806ED17B9F23F0a21ee5948eCaa776
+export L1_ACCOUNT_PRIVATE_KEY=0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31
+export L1_RPC_URL=https://placeholder:32002
+```
 
 ### Deployment Script
 
 ```bash
-docker run --rm \
-    -e PRIVATE_KEY=$ACCOUNT_PRIVATE_KEY \
-    -e CONTRACT_OWNER=$ACCOUNT_ADDRESS \
-    -e FORK_URL=$RPC_URL \
-    -e PROPOSER=0x0000000000000000000000000000000000000000 \
-    -e PROPOSER_ONE=0x0000000000000000000000000000000000000000 \
-    -e GUARDIAN_PROVERS=0x1000777700000000000000000000000000000001,0x1000777700000000000000000000000000000002,0x1000777700000000000000000000000000000003,0x1000777700000000000000000000000000000004,0x1000777700000000000000000000000000000005,0x1000777700000000000000000000000000000006,0x1000777700000000000000000000000000000007 \
-    -e TAIKO_L2_ADDRESS=0x7633740000000000000000000000000000010001 \
-    -e L2_SIGNAL_SERVICE=0x7633740000000000000000000000000000000005 \
-    -e SHARED_ADDRESS_MANAGER=0x0000000000000000000000000000000000000000 \
-    -e L2_GENESIS_HASH=$L2_GENESIS_HASH \
-    -e PAUSE_TAIKO_L1=false \
-    -e PAUSE_BRIDGE=false \
-    -e NUM_MIN_MAJORITY_GUARDIANS=7 \
-    -e NUM_MIN_MINORITY_GUARDIANS=2 \
-    -e TIER_PROVIDER=devnet_sgx \
-    -e FOUNDRY_PROFILE=layer1 \
-    nethsurge/taiko-contract:surge-devnet \
-    script/layer1/deploy_protocol_on_l1.sh
+docker run \
+  -e PROPOSER=0x0000000000000000000000000000000000000000 \
+  -e PROPOSER_ONE=0x0000000000000000000000000000000000000000 \
+  -e GUARDIAN_PROVERS=0x1000777700000000000000000000000000000001,0x1000777700000000000000000000000000000002,0x1000777700000000000000000000000000000003,0x1000777700000000000000000000000000000004,0x1000777700000000000000000000000000000005,0x1000777700000000000000000000000000000006,0x1000777700000000000000000000000000000007 \
+  -e TAIKO_L2_ADDRESS=0x${CHAIN_ID}0000000000000000000000000000000001 \
+  -e L2_SIGNAL_SERVICE=0x${CHAIN_ID}0000000000000000000000000000000005 \
+  -e CONTRACT_OWNER=${L1_ACCOUNT_ADDRESS} \
+  -e SHARED_ADDRESS_MANAGER=0x0000000000000000000000000000000000000000 \
+  -e PAUSE_TAIKO_L1=false \
+  -e PAUSE_BRIDGE=false \
+  -e NUM_MIN_MAJORITY_GUARDIANS=7 \
+  -e NUM_MIN_MINORITY_GUARDIANS=2 \
+  -e TIER_PROVIDER=composite \
+  -e PRIVATE_KEY=${L1_ACCOUNT_PRIVATE_KEY} \
+  -e L2_GENESIS_HASH=${GENESIS_HASH} \
+  -e FOUNDRY_PROFILE=${FOUNDRY_PROFILE} \
+  nethsurge/taiko-contract:surge-devnet \
+  forge script ./script/layer1/DeployProtocolOnL1.s.sol:DeployProtocolOnL1 \
+  --private-key ${L1_ACCOUNT_PRIVATE_KEY} \
+  --fork-url ${L1_RPC_URL} \
+  --broadcast --ffi -vv --block-gas-limit 200000000
 ```
 
 ## 2. Configure Bridge on L1
@@ -54,52 +67,33 @@ docker run --rm \
 - L1 Account with funds
 - L1 RPC URL
 
+### Set Environment Variables
+
+```bash
+export FOUNDRY_PROFILE=layer1
+export DOMAIN=763374
+export ADDRESS=0x7633740000000000000000000000000000000001
+export NAME=0x6272696467650000000000000000000000000000000000000000000000000000
+export PROXY_ADDRESS=0x0643D39D47CF0ea95Dbea69Bf11a7F8C4Bc34968
+export PRIVATE_KEY=0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31
+export L1_RPC_URL=https://placeholder:32002
+```
+
 ### Bridge Setup Script
 
-```javascript
-const { ethers } = require('ethers');
-
-const RPC_URL = $RPC_URL;
-const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
-const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
-
-// Contract ABI (Application Binary Interface)
-const contractABI = [
-  {
-    inputs: [
-      { internalType: 'uint64', name: '_chainId', type: 'uint64' },
-      { internalType: 'bytes32', name: '_name', type: 'bytes32' },
-      { internalType: 'address', name: '_newAddress', type: 'address' },
-    ],
-    name: 'setAddress',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-];
-
-async function main() {
-  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-  const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
-
-  const chainId = $CHAIN_ID;
-  const name = ethers.utils.formatBytes32String('bridge');
-  const newAddress = $BRIDGE;
-
-  try {
-    const tx = await contract.setAddress(chainId, name, newAddress);
-    console.log('Transaction hash:', tx.hash);
-
-    const receipt = await tx.wait();
-    console.log('Transaction confirmed in block:', receipt.blockNumber);
-  } catch (error) {
-    console.error('Error calling setAddress:', error);
-  }
-}
-
-main();
+```bash
+docker run \
+  -e FOUNDRY_PROFILE=${FOUNDRY_PROFILE} \
+  -e DOMAIN=${DOMAIN} \
+  -e ADDRESS=${ADDRESS} \
+  -e NAME=${NAME} \
+  -e PROXY_ADDRESS=${PROXY_ADDRESS} \
+  -e PRIVATE_KEY=${PRIVATE_KEY} \
+  nethsurge/taiko-contract:surge-devnet \
+  forge script ./script/shared/SetAddress.s.sol \
+  --private-key ${PRIVATE_KEY} \
+  --fork-url ${L1_RPC_URL} \
+  --broadcast -vvv
 ```
 
 ## 3. Configure Signal Service on L1
@@ -112,51 +106,33 @@ main();
 - L1 Account with funds
 - L1 RPC URL
 
+### Set Environment Variables
+
+```bash
+export FOUNDRY_PROFILE=layer1
+export DOMAIN=763374
+export ADDRESS=0x7633740000000000000000000000000000000005
+export NAME=0x7369676e616c5f73657276696365000000000000000000000000000000000000
+export PROXY_ADDRESS=0x0643D39D47CF0ea95Dbea69Bf11a7F8C4Bc34968
+export PRIVATE_KEY=0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31
+export L1_RPC_URL=https://placeholder:32002
+```
+
 ### Signal Service Setup Script
 
-```javascript
-const { ethers } = require('ethers');
-
-const RPC_URL = $RPC_URL;
-const PRIVATE_KEY = $ACCOUNT_PRIVATE_KEY;
-const CONTRACT_ADDRESS = $SHARED_ADDRESS_MANAGER;
-
-const contractABI = [
-  {
-    inputs: [
-      { internalType: 'uint64', name: '_chainId', type: 'uint64' },
-      { internalType: 'bytes32', name: '_name', type: 'bytes32' },
-      { internalType: 'address', name: '_newAddress', type: 'address' },
-    ],
-    name: 'setAddress',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-];
-
-async function main() {
-  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-  const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
-
-  const chainId = $CHAIN_ID;
-  const name = ethers.utils.formatBytes32String('signal_service');
-  const newAddress = $SIGNAL_SERVICE;
-
-  try {
-    const tx = await contract.setAddress(chainId, name, newAddress);
-    console.log('Transaction hash:', tx.hash);
-
-    const receipt = await tx.wait();
-    console.log('Transaction confirmed in block:', receipt.blockNumber);
-  } catch (error) {
-    console.error('Error calling setAddress:', error);
-  }
-}
-
-main();
+```bash
+docker run \
+  -e FOUNDRY_PROFILE=${FOUNDRY_PROFILE} \
+  -e DOMAIN=${DOMAIN} \
+  -e ADDRESS=${ADDRESS} \
+  -e NAME=${NAME} \
+  -e PROXY_ADDRESS=${PROXY_ADDRESS} \
+  -e PRIVATE_KEY=${PRIVATE_KEY} \
+  nethsurge/taiko-contract:surge-devnet \
+  forge script ./script/shared/SetAddress.s.sol \
+  --private-key ${PRIVATE_KEY} \
+  --fork-url ${L1_RPC_URL} \
+  --broadcast -vvv
 ```
 
 ## 4. Configure SGX TCB on L1
@@ -175,3 +151,46 @@ main();
 :::info Full Quote Value
 For the complete Quote value required for SGX TCB configuration, please refer to the deployment documentation or contact your system administrator.
 :::
+
+### Set Environment Variables
+
+```bash
+export FOUNDRY_PROFILE=layer1
+export MR_ENCLAVE=14c4362d5dd0af9721ef9bdea2c92bf84b67fe34a102c892182ce2be7a81f2c5
+export MR_SIGNER=ca0583a715534a8c981b914589a7f0dc5d60959d9ae79fb5353299a4231673d5
+export QEID_PATH="/test/qe_identity"
+export TCB_INFO_PATH="/test/tcb"
+export V3_QUOTE_BYTES=${Quote}
+export SGX_VERIFIER_ADDRESS=0x86A0679C7987B5BA9600affA994B78D0660088ff
+export ATTESTATION_ADDRESS=0xdFb2fAc1519eDA2b3ee1Edf578ee0509DC8633f7
+export PEM_CERTCHAIN_ADDRESS=0x86B28E406738f2928bE33D111A0B821BBC5610A2
+export FMSPC=00906ED50000
+```
+
+### SGX TCB Setup Script
+
+```bash
+docker run \
+  -e TASK_ENABLE="[1,1,1,1,1,1]" \
+  -e MR_ENCLAVE=${MR_ENCLAVE} \
+  -e MR_SIGNER=${MR_SIGNER} \
+  -e QEID_PATH=${QEID_PATH} \
+  -e TCB_INFO_PATH=${TCB_INFO_PATH} \
+  -e V3_QUOTE_BYTES=${V3_QUOTE_BYTES} \
+  -e SGX_VERIFIER_ADDRESS=${SGX_VERIFIER_ADDRESS} \
+  -e ATTESTATION_ADDRESS=${ATTESTATION_ADDRESS} \
+  -e PEM_CERTCHAIN_ADDRESS=${PEM_CERTCHAIN_ADDRESS} \
+  -e FMSPC=${FMSPC} \
+  -e TCB_FILE=${TCB_FILE} \
+  -e QE_IDENTITY_FILE=${QE_IDENTITY_FILE} \
+  -e PRIVATE_KEY=${PRIVATE_KEY} \
+  nethsurge/taiko-contract:surge-devnet \
+  sh -c 'curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/tcb?fmspc=${FMSPC}" > ${TCB_FILE} && \
+         curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/qe/identity" > ${QE_IDENTITY_FILE} && \
+         jq ".tcbInfo.fmspc |= ascii_downcase" ${TCB_FILE} > temp.json && \
+         mv temp.json ${TCB_FILE} && \
+         forge script ./script/layer1/SetDcapParams.s.sol:SetDcapParams \
+         --private-key ${PRIVATE_KEY} \
+         --fork-url ${L1_RPC_URL} \
+         --broadcast --evm-version cancun --ffi -vvvv --block-gas-limit 100000000 --legacy'
+```
