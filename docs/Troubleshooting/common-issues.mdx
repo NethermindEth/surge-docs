@@ -1,0 +1,23 @@
+---
+sidebar_position: 2
+---
+
+# Common Issues
+
+This page contains common issues and their solutions.
+
+#### After each L1 - L2 bridged tx, why isn't it processed until a new L2 block is produced?
+
+1. L2 receives L1's state via an anchor transaction. The anchor transaction sends the state root at the last L1 block. So, to get the state root of the bridging txn block, we need another block on top of it. If we are not proposing empty blocks, then at least one L2 tx needs to be sent to force a new block to be generated.
+
+2. Another thing to remember: This extra L2 block must be a part of the L1 block that follows the L1 block containing the bridging txn. This kind of happens implicitly at the moment since kurtosis blocks are fast.
+
+#### For L2 - L1 bridged tx to be processed, there should be L1 - L2 bridged txs. Why is this?
+
+1. The main requirement is that if 1 ETH is bridged from L1 to L2, and in return when we bridge back same 1 ETH from L2 -> L1, we also end up paying a small fee to the relayer. That fee is added on top of 1 ETH. 
+2. Now, unless a lot of people have bridged in and the pool is larger than 1 eth. This won’t work, since the fee can never be paid as the total amount in the bridge is 1 ETH itself.
+
+#### I have bridged 3 times from L2 to L1, but bridged txs are not being processed.
+
+1. Verification attempt every 4 blocks, your txn might not be verified yet.
+2. Try bridging again.

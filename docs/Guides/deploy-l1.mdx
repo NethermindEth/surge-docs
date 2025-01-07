@@ -8,7 +8,7 @@ In this guide, we'll walk through the process of deploying the L1 network using 
 
 ## Prerequisites
 
-- Git installed on your system
+- Git and Docker installed on your system
 - Terminal access
 - Basic command line knowledge
 
@@ -51,7 +51,7 @@ git checkout surge/devnet
 Run Kurtosis with the following command to deploy the L1 network:
 
 ```bash
-kurtosis run --enclave core-rollup . --args-file network_params.yaml
+kurtosis run --enclave surge-devnet . --args-file network_params.yaml
 ```
 
 :::tip
