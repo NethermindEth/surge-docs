@@ -34,6 +34,9 @@ jobs:
         run: |
           python static/error_code_scanner.py surge-taiko-mono/packages/protocol/ > temp_error_codes.txt
 
+      - name: Display temp_error_codes.txt content
+        run: cat temp_error_codes.txt
+
       - name: Update documentation
         run: |
           cat > docs/Troubleshooting/error-codes.mdx << 'EOL'
