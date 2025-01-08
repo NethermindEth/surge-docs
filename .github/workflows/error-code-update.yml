@@ -29,10 +29,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install eth-utils
+          pip install "eth-hash[pycryptodome]"
 
       - name: Generate error codes
         run: |
           python static/error_code_scanner.py surge-taiko-mono/packages/protocol/ > temp_error_codes.txt
+
+      - name: Display temp_error_codes.txt content
+        run: cat temp_error_codes.txt
 
       - name: Update documentation
         run: |
