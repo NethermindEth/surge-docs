@@ -39,6 +39,17 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sudo reboot
 ```
 
+## Install openssl
+```bash
+sudo apt-get install libssl-dev
+```
+
+## Install package-config
+```bash
+sudo apt-get update
+sudo apt-get install pkg-config
+```
+
 ## Install sccache
 ```bash
 cargo install sccache
@@ -59,16 +70,6 @@ sudo apt install g++-12
 sudo rm g++
 sudo ln -s g++-12 g++
 g++ --version
-```
-
-## Install openssl
-```bash
-sudo apt-get install libssl-dev
-```
-
-## Install package-config
-```bash
-sudo apt install pkg-config
 ```
 
 ---
@@ -172,7 +173,7 @@ cargo --version
 2. Create the required directories:
     ```bash
     sudo mkdir -p /opt/riscv
-    sudo chown <USER> /opt/riscv
+    sudo chown $USER /opt/riscv
     ```
 3.   Switch to the Raiko repository directory:
         ```bash
@@ -216,7 +217,7 @@ Set the values according to your chain configuration.
 
 Run the following command:
 ```bash
-cargo build --release --features risc0 -F cuda
+cargo build -F cuda --release --features risc0 -F raiko-tasks/in-memory
 ```
 
 ## Run Raiko
