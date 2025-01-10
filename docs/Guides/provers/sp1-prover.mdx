@@ -39,6 +39,17 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sudo reboot
 ```
 
+## Install openssl
+```bash
+sudo apt-get install libssl-dev
+```
+
+## Install package-config
+```bash
+sudo apt-get update
+sudo apt-get install pkg-config
+```
+
 ## Install sccache
 ```bash
 cargo install sccache
@@ -61,14 +72,9 @@ sudo ln -s g++-12 g++
 g++ --version
 ```
 
-## Install openssl
+# Install clang
 ```bash
-sudo apt-get install libssl-dev
-```
-
-## Install package-config
-```bash
-sudo apt install pkg-config
+sudo apt install clang
 ```
 
 ---
@@ -200,21 +206,20 @@ Refer to the [NVIDIA Documentation](https://docs.nvidia.com/datacenter/cloud-nat
 ```bash
 git clone https://github.com/NethermindEth/raiko.git
 cd raiko
-git checkout sp1-main
 cargo --version
 ```
 
 ## Install Raiko with SP1
 Install Raiko with the SP1 target:
-    ```bash
-    TARGET=sp1 make install
-    ```
+```bash
+TARGET=sp1 make install
+```
 
 ## Build SP1 Program
 
 Run the following command:
 ```bash
-cargo +nightly-2024-04-18 run --release --bin sp1-builder -F raiko-tasks/in-memory
+cargo +nightly-2024-04-18 run --release --bin sp1-builder
 ```
 You will get the `programVKey` from the output of that call.
 
