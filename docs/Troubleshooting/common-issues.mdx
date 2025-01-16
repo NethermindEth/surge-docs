@@ -21,3 +21,9 @@ This page contains common issues and their solutions.
 
 1. Verification attempt every 4 blocks, your txn might not be verified yet.
 2. Try bridging again.
+
+#### Why do I need to use the same key for prover and proposer?
+
+1. The contract is designed to only accept proofs from the proposer's address during the proving window.
+2. Non-proposer addresses can only submit proofs outside of the proving window.
+3. Therefore, to ensure your proofs can be submitted during the proving window, the same key must be used for both proposing and proving.
