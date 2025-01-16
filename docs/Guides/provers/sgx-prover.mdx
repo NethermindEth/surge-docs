@@ -49,7 +49,11 @@ The output will contain important measurement values including:
 - MRENCLAVE: `14c4362d5dd0af9721ef9bdea2c92bf84b67fe34a102c892182ce2be7a81f2c5`
 - MRSIGNER: `ca0583a715534a8c981b914589a7f0dc5d60959d9ae79fb5353299a4231673d5`
 
-### 4. Register Collaterals
+### 4. Register Collaterals 
+
+:::note Skip if Using Kurtosis
+If you're using the Kurtosis Package to deploy L1, you can skip this section.
+:::
 
 Use `config_dcap_sgx_verifier.sh` or the script below to register the collaterals and the instance. For more information, see the following:
 <details>
@@ -62,9 +66,9 @@ Use `config_dcap_sgx_verifier.sh` or the script below to register the collateral
   export QEID_PATH="/test/qe_identity"
   export TCB_INFO_PATH="/test/tcb"
   export V3_QUOTE_BYTES=${Quote}
-  export SGX_VERIFIER_ADDRESS=0x86A0679C7987B5BA9600affA994B78D0660088ff
-  export ATTESTATION_ADDRESS=0xdFb2fAc1519eDA2b3ee1Edf578ee0509DC8633f7
-  export PEM_CERTCHAIN_ADDRESS=0x86B28E406738f2928bE33D111A0B821BBC5610A2
+  export SGX_VERIFIER_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
+  export ATTESTATION_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
+  export PEM_CERTCHAIN_ADDRESS=0x303CB317624c74bB20Acbb9E13c8D745C6379826
   export FMSPC=00906ED50000
   ```
 
@@ -105,9 +109,9 @@ Set up the following environment variables:
 export SGX_INSTANCE_ID=0
 export L1_NETWORK=surge_dev_l1
 export NETWORK=surge_dev
-export SGX_VERIFIER_ADDRESS=0x86A0679C7987B5BA9600affA994B78D0660088ff
-export ATTESTATION_ADDRESS=0xdFb2fAc1519eDA2b3ee1Edf578ee0509DC8633f7
-export PEM_CERTCHAIN_ADDRESS=0x86B28E406738f2928bE33D111A0B821BBC5610A2
+export SGX_VERIFIER_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
+export ATTESTATION_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
+export PEM_CERTCHAIN_ADDRESS=0x303CB317624c74bB20Acbb9E13c8D745C6379826
 export PROVER_PRIVATE_KEY=0x53321db7c1e331d93a11a41d16f004d7ff63972ec8ec7c25db329728ceeb1710
 export PRIVATE_KEY=0x53321db7c1e331d93a11a41d16f004d7ff63972ec8ec7c25db329728ceeb1710
 export FORK_URL=https://placeholder:32002
