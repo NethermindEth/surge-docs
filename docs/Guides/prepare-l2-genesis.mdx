@@ -1,0 +1,75 @@
+---
+sidebar_position: 1
+---
+
+# Prepare L2 Genesis
+
+In this guide, we'll walk through the process of preparing the L2 genesis file, chainspec file and genesis hash later required by deploying L1 Network and L2.
+
+## Prerequisites
+
+- Foundry, pnpm and jq installed on your system
+- Terminal access
+- Basic command line knowledge
+
+## Deployment Steps
+
+### 1. Clone Repository
+
+First, clone the Surge Taiko Mono repository and cd into protocol directory:
+
+```bash
+git clone https://github.com/NethermindEth/surge-taiko-mono.git
+cd surge-taiko-mono/packages/protocol
+```
+
+### 2. Install Dependencies
+
+Install all required dependencies:
+
+```bash
+foundryup && pnpm install
+```
+
+### 3. Set Environment Variables
+
+Set the following environment variables as needed:
+
+```bash
+export CONTRACT_OWNER=0x8943545177806ED17B9F23F0a21ee5948eCaa776
+export L1_CHAINID=3151908
+export L2_CHAINID=763374
+```
+
+### 4. Generate L2 Genesis
+
+Then compile the L2 contracts and generate the genesis block:
+
+```bash
+pnpm compile:l2
+pnpm genesis:gen
+```
+
+:::tip
+You will find the genesis file in `./test/genesis/data/`.
+:::
+
+### 5. Download Genesis to Chainspec Converter
+
+In order to convert the genesis file to chainspec file, you can download the following tool:
+
+```bash
+curl -O https://raw.githubusercontent.com/NethermindEth/core-scripts/refs/heads/main/gen2spec/gen2spec.jq
+```
+
+### 6. Convert Genesis to Chainspec
+
+Then run the following command to convert the genesis file to chainspec file:
+
+```bash
+cat ./test/genesis/data/genesis.json | jq '. + {config: {taiko: true}}' | jq --from-file ./gen2spec.jq > ./test/genesis/data/chainspec.json
+```
+
+:::tip
+You will find the chainspec file in `./test/genesis/data/`.
+:::
