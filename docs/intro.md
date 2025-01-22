@@ -27,6 +27,6 @@ Surge is designed to be:
 ## Goals
 
 - Provide maximum Ethereum alignment
-- Push Rollup Centric Roadmap forward with Engineering and Research
+- Push the Rollup Centric Roadmap forward with engineering and research
 - Maintain censorship resistance
 - Enable seamless composability with L1 and other rollups
