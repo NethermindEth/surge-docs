@@ -21,12 +21,12 @@ Surge is designed to be:
 - Native messaging bridge with Ethereum L1
 - ZK proving system with multiple prover options
 - High gas throughput (GGas per second)
-- Cross-layer composability support
+- Cross-layer composability support (Coming soon)
 - Open source
 
 ## Goals
 
 - Provide maximum Ethereum alignment
-- Deliver optimal user experience
+- Push Rollup Centric Roadmap forward with Engineering and Research
 - Maintain censorship resistance
 - Enable seamless composability with L1 and other rollups
