@@ -212,6 +212,10 @@ raiko/host/config/chain_spec_list_default.json
 ```
 Set the values according to your chain configuration.
 
+:::note Don't miss out genesis timestamp
+You can retrieve the genesis timestamp from http://placeholder:33001/eth/v1/beacon/genesis.
+:::
+
 ## Build Raiko
 
 Run the following command:
@@ -224,8 +228,8 @@ cargo build -F cuda --release --features risc0 -F raiko-tasks/in-memory
 Set the required environment variables:
 
 ```bash
-export GROTH16_VERIFIER_ADDRESS=0xA2C4Ef228de6BA701660e75Cb06f1c9b29E53069
-export GROTH16_VERIFIER_RPC_URL=http://139.162.249.67:32002
+export GROTH16_VERIFIER_ADDRESS=0x7E2E7DD2Aead92e2e6d05707F21D4C36004f8A2B
+export GROTH16_VERIFIER_RPC_URL=http://placeholder:32002
 export TASKDB=./raiko-tasks/in-memory
 export RISC0_PROVER=local
 ```

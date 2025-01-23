@@ -238,6 +238,10 @@ raiko/host/config/chain_spec_list_default.json
 ```
 Set the values according to your chain configuration.
 
+:::note Don't miss out genesis timestamp
+You can retrieve the genesis timestamp from http://placeholder:33001/eth/v1/beacon/genesis.
+:::
+
 ## Build Raiko
 Run the following command:
 ```bash
@@ -249,8 +253,8 @@ cargo +nightly-2024-04-18 build --release --features sp1 -F raiko-tasks/in-memor
 Set the required environment variables:
 
 ```bash
-export SP1_VERIFIER_RPC_URL=http://139.162.249.67:32002
-export SP1_VERIFIER_ADDRESS=0x9c63682FC2d397Aa47471c046cE57b095d7195D7
+export SP1_VERIFIER_RPC_URL=http://placeholder:32002
+export SP1_VERIFIER_ADDRESS=0x57E5d642648F54973e504f10D21Ea06360151cAf
 ```
 Run Raiko in the background:
 ```bash
