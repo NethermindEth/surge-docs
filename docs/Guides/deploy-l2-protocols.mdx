@@ -16,7 +16,7 @@ This guide explains how to deploy and configure the bridge and signal service pr
 
         #### Prerequisites
         - L1 Chain ID (3151908)
-        - L1_BRIDGE: `0x72bCbB3f339aF622c28a26488Eed9097a2977404`
+        - L1_BRIDGE: `0x63e6DDE6763C3466C7b45Be880f7eE5dC2ca3E25`
         - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
         - L2 Prefunded Account private key
         - L2 RPC URL
@@ -57,7 +57,7 @@ This guide explains how to deploy and configure the bridge and signal service pr
 
         #### Prerequisites
         - L1 Chain ID (3151908)
-        - L1_SIGNAL_SERVICE: `0x00c042C4D5D913277CE16611a2ce6e9003554aD5`
+        - L1_SIGNAL_SERVICE: `0x72ae2643518179cF01bcA3278a37ceAD408DE8b2`
         - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
         - L2 Prefunded Account private key
         - L2 RPC URL
@@ -92,7 +92,47 @@ This guide explains how to deploy and configure the bridge and signal service pr
         ```
 
     </TabItem>
+    <TabItem value="erc20" label="3. Configure ERC20 Vault">
 
+        ### Signal Service Configuration
+
+        #### Prerequisites
+        - L1 Chain ID (3151908)
+        - L1_ERC20_VAULT: `0xEE0fCB8E5cCAD0b4197BAabd633333886f5C364d`
+        - L2_SHARED_ADDRESS_MANAGER: `0x7633740000000000000000000000000000000006`
+        - L2 Prefunded Account private key
+        - L2 RPC URL
+
+        ### Set Environment Variables
+
+        ```bash
+        export FOUNDRY_PROFILE=layer1
+        export DOMAIN=3151908
+        export ADDRESS=0xEE0fCB8E5cCAD0b4197BAabd633333886f5C364d
+        export NAME=0x65726332305f7661756c74000000000000000000000000000000000000000000
+        export PROXY_ADDRESS=0x7633740000000000000000000000000000000006
+        export PRIVATE_KEY=0xbcdf20249abf0ed6d944c0288fad489e33f66b3960d9e6229c1cd214ed3bbe31
+        export L2_RPC_URL=https://placeholder:8547
+        ```
+
+        ### ERC20 Vault Setup Script
+
+        ```bash
+        docker run \
+        -e FOUNDRY_PROFILE=${FOUNDRY_PROFILE} \
+        -e DOMAIN=${DOMAIN} \
+        -e ADDRESS=${ADDRESS} \
+        -e NAME=${NAME} \
+        -e PROXY_ADDRESS=${PROXY_ADDRESS} \
+        -e PRIVATE_KEY=${PRIVATE_KEY} \
+        nethsurge/taiko-contract:surge-devnet \
+        forge script ./script/shared/SetAddress.s.sol \
+        --private-key ${PRIVATE_KEY} \
+        --fork-url ${L2_RPC_URL} \
+        --broadcast -vvv
+        ```
+
+    </TabItem>
 </Tabs>
 
 ## Verification Steps
@@ -110,6 +150,12 @@ After deploying both protocols:
 - Confirm the signal service address is correctly set
 - Check transaction confirmation on L2
 - Verify the signal service contract is accessible
+
+3. Verify ERC20 Vault Setup
+
+- Confirm the ERC20 vault address is correctly set
+- Check transaction confirmation on L2
+- Verify the ERC20 vault contract is accessible
 
 :::warning Important Note
 Ensure you have sufficient funds in your L2 account before deploying these protocols, as each transaction will require gas fees.
