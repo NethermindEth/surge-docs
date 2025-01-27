@@ -219,7 +219,7 @@ TARGET=sp1 make install
 
 Run the following command:
 ```bash
-cargo +nightly-2024-04-18 run --release --bin sp1-builder
+cargo run --release --bin sp1-builder
 ```
 You will get the `programVKey` from the output of that call.
 
@@ -245,7 +245,7 @@ You can retrieve the genesis timestamp from http://placeholder:33001/eth/v1/beac
 ## Build Raiko
 Run the following command:
 ```bash
-cargo +nightly-2024-04-18 build --release --features sp1 -F raiko-tasks/in-memory
+cargo --release --features sp1 -F raiko-tasks/in-memory
 ```
 
 ## Run Raiko
@@ -266,3 +266,6 @@ View the log output:
 ```bash
 cat ~/log/output.log
 ```
+
+### Restarting Raiko
+Before restarting Raiko, ensure that `succinct-labs/moongate` and `succinctlabs/sp1-gnark` Docker containers are stopped
