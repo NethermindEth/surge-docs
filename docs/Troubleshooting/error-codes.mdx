@@ -7,6 +7,36 @@ sidebar_position: 1
 This page contains a comprehensive list of error codes used in protocols. These codes are automatically generated from the source code.
 
 
+## test/shared/DeployCapability.sol
+
+| Error | Code |
+|-------|------|
+| `ADDRESS_NULL()` | `0xc61d2985` |
+
+## layer1/verifiers/SP1Verifier.t.sol
+
+| Error | Code |
+|-------|------|
+| `SP1_INVALID_PROOF()` | `0xb9e4dcf2` |
+
+## test/layer2/LibL2Signer.sol
+
+| Error | Code |
+|-------|------|
+| `L2_INVALID_GOLDEN_TOUCH_K()` | `0xbcd2d90d` |
+
+## test/layer2/TaikoL2EIP1559Configurable.sol
+
+| Error | Code |
+|-------|------|
+| `L2_INVALID_CONFIG()` | `0x0186236b` |
+
+## shared/common/AddressManager.sol
+
+| Error | Code |
+|-------|------|
+| `AM_ADDRESS_ALREADY_SET()` | `0xa8830893` |
+
 ## shared/common/LibTrieProof.sol
 
 | Error | Code |
@@ -29,12 +59,6 @@ This page contains a comprehensive list of error codes used in protocols. These 
 |-------|------|
 | `INNER_ERROR(bytes innerError)` | `0xbe40ece2` |
 
-## shared/common/LibAddress.sol
-
-| Error | Code |
-|-------|------|
-| `ETH_TRANSFER_FAILED()` | `0x98ce269a` |
-
 ## shared/common/EssentialContract.sol
 
 | Error | Code |
@@ -46,74 +70,23 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `ZERO_VALUE()` | `0xec732959` |
 | `FUNCTION_DISABLED()` | `0xa87dd7cf` |
 
-## shared/common/AddressManager.sol
+## shared/common/LibAddress.sol
 
 | Error | Code |
 |-------|------|
-| `AM_ADDRESS_ALREADY_SET()` | `0xa8830893` |
+| `ETH_TRANSFER_FAILED()` | `0x98ce269a` |
 
-## shared/tokenvault/BridgedERC20.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-| `BTOKEN_MINT_DISALLOWED()` | `0x270bf775` |
-
-## shared/tokenvault/BaseNFTVault.sol
+## shared/signal/SignalService.sol
 
 | Error | Code |
 |-------|------|
-| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
-| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
-| `VAULT_INTERFACE_NOT_SUPPORTED()` | `0x7dd22bea` |
-| `VAULT_TOKEN_ARRAY_MISMATCH()` | `0xcb745208` |
-
-## shared/tokenvault/BridgedERC1155.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-
-## shared/tokenvault/BridgedERC20V2.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_DEADLINE_EXPIRED()` | `0x2d5c4e9a` |
-| `BTOKEN_INVALID_SIG()` | `0xe1de4396` |
-
-## shared/tokenvault/LibBridgedToken.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-| `BTOKEN_INVALID_TO_ADDR()` | `0x30a4b274` |
-
-## shared/tokenvault/BridgedERC721.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-| `BTOKEN_INVALID_BURN()` | `0x358bf3d9` |
-
-## shared/tokenvault/BaseVault.sol
-
-| Error | Code |
-|-------|------|
-| `VAULT_INSUFFICIENT_FEE()` | `0x0bc67058` |
-| `VAULT_INVALID_TO_ADDR()` | `0x5b50f3f9` |
-| `VAULT_PERMISSION_DENIED()` | `0x2583296b` |
-
-## shared/tokenvault/ERC20Vault.sol
-
-| Error | Code |
-|-------|------|
-| `VAULT_BTOKEN_BLACKLISTED()` | `0x75c42fc1` |
-| `VAULT_CTOKEN_MISMATCH()` | `0x5f3a3af6` |
-| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
-| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
-| `VAULT_INVALID_CTOKEN()` | `0x8257f7f5` |
-| `VAULT_INVALID_NEW_BTOKEN()` | `0xdc63f987` |
-| `VAULT_LAST_MIGRATION_TOO_CLOSE()` | `0x463a6bf6` |
+| `SS_EMPTY_PROOF()` | `0x2e4b6bbc` |
+| `SS_INVALID_HOPS_WITH_LOOP()` | `0x906c584e` |
+| `SS_INVALID_LAST_HOP_CHAINID()` | `0xe2fe089c` |
+| `SS_INVALID_MID_HOP_CHAINID()` | `0xeaac446a` |
+| `SS_INVALID_STATE()` | `0x98f26f45` |
+| `SS_SIGNAL_NOT_FOUND()` | `0x738afa05` |
+| `SS_UNAUTHORIZED()` | `0x1f67751f` |
 
 ## shared/bridge/QuotaManager.sol
 
@@ -140,42 +113,92 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `B_RETRY_FAILED()` | `0x161e3ead` |
 | `B_SIGNAL_NOT_RECEIVED()` | `0xa2826398` |
 
-## shared/signal/SignalService.sol
+## shared/tokenvault/ERC20Vault.sol
 
 | Error | Code |
 |-------|------|
-| `SS_EMPTY_PROOF()` | `0x2e4b6bbc` |
-| `SS_INVALID_HOPS_WITH_LOOP()` | `0x906c584e` |
-| `SS_INVALID_LAST_HOP_CHAINID()` | `0xe2fe089c` |
-| `SS_INVALID_MID_HOP_CHAINID()` | `0xeaac446a` |
-| `SS_INVALID_STATE()` | `0x98f26f45` |
-| `SS_SIGNAL_NOT_FOUND()` | `0x738afa05` |
-| `SS_UNAUTHORIZED()` | `0x1f67751f` |
+| `VAULT_BTOKEN_BLACKLISTED()` | `0x75c42fc1` |
+| `VAULT_CTOKEN_MISMATCH()` | `0x5f3a3af6` |
+| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
+| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
+| `VAULT_INVALID_CTOKEN()` | `0x8257f7f5` |
+| `VAULT_INVALID_NEW_BTOKEN()` | `0xdc63f987` |
+| `VAULT_LAST_MIGRATION_TOO_CLOSE()` | `0x463a6bf6` |
 
-## layer1/based/LibVerifying.sol
-
-| Error | Code |
-|-------|------|
-| `L1_BLOCK_MISMATCH()` | `0x5d8690aa` |
-| `L1_INVALID_CONFIG()` | `0x88eb2934` |
-| `L1_TRANSITION_ID_ZERO()` | `0xd4345b97` |
-| `L1_TOO_LATE()` | `0x241d70fd` |
-
-## layer1/based/LibProving.sol
+## shared/tokenvault/LibBridgedToken.sol
 
 | Error | Code |
 |-------|------|
-| `L1_ALREADY_CONTESTED()` | `0x82ef1699` |
-| `L1_ALREADY_PROVED()` | `0x9d497731` |
-| `L1_BLOCK_MISMATCH()` | `0x5d8690aa` |
-| `L1_CANNOT_CONTEST()` | `0xde2c7bfc` |
-| `L1_DIFF_VERIFIER()` | `0x4f29db4e` |
-| `L1_INVALID_PARAMS()` | `0x36c7c689` |
-| `L1_INVALID_PAUSE_STATUS()` | `0xd13a013a` |
-| `L1_INVALID_TIER()` | `0x1a32f513` |
-| `L1_INVALID_TRANSITION()` | `0x2fdbbd42` |
-| `L1_NOT_ASSIGNED_PROVER()` | `0x86168ab4` |
-| `L1_PROVING_PAUSED()` | `0x66031caa` |
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+| `BTOKEN_INVALID_TO_ADDR()` | `0x30a4b274` |
+
+## shared/tokenvault/BridgedERC721.sol
+
+| Error | Code |
+|-------|------|
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+| `BTOKEN_INVALID_BURN()` | `0x358bf3d9` |
+
+## shared/tokenvault/BridgedERC1155.sol
+
+| Error | Code |
+|-------|------|
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+
+## shared/tokenvault/BridgedERC20V2.sol
+
+| Error | Code |
+|-------|------|
+| `BTOKEN_DEADLINE_EXPIRED()` | `0x2d5c4e9a` |
+| `BTOKEN_INVALID_SIG()` | `0xe1de4396` |
+
+## shared/tokenvault/BaseVault.sol
+
+| Error | Code |
+|-------|------|
+| `VAULT_INSUFFICIENT_FEE()` | `0x0bc67058` |
+| `VAULT_INVALID_TO_ADDR()` | `0x5b50f3f9` |
+| `VAULT_PERMISSION_DENIED()` | `0x2583296b` |
+
+## shared/tokenvault/BaseNFTVault.sol
+
+| Error | Code |
+|-------|------|
+| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
+| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
+| `VAULT_INTERFACE_NOT_SUPPORTED()` | `0x7dd22bea` |
+| `VAULT_TOKEN_ARRAY_MISMATCH()` | `0xcb745208` |
+
+## shared/tokenvault/BridgedERC20.sol
+
+| Error | Code |
+|-------|------|
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+| `BTOKEN_MINT_DISALLOWED()` | `0x270bf775` |
+
+## lib/QuoteV3Auth/V3Parser.sol
+
+| Error | Code |
+|-------|------|
+| `V3PARSER_INVALID_QUOTE_LENGTN()` | `0x9a800458` |
+| `V3PARSER_INVALID_QUOTE_MEMBER_LENGTN()` | `0x7841ff9e` |
+| `V3PARSER_INVALID_QEREPORT_LENGTN()` | `0x03dc2590` |
+| `V3PARSER_UNSUPPORT_CERTIFICATION_TYPE()` | `0x84f41c44` |
+| `V3PARSER_INVALID_CERTIFICATION_CHAIN_SIZE()` | `0x22ff290f` |
+| `V3PARSER_INVALID_CERTIFICATION_CHAIN_DATA()` | `0xc46fc8f6` |
+| `V3PARSER_INVALID_ECDSA_SIGNATURE()` | `0x46ac673f` |
+| `V3PARSER_INVALID_QEAUTHDATA_SIZE()` | `0x0c6543ad` |
+
+## layer1/provers/GuardianProver.sol
+
+| Error | Code |
+|-------|------|
+| `GP_INVALID_GUARDIAN()` | `0xe81e409d` |
+| `GP_INVALID_GUARDIAN_SET()` | `0x72fca45d` |
+| `GP_INVALID_MIN_GUARDIANS()` | `0xb8143131` |
+| `GP_INVALID_STATUS()` | `0x6c242ee7` |
+| `GV_PERMISSION_DENIED()` | `0x6e66d5f7` |
+| `GV_ZERO_ADDRESS()` | `0x436b7f1c` |
 
 ## layer1/based/LibProposing.sol
 
@@ -199,6 +222,31 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `L1_FORK_ERROR()` | `0x3a0e4c1a` |
 | `L1_INVALID_PARAMS()` | `0x36c7c689` |
 
+## layer1/based/LibProving.sol
+
+| Error | Code |
+|-------|------|
+| `L1_ALREADY_CONTESTED()` | `0x82ef1699` |
+| `L1_ALREADY_PROVED()` | `0x9d497731` |
+| `L1_BLOCK_MISMATCH()` | `0x5d8690aa` |
+| `L1_CANNOT_CONTEST()` | `0xde2c7bfc` |
+| `L1_DIFF_VERIFIER()` | `0x4f29db4e` |
+| `L1_INVALID_PARAMS()` | `0x36c7c689` |
+| `L1_INVALID_PAUSE_STATUS()` | `0xd13a013a` |
+| `L1_INVALID_TIER()` | `0x1a32f513` |
+| `L1_INVALID_TRANSITION()` | `0x2fdbbd42` |
+| `L1_NOT_ASSIGNED_PROVER()` | `0x86168ab4` |
+| `L1_PROVING_PAUSED()` | `0x66031caa` |
+
+## layer1/based/LibVerifying.sol
+
+| Error | Code |
+|-------|------|
+| `L1_BLOCK_MISMATCH()` | `0x5d8690aa` |
+| `L1_INVALID_CONFIG()` | `0x88eb2934` |
+| `L1_TRANSITION_ID_ZERO()` | `0xd4345b97` |
+| `L1_TOO_LATE()` | `0x241d70fd` |
+
 ## layer1/based/LibUtils.sol
 
 | Error | Code |
@@ -210,18 +258,19 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `L1_TRANSITION_NOT_FOUND()` | `0x727b1d61` |
 | `L1_UNEXPECTED_TRANSITION_ID()` | `0x67a1907f` |
 
-## lib/QuoteV3Auth/V3Parser.sol
+## layer1/tiers/ITierProvider.sol
 
 | Error | Code |
 |-------|------|
-| `V3PARSER_INVALID_QUOTE_LENGTN()` | `0x9a800458` |
-| `V3PARSER_INVALID_QUOTE_MEMBER_LENGTN()` | `0x7841ff9e` |
-| `V3PARSER_INVALID_QEREPORT_LENGTN()` | `0x03dc2590` |
-| `V3PARSER_UNSUPPORT_CERTIFICATION_TYPE()` | `0x84f41c44` |
-| `V3PARSER_INVALID_CERTIFICATION_CHAIN_SIZE()` | `0x22ff290f` |
-| `V3PARSER_INVALID_CERTIFICATION_CHAIN_DATA()` | `0xc46fc8f6` |
-| `V3PARSER_INVALID_ECDSA_SIGNATURE()` | `0x46ac673f` |
-| `V3PARSER_INVALID_QEAUTHDATA_SIZE()` | `0x0c6543ad` |
+| `TIER_NOT_FOUND()` | `0xd04c3d84` |
+
+## layer1/verifiers/Risc0Verifier.sol
+
+| Error | Code |
+|-------|------|
+| `RISC_ZERO_INVALID_BLOCK_PROOF_IMAGE_ID()` | `0x749091ae` |
+| `RISC_ZERO_INVALID_AGGREGATION_IMAGE_ID()` | `0xc8cde2c0` |
+| `RISC_ZERO_INVALID_PROOF()` | `0x444c8c2c` |
 
 ## layer1/verifiers/SP1Verifier.sol
 
@@ -242,14 +291,6 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `SGX_INVALID_PROOF()` | `0x7bb2c129` |
 | `SGX_RA_NOT_SUPPORTED()` | `0xfd85d29d` |
 
-## layer1/verifiers/Risc0Verifier.sol
-
-| Error | Code |
-|-------|------|
-| `RISC_ZERO_INVALID_BLOCK_PROOF_IMAGE_ID()` | `0x749091ae` |
-| `RISC_ZERO_INVALID_AGGREGATION_IMAGE_ID()` | `0xc8cde2c0` |
-| `RISC_ZERO_INVALID_PROOF()` | `0x444c8c2c` |
-
 ## verifiers/compose/ComposeVerifier.sol
 
 | Error | Code |
@@ -259,23 +300,6 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `CV_INVALID_SUB_VERIFIER()` | `0x26998179` |
 | `CV_INVALID_SUBPROOF_LENGTH()` | `0x70fc7004` |
 | `CV_SUB_VERIFIER_NOT_FOUND()` | `0x076f5707` |
-
-## layer1/provers/GuardianProver.sol
-
-| Error | Code |
-|-------|------|
-| `GP_INVALID_GUARDIAN()` | `0xe81e409d` |
-| `GP_INVALID_GUARDIAN_SET()` | `0x72fca45d` |
-| `GP_INVALID_MIN_GUARDIANS()` | `0xb8143131` |
-| `GP_INVALID_STATUS()` | `0x6c242ee7` |
-| `GV_PERMISSION_DENIED()` | `0x6e66d5f7` |
-| `GV_ZERO_ADDRESS()` | `0x436b7f1c` |
-
-## layer1/tiers/ITierProvider.sol
-
-| Error | Code |
-|-------|------|
-| `TIER_NOT_FOUND()` | `0xd04c3d84` |
 
 ## contracts/layer2/DelegateOwner.sol
 
@@ -287,6 +311,12 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `DO_INVALID_TARGET()` | `0xe4379036` |
 | `DO_INVALID_TX_ID()` | `0x11cff9ae` |
 | `DO_PERMISSION_DENIED()` | `0xb1bff0fa` |
+
+## layer2/based/Lib1559Math.sol
+
+| Error | Code |
+|-------|------|
+| `EIP1559_INVALID_PARAMS()` | `0xc52de372` |
 
 ## layer2/based/TaikoL2.sol
 
@@ -300,33 +330,3 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `L2_INVALID_SENDER()` | `0x6494e9f7` |
 | `L2_PUBLIC_INPUT_HASH_MISMATCH()` | `0xd719258d` |
 | `L2_TOO_LATE()` | `0xb41f3c82` |
-
-## layer2/based/Lib1559Math.sol
-
-| Error | Code |
-|-------|------|
-| `EIP1559_INVALID_PARAMS()` | `0xc52de372` |
-
-## test/shared/DeployCapability.sol
-
-| Error | Code |
-|-------|------|
-| `ADDRESS_NULL()` | `0xc61d2985` |
-
-## layer1/verifiers/SP1Verifier.t.sol
-
-| Error | Code |
-|-------|------|
-| `SP1_INVALID_PROOF()` | `0xb9e4dcf2` |
-
-## test/layer2/LibL2Signer.sol
-
-| Error | Code |
-|-------|------|
-| `L2_INVALID_GOLDEN_TOUCH_K()` | `0xbcd2d90d` |
-
-## test/layer2/TaikoL2EIP1559Configurable.sol
-
-| Error | Code |
-|-------|------|
-| `L2_INVALID_CONFIG()` | `0x0186236b` |
