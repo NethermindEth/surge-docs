@@ -192,7 +192,7 @@ cargo --version
 
 Run the following command:
 ```bash
-cargo +nightly-2024-04-18 run --bin risc0-builder -F raiko-tasks/in-memory
+cargo run --bin risc0-builder
 ```
 You will get the image ID from the output of that call.
 
@@ -230,7 +230,6 @@ Set the required environment variables:
 ```bash
 export GROTH16_VERIFIER_ADDRESS=0x7E2E7DD2Aead92e2e6d05707F21D4C36004f8A2B
 export GROTH16_VERIFIER_RPC_URL=http://placeholder:32002
-export TASKDB=./raiko-tasks/in-memory
 export RISC0_PROVER=local
 ```
 Run Raiko in the background:
