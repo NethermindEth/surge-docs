@@ -210,10 +210,15 @@ cargo --version
 ```
 
 ## Install Raiko with SP1
-Install Raiko with the SP1 target:
-```bash
-TARGET=sp1 make install
-```
+1. Create the required directories:
+    ```bash
+    sudo mkdir -p /opt/riscv
+    sudo chown $USER /opt/riscv
+    ```
+2. Install Raiko with the SP1 target:
+    ```bash
+    TARGET=sp1 make install
+    ```
 
 ## Build SP1 Program
 
@@ -250,9 +255,12 @@ cargo build --release --features sp1 -F raiko-tasks/in-memory
 
 ## Run Raiko
 
-Set the required environment variables:
-
+Before running the application, set the required environment variables.
+You can use any value for SP1_PRIVATE_KEY and NETWORK_PRIVATE_KEY.
 ```bash
+SP1_PROVER=local
+SP1_PRIVATE_KEY=0xabc...
+NETWORK_PRIVATE_KEY=0xabc...
 export SP1_VERIFIER_RPC_URL=http://placeholder:32002
 export SP1_VERIFIER_ADDRESS=0x57E5d642648F54973e504f10D21Ea06360151cAf
 ```
