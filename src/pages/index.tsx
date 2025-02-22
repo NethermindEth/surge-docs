@@ -151,12 +151,6 @@ const actions = [
     to: '/docs/Guides/provers',
     text: 'Set up and run SGX or ZK provers.',
   },
-  {
-    title: 'Sequencer Guide',
-    icon: BookOpen,
-    to: '/docs/core-concepts/sequencing',
-    text: 'Learn about Surge sequencer operations.',
-  },
 ];
 
 const itemLinks = [
@@ -175,17 +169,7 @@ const itemLinks = [
     title: 'Prover Setup',
     description: 'Configure SGX or ZK provers for Surge rollup.',
     to: '/docs/Guides/provers',
-  },
-  {
-    title: 'Bridge Operations',
-    description: 'Understanding the native messaging bridge with Ethereum L1.',
-    to: '/docs/core-concepts/bridging',
-  },
-  {
-    title: 'Core concepts',
-    description: 'Deep dive into zkEVM, block production, and cross-layer composability.',
-    to: '/docs/core-concepts',
-  },
+  }
 ];
 
 const QuickLinks = () => (
