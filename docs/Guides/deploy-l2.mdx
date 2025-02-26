@@ -13,7 +13,7 @@ This guide walks you through the process of deploying the L2 network components 
 
 ### 1. Clone Repository
 
-First, clone the Simple Surge Node repository:
+First, clone the Simple Surge Node repository and navigate to the directory:
 
 ```bash
 git clone https://github.com/NethermindEth/simple-surge-node.git
@@ -21,7 +21,15 @@ git clone https://github.com/NethermindEth/simple-surge-node.git
 cd simple-surge-node
 ```
 
-### 2. Configure Environment
+### 2. Switch to the Correct Branch
+
+Checkout the `surge/devnet` branch:
+
+```bash
+git checkout surge/devnet
+```
+
+### 3. Configure Environment
 
 Create and configure your environment file:
 
@@ -40,7 +48,7 @@ L1_BEACON_HTTP=http://placeholder:33001
 Make sure to replace the IP address and ports with your actual deployment values.
 :::
 
-### 3. Start Components
+### 4. Start Components
 
 The deployment consists of three main components that need to be started in sequence:
 

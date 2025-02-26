@@ -13,24 +13,35 @@ This guide walks you through the process of deploying and configuring the Surge 
 
 ### 1. Clone Repository
 
-First, clone the Surge Taiko Mono repository:
+First, clone the Surge Taiko Mono repository and navigate to the directory:
 
 ```bash
 git clone https://github.com/NethermindEth/surge-taiko-mono.git
+
+cd surge-taiko-mono/
 ```
 
-### 2. Configure Environment
+### 2. Switch to the Correct Branch
+
+Checkout the `surge/devnet` branch:
+
+```bash
+git checkout surge/devnet
+```
+
+### 3. Configure Environment
 
 Navigate to the relayer package and prepare the configuration:
 
 ```bash
-cd surge-taiko-mono/packages/relayer
+cd packages/relayer
+
 cp .default.env .env
 ```
 
 Edit `.env`, make sure `L1_RPC_URL` and `L2_RPC_URL` are set correctly.
 
-### 3. Deploy Components
+### 4. Deploy Components
 
 Deploy the relayer components in the following sequence:
 

@@ -43,7 +43,7 @@ This guide explains how to deploy and configure the bridge and signal service pr
         -e NAME=${NAME} \
         -e PROXY_ADDRESS=${PROXY_ADDRESS} \
         -e PRIVATE_KEY=${PRIVATE_KEY} \
-        nethsurge/taiko-contract:surge-devnet \
+        nethsurge/protocol:surge-devnet \
         forge script ./script/shared/SetAddress.s.sol \
         --private-key ${PRIVATE_KEY} \
         --fork-url ${L2_RPC_URL} \
@@ -84,7 +84,7 @@ This guide explains how to deploy and configure the bridge and signal service pr
         -e NAME=${NAME} \
         -e PROXY_ADDRESS=${PROXY_ADDRESS} \
         -e PRIVATE_KEY=${PRIVATE_KEY} \
-        nethsurge/taiko-contract:surge-devnet \
+        nethsurge/protocol:surge-devnet \
         forge script ./script/shared/SetAddress.s.sol \
         --private-key ${PRIVATE_KEY} \
         --fork-url ${L2_RPC_URL} \
@@ -125,7 +125,7 @@ This guide explains how to deploy and configure the bridge and signal service pr
         -e NAME=${NAME} \
         -e PROXY_ADDRESS=${PROXY_ADDRESS} \
         -e PRIVATE_KEY=${PRIVATE_KEY} \
-        nethsurge/taiko-contract:surge-devnet \
+        nethsurge/protocol:surge-devnet \
         forge script ./script/shared/SetAddress.s.sol \
         --private-key ${PRIVATE_KEY} \
         --fork-url ${L2_RPC_URL} \
