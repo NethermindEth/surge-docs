@@ -31,27 +31,20 @@ First, you'll need to install Kurtosis on your system. Follow the installation g
 
 ### 2. Clone the Repository
 
-Clone the Preconfirm devnet package repository:
+Clone the Surge devnet package repository and navigate to the directory:
 
 ```bash
-git clone https://github.com/NethermindEth/preconfirm-devnet-package.git
+git clone https://github.com/NethermindEth/surge-devnet-package.git
+
+cd surge-devnet-package
 ```
 
-### 3. Switch to the Correct Branch
-
-Navigate to the cloned directory and checkout the `surge/devnet` branch:
-
-```bash
-cd preconfirm-devnet-package
-git checkout surge/devnet
-```
-
-### 4. Deploy Using Kurtosis
+### 3. Deploy Using Kurtosis
 
 Run Kurtosis with the following command to deploy the L1 network:
 
 ```bash
-kurtosis run --enclave surge-devnet . --args-file network_params.yaml
+kurtosis run --enclave surge-devnet . --args-file network_params.yaml --production
 ```
 
 :::tip
@@ -71,6 +64,5 @@ Once your L1 deployment is complete, you can proceed with setting up your prover
 If you encounter any issues during deployment:
 
 1. Ensure all prerequisites are properly installed
-2. Verify you're on the correct branch (`surge/devnet`)
-3. Check that the `network_params.yaml` file exists and is properly configured
-4. Make sure Kurtosis is running correctly on your system
+2. Check that the `network_params.yaml` file exists and is properly configured
+3. Make sure Kurtosis is running correctly on your system

@@ -16,22 +16,33 @@ In this guide, we'll walk through the process of preparing the L2 genesis file, 
 
 ### 1. Clone Repository
 
-First, clone the Surge Taiko Mono repository and cd into protocol directory:
+First, clone the Surge Taiko Mono repository and navigate to the directory:
 
 ```bash
 git clone https://github.com/NethermindEth/surge-taiko-mono.git
-cd surge-taiko-mono/packages/protocol
+
+cd surge-taiko-mono
 ```
 
-### 2. Install Dependencies
+### 2. Switch to the Correct Branch
 
-Install all required dependencies:
+Checkout the `surge/devnet` branch:
 
 ```bash
+git checkout surge/devnet
+```
+
+### 3. Install Dependencies
+
+Navigate to the protocol package and install all required dependencies:
+
+```bash
+cd packages/protocol
+
 foundryup && pnpm install
 ```
 
-### 3. Set Environment Variables
+### 4. Set Environment Variables
 
 Set the following environment variables as needed:
 
@@ -41,7 +52,7 @@ export L1_CHAINID=3151908
 export L2_CHAINID=763374
 ```
 
-### 4. Generate L2 Genesis
+### 5. Generate L2 Genesis
 
 Then compile the L2 contracts and generate the genesis block:
 
@@ -54,7 +65,7 @@ pnpm genesis:gen
 You will find the genesis file in `./test/genesis/data/`.
 :::
 
-### 5. Download Genesis to Chainspec Converter
+### 6. Download Genesis to Chainspec Converter
 
 In order to convert the genesis file to chainspec file, you can download the following tool:
 
@@ -62,7 +73,7 @@ In order to convert the genesis file to chainspec file, you can download the fol
 curl -O https://raw.githubusercontent.com/NethermindEth/core-scripts/refs/heads/main/gen2spec/gen2spec.jq
 ```
 
-### 6. Convert Genesis to Chainspec
+### 7. Convert Genesis to Chainspec
 
 Then run the following command to convert the genesis file to chainspec file:
 

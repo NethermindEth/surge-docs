@@ -45,7 +45,7 @@ docker run \
   -e OWNER_MULTISIG=${OWNER_MULTISIG} \
   -e OWNER_MULTISIG_SIGNERS=${OWNER_MULTISIG_SIGNERS} \
   -e TIMELOCK_PERIOD="3888000" \
-  nethsurge/taiko-contract:surge-devnet \
+  nethsurge/protocol:surge-devnet \
   forge script ./script/layer1/surge/DeploySurgeOnL1.s.sol:DeploySurgeOnL1 \
   --private-key ${L1_ACCOUNT_PRIVATE_KEY} \
   --fork-url ${L1_RPC_URL} \
@@ -236,7 +236,7 @@ docker run \
   -e TCB_FILE=${TCB_FILE} \
   -e QE_IDENTITY_FILE=${QE_IDENTITY_FILE} \
   -e PRIVATE_KEY=${PRIVATE_KEY} \
-  nethsurge/taiko-contract:surge-devnet \
+  nethsurge/protocol:surge-devnet \
   sh -c 'curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/tcb?fmspc=${FMSPC}" > ${TCB_FILE} && \
          curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/qe/identity" > ${QE_IDENTITY_FILE} && \
          jq ".tcbInfo.fmspc |= ascii_downcase" ${TCB_FILE} > temp.json && \

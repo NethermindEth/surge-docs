@@ -89,7 +89,7 @@ Use `config_dcap_sgx_verifier.sh` or the script below to register the collateral
     -e TCB_FILE=${TCB_FILE} \
     -e QE_IDENTITY_FILE=${QE_IDENTITY_FILE} \
     -e PRIVATE_KEY=${PRIVATE_KEY} \
-    nethsurge/taiko-contract:surge-devnet \
+    nethsurge/protocol:surge-devnet \
     sh -c 'curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/tcb?fmspc=${FMSPC}" > ${TCB_FILE} && \
           curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/qe/identity" > ${QE_IDENTITY_FILE} && \
           jq ".tcbInfo.fmspc |= ascii_downcase" ${TCB_FILE} > temp.json && \
