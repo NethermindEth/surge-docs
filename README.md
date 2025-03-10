@@ -1,6 +1,6 @@
-# Website
+# Surge docs
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+The [Surge Documentation](https://docs.surge.wtf/) website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
 ### Installation
 
