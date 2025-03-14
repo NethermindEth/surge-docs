@@ -163,7 +163,7 @@ const itemLinks = [
   {
     title: 'Deploy relay',
     description: 'Complete guide to setting up and operating a Surge relay.',
-    to: '/docs/Guides/deploy-relay',
+    to: '/docs/Guides/deploy-relayer',
   },
   {
     title: 'Prover Setup',
