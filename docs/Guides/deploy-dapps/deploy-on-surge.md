@@ -9,7 +9,7 @@ To deploy your DApp on Surge follow these steps:
 ### Prerequisites
 
 - *Holesky* ETH on L1: ([Holesky Faucet](https://cloud.google.com/application/web3/faucet/ethereum/holesky))
-- Surge L2 RPC: ([https://placeholder/l2-rpc/](https://l2-rpc.surge.staging-nethermind.xyz)). Find all the settings and autoconfigure your wallet on ([ChainList](https://chainlist.org/chain/763374))
+- Surge L2 RPC: ([https://l2-rpc.surge.staging-nethermind.xyz](https://l2-rpc.surge.staging-nethermind.xyz)). Find all the settings and autoconfigure your wallet on ([ChainList](https://chainlist.org/chain/763374))
 - Surge L2 Blockscout URL: ([Blockscout](https://explorer.holesky.surge.wtf/))
 
 ## Bridge Eth in to Surge
