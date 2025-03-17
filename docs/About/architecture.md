@@ -36,4 +36,4 @@ Disabled pausing of protocol and peripheral contracts: The owner cannot pause th
 
 2/3 proof verifier as the sole proof verifier: We have three proof systems: SGX, SP1, Risc0. At least 2 of 3 of the provers must agree on a state transition for the transition to be accepted.
 
-Disabled contestatino window as we only have one proving system and no other tiers. This makes Surge a ZkRollup and not an Optimistic one.
+Disabled contestation window as we only have one proving system and no other tiers. This makes Surge a ZkRollup and not an Optimistic one.
