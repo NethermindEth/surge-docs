@@ -33,6 +33,7 @@
     "react-feather": "^2.0.10",
     "remark-gfm": "^4.0.0",
     "tailwind-merge": "^2.5.4",
+    "tailwindcss": "^4.0.14",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {

@@ -26,7 +26,7 @@ Learn about the [Surge Architecture](/About/architecture)
 
 We will deploy Surge in the following Phases:
 
-![Surge Roadmap](/img/surge-roadmap.svg)
+![Surge Roadmap](/img/surge-roadmap.png)
 
 - Surge Testnet Alpha will be rolled out anchoring on Holesky
 - Surge Testnet will be rolled out anchoring on Hoodi
