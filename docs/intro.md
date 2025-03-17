@@ -20,13 +20,13 @@ Surge is a novel high-performance, and censorship-resistant Ethereum rollup mean
 
 ## Architecture
 
-Learn about the [Surge Architecture](/About/architecture)
+Learn about the [Surge Architecture](./About/architecture)
 
 ## Roadmap
 
 We will deploy Surge in the following Phases:
 
-![Surge Roadmap](/img/surge-roadmap.svg)
+![Surge Roadmap](/img/surge-roadmap.png)
 
 - Surge Testnet Alpha will be rolled out anchoring on Holesky
 - Surge Testnet will be rolled out anchoring on Hoodi
@@ -34,11 +34,11 @@ We will deploy Surge in the following Phases:
 
 ## Deploying your DApp on surge
 
-Follow our [DApp Deployment Guideline](/Guides/deploy-dapps/deploy-on-surge)
+Follow our [DApp Deployment Guideline](./Guides/deploy-dapps/deploy-on-surge)
 
 ## Running your Surge rollup
 
-Follow the [Running Surge](/running-surge) guide
+Follow the [Running Surge](./Guides/running-surge) guide
 
 ## Key Features
 

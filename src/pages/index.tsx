@@ -142,14 +142,20 @@ const actions = [
   {
     title: 'Get Started',
     icon: Info,
-    to: '/docs/getting-started',
+    to: '/docs/Guides/running-surge/',
     text: 'Learn how to set up and run Surge rollup.',
   },
   {
     title: 'Run a Prover',
     icon: HelpCircle,
-    to: '/docs/Guides/provers',
+    to: '/docs/Guides/running-surge/provers/',
     text: 'Set up and run SGX or ZK provers.',
+  },
+  {
+    title: 'Deploy a DApp',
+    icon: Info,
+    to: '/docs/Guides/deploy-dapps/deploy-on-surge',
+    text: 'Learn how to deploy your DApp to test Surge.',
   },
 ];
 
@@ -163,13 +169,13 @@ const itemLinks = [
   {
     title: 'Deploy relay',
     description: 'Complete guide to setting up and operating a Surge relay.',
-    to: '/docs/Guides/deploy-relayer',
+    to: '/docs/Guides/running-surge/deploy-relayer',
   },
   {
     title: 'Prover Setup',
     description: 'Configure SGX or ZK provers for Surge rollup.',
-    to: '/docs/Guides/provers',
-  }
+    to: '/docs/Guides/running-surge/provers/',
+  },
 ];
 
 const QuickLinks = () => (
