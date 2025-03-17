@@ -176,8 +176,8 @@ const QuickLinks = () => (
   <QuickLinksSection>
     <ColumnWrapper>
       <Column>
-        <QuickLinksTitle>Use Surge</QuickLinksTitle>
-        <p>Explore these guided tutorials to get started with Surge.</p>
+        <QuickLinksTitle>Quick Links</QuickLinksTitle>
+        <p>Get started with Surge rollup development</p>
         {itemLinks.map((link) => (
           <LinkCard key={link.title} to={link.to}>
             <div>
