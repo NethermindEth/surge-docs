@@ -10,13 +10,13 @@ To deploy your DApp on Surge follow these steps:
 
 - *Holesky* ETH on L1: ([Holesky Faucet](https://cloud.google.com/application/web3/faucet/ethereum/holesky))
 - Surge L2 RPC: ([https://placeholder/l2-rpc/](https://l2-rpc.surge.staging-nethermind.xyz)). Find all the settings and autoconfigure your wallet on ([ChainList](https://chainlist.org/chain/763374))
-- Surge L2 Blockscout URL: ([Blockscout](https://explorer.testnet.surge.wtf/))
+- Surge L2 Blockscout URL: ([Blockscout](https://explorer.holesky.surge.wtf/))
 
 ## Bridge Eth in to Surge
 
-You can use the ([bridge UI](https://bridge.testnet.surge.wtf)) to transfer ETH from L1 to L2
+You can use the ([bridge UI](https://bridge.holesky.surge.wtf)) to transfer ETH from L1 to L2
 
-Your transfer can be monitored from our ([Blockscout](https://explorer.testnet.surge.wtf/)) instance.
+Your transfer can be monitored from our ([Blockscout](https://explorer.holesky.surge.wtf/)) instance.
 
 In its default settings, our relayer will automatically claim your bridged ETH for you within a minute after the transfer is confirmed.
 
