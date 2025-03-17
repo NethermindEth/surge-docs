@@ -157,6 +157,12 @@ const actions = [
     to: '/docs/Guides/deploy-dapps/deploy-on-surge',
     text: 'Learn how to deploy your DApp to test Surge.',
   },
+  {
+    title: 'Deploy a DApp',
+    icon: Info,
+    to: '/docs/Guides/deploy-dapps/deploy-on-surge',
+    text: 'Learn how to deploy your DApp to test Surge.',
+  },
 ];
 
 const itemLinks = [
