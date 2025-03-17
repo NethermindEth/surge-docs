@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Introduction to Surge
 
-Surge is a maximally aligned, high-performance Ethereum rollup built on modified Taiko technology. It inherits Ethereum's security while providing enhanced performance and composability.
+Surge is a maximally aligned, high-performance Ethereum rollup built on modified Taiko technology. It inherits Ethereum's security while providing enhanced performance and composability
 
 ## What is Surge?
 
@@ -20,7 +20,15 @@ Surge is a novel high-performance, and censorship-resistant Ethereum rollup mean
 
 ## Architecture
 
-You can learn about the [Surge Architecture](/About/architecture) here.
+Learn about the [Surge Architecture](/About/architecture)
+
+## Deploying your DApp on surge
+
+Follow our [DApp Deployment Guideline](/Guides/deploy-dapps/deploy-on-surge)
+
+## Running your Surge rollup
+
+Follow the [Running Surge](/running-surge) guide
 
 ## Key Features
 
