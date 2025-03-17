@@ -22,6 +22,16 @@ Surge is a novel high-performance, and censorship-resistant Ethereum rollup mean
 
 Learn about the [Surge Architecture](/About/architecture)
 
+## Roadmap
+
+We will deploy Surge in the following Phases:
+
+![Surge Roadmap](/img/surge-roadmap.svg)
+
+- Surge Testnet Alpha will be rolled out anchoring on Holesky
+- Surge Testnet will be rolled out anchoring on Hoodi
+- Surge Mainnet will be rolled out anchoring on Ethereum Mainnet 
+
 ## Deploying your DApp on surge
 
 Follow our [DApp Deployment Guideline](/Guides/deploy-dapps/deploy-on-surge)
@@ -33,6 +43,7 @@ Follow the [Running Surge](/running-surge) guide
 ## Key Features
 
 - Stage 2 from Launch
+- Uses ETH as a gas token
 - Gigagas Per Second gas throughput
 - ZK proving system with multiple proving options
 - Cross-layer composability support (Coming soon)
