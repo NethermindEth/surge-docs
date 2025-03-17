@@ -8,13 +8,19 @@ Surge is a maximally aligned, high-performance Ethereum rollup built on modified
 
 ## What is Surge?
 
-Surge is designed to be:
+Surge is a novel high-performance, and censorship-resistant Ethereum rollup meant as a technical showcase that is designed to be:
 
 - A based rollup with maximum Ethereum alignment
+- Stage 2 from launch
+- Provide Gigagas performance
 - Censorship resistant
 - Optimized for user experience with low transaction costs and confirmation times
 - Focused on cross-layer composability
 - Built on proven Taiko technology, modified to remove token dependencies
+
+## Architecture
+
+You can learn about the [Surge Architecture](/About/architecture) here.
 
 ## Key Features
 
