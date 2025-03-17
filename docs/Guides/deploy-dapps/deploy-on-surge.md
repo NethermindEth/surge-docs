@@ -27,6 +27,6 @@ Happy testing!
 
 ## Troubleshooting
 
-If you need help, you can consult our ([Troubleshooting section](/Troubleshooting/index))
+If you need help, you can consult our ([Troubleshooting section](../../intro))
 
 For more information and personalized support, you can also join the [Nethermind Community Channel on Telegram](https://t.me/nethermind_community)
