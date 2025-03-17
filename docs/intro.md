@@ -24,13 +24,9 @@ Learn about the [Surge Architecture](./About/architecture)
 
 ## Roadmap
 
-We will deploy Surge in the following Phases:
-
-![Surge Roadmap](/img/surge-roadmap.png)
-
 - Surge Testnet Alpha will be rolled out anchoring on Holesky
 - Surge Testnet will be rolled out anchoring on Hoodi
-- Surge Mainnet will be rolled out anchoring on Ethereum Mainnet 
+- Surge Mainnet will be rolled out anchoring on Ethereum Mainnet
 
 ## Deploying your DApp on surge
 
@@ -54,7 +50,6 @@ Follow the [Running Surge](./Guides/running-surge) guide
 - Push the Rollup Centric Roadmap forward with engineering and research
 - Maintain censorship resistance
 - Enable seamless composability with L1 and other rollups
-- Showcase how Nethermind technology can be used for building high performant rollups
 
 ## Non-Goals
 

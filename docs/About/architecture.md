@@ -10,11 +10,11 @@ sidebar_position: 1
 
 Each of the components in our architecture serves a specific purpose:
 
-- Fast Composability solution (Coming soon): A component that allows for fast withdrawals to L1 ([Coming soon, research can be found here](https://ethresear.ch/t/fast-and-slow-l2-l1-withdrawals/21161/2))
-
 - Nethermind Execution Client (NMC): A high-performance Ethereum client that handles the execution with Gigagas performance ([NMC documentation](https://github.com/NethermindEth/nethermind))
 
 - Taiko Client: Handles the consensus layer ([Taiko documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client))
+
+### Components of Taiko Stack
 
 - Taiko Prover: Part of the Taiko Client, generates proofs for the rollup [
   ([Taiko documentation](https://github.com/taiko-eth/taiko))
@@ -30,7 +30,7 @@ Performance improevements were made by swapping out the execution client from Ta
 
 Time-Locked owner: We modified the multisig implementation to have a 45 day timelock to be compliant with Stage2 requirements set forth by L2Beat
 
-Verification Streack checks: Owner operations from the multisig are blocked, if there has been a liveness disruption for a period of 7 days or more in the last 45 days.
+Verification Streak checks: Owner operations from the multisig are blocked, if there has been a liveness disruption for a period of 7 days or more in the last 45 days.
 
 Disabled pausing of protocol and peripheral contracts: The owner cannot pause the protocol
 
@@ -41,4 +41,4 @@ Disabled pausing of protocol and peripheral contracts: The owner cannot pause th
 - Be Stage 2 from launch
 - Provide Gigagas performance
 - Be maximally ethereum aligned by being based
-- Enable seamless composability with L1 and other rollups once we enable our composiability solution
+- Enable seamless composability with L1 and other rollups

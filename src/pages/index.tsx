@@ -140,16 +140,22 @@ const QuickLinksTitle = styled.h2`
 
 const actions = [
   {
-    title: 'Get Started',
+    title: 'What is Surge',
     icon: Info,
-    to: '/docs/Guides/running-surge/',
-    text: 'Learn how to set up and run Surge rollup.',
+    to: '/docs/intro',
+    text: 'Learn about the Surge Rollup',
   },
   {
-    title: 'Run a Prover',
-    icon: HelpCircle,
-    to: '/docs/Guides/running-surge/provers/',
-    text: 'Set up and run SGX or ZK provers.',
+    title: 'Run Surge',
+    icon: Info,
+    to: '/docs/Guides/running-surge/',
+    text: 'Set up and run surge locally',
+  },
+  {
+    title: 'Deploy a DApp',
+    icon: Info,
+    to: '/docs/Guides/deploy-dapps/deploy-on-surge',
+    text: 'Learn how to deploy your DApp to test Surge.',
   },
   {
     title: 'Deploy a DApp',
@@ -161,20 +167,14 @@ const actions = [
 
 const itemLinks = [
   {
-    title: 'Introduction to Surge',
-    description:
-      'Learn about Surge rollup - a maximally aligned, high-performance Ethereum rollup.',
-    to: '/docs/intro',
+    title: 'Surge Architecture',
+    description: 'Learn about the Architecture of Surge rollup',
+    to: 'docs/About/architecture',
   },
   {
-    title: 'Deploy relay',
-    description: 'Complete guide to setting up and operating a Surge relay.',
-    to: '/docs/Guides/running-surge/deploy-relayer',
-  },
-  {
-    title: 'Prover Setup',
-    description: 'Configure SGX or ZK provers for Surge rollup.',
-    to: '/docs/Guides/running-surge/provers/',
+    title: 'Troubleshooting',
+    description: 'Get Solutions to common Surge issues and get help',
+    to: 'docs/Troubleshooting/',
   },
 ];
 
