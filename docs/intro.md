@@ -8,9 +8,9 @@ Surge is a maximally aligned, high-performance Ethereum rollup built on modified
 
 ## What is Surge?
 
-Surge is a novel high-performance, and censorship-resistant Ethereum rollup meant as a technical showcase that is designed to be:
+Surge is a high-performance, and censorship-resistant Ethereum rollup template meant as a technical showcase that is designed to be:
 
-- A based rollup with maximum Ethereum alignment
+- based with maximum Ethereum alignment
 - Stage 2 from launch
 - Provide Gigagas performance
 - Censorship resistant
@@ -22,12 +22,6 @@ Surge is a novel high-performance, and censorship-resistant Ethereum rollup mean
 
 Learn about the [Surge Architecture](./About/architecture)
 
-## Roadmap
-
-- Surge Testnet Alpha will be rolled out anchoring on Holesky
-- Surge Testnet will be rolled out anchoring on Hoodi
-- Surge Mainnet will be rolled out anchoring on Ethereum Mainnet
-
 ## Deploying your DApp on surge
 
 Follow our [DApp Deployment Guideline](./Guides/deploy-dapps/deploy-on-surge)
@@ -38,12 +32,12 @@ Follow the [Running Surge](./Guides/running-surge) guide
 
 ## Key Features
 
-- Stage 2 from Launch
 - Uses ETH as a gas token
 - Gigagas Per Second gas throughput
 - ZK proving system with multiple proving options
 - Cross-layer composability support (Coming soon)
 - Open source & Maximally Ethereum Aligned
+- Owner multisig have a 45 days timelock on any action to allow users ample time to exit with their funds.
 
 ## Goals
 
