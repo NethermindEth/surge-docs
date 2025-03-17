@@ -32,15 +32,20 @@ Follow the [Running Surge](/running-surge) guide
 
 ## Key Features
 
-- Native messaging bridge with Ethereum L1
-- ZK proving system with multiple prover options
-- High gas throughput (GGas per second)
+- Stage 2 from Launch
+- Gigagas Per Second gas throughput
+- ZK proving system with multiple proving options
 - Cross-layer composability support (Coming soon)
-- Open source
+- Open source & Maximally Ethereum Aligned
 
 ## Goals
 
-- Provide maximum Ethereum alignment
 - Push the Rollup Centric Roadmap forward with engineering and research
 - Maintain censorship resistance
 - Enable seamless composability with L1 and other rollups
+- Showcase how Nethermind technology can be used for building high performant rollups
+
+## Non-Goals
+
+- Capture users and revenue
+- Compete with other rollups
