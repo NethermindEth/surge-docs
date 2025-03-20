@@ -30,4 +30,9 @@ Surge fully embraces this model for its rollup architecture. By integrating with
 ## Comparing Based and Non-Based Rollups
 
 - **Based Rollups**: Transaction ordering is done by Ethereum’s decentralized validators and block builders, leveraging PBS to maintain fairness and trustlessness.
+
+![Based Rollups: L2 transactions enter the same permissionless block-building pipeline as L1.](./based-rollups.png)
+
 - **Conventional Rollups**: A centralized sequencer has the final say on transaction order before batches go to L1, introducing potential risks of manipulation or censorship.
+
+![Conventional Non-Based Rollups: A centralized sequencer decides transaction ordering before submitting them to L1.](./conventional-rollups.png)
