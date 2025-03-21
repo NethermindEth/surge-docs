@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Surge Architecture
 ---
 
@@ -7,34 +7,36 @@ title: Surge Architecture
 
 ![Surge Architecture](/img/Surge-Architecture.svg)
 
-## What is the purpose of these components?
+## Purpose of Each Component
 
-Each of the components in our architecture serves a specific purpose:
+Surge’s architecture is composed of several key components, each serving a specific function:
 
-- Nethermind Execution Client (NMC): A high-performance Ethereum client that handles the execution with Gigagas performance ([NMC documentation](https://github.com/NethermindEth/nethermind))
+- **Nethermind Execution Client (NMC):** A high-performance Ethereum client that delivers Gigagas performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
 
-- Taiko Client: Handles the consensus layer ([Taiko documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client))
+- **Taiko Client:** Manages the consensus layer of the rollup. [Taiko Documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client).
 
-### Components of Taiko Stack
+### Components of the Taiko Stack
 
-- Taiko Prover: Part of the Taiko Client, generates state transition proofs for the rollup
+The Taiko Client consists of several sub-components:
 
-- Taiko Driver: Part of the Taiko Client, handles following the rollup
+- **Taiko Prover:** Generates state transition proofs for the rollup.
+- **Taiko Driver:** Follows and monitors the rollup’s state transitions.
+- **Taiko Proposer:** Proposes new blocks to the rollup.
 
-- Taiko Proposer: Part of the Taiko Client, proposes new blocks to the rollup
+## How Surge Differs from the Taiko Stack
 
-## How is Surge different from the Taiko Stack
+Surge has customized aspects of the Taiko architecture to enhance performance and remove any reliance on new tokens:
 
-We customized the implementation of the Taiko stack to remove token dependencies and allowed utilizing Ether for use as a bond in block proposal.
+1. **Token-Free Design:** Surge removes token dependencies, allowing the use of Ether as a bond for block proposals.
 
-Performance improevements were made by swapping out the execution client from TaikoGeth to using the NMC [(NMC documentation) https://github.com/NethermindEth/nethermind].
+2. **Execution Client Upgrade:** Replaced TaikoGeth with the Nethermind Execution Client (NMC) to achieve better performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
 
-Time-Locked owner: We modified the multisig implementation to have a 45 day timelock to be compliant with Stage2 requirements set forth by L2Beat
+3. **Time-Locked Owner:** Modified the multisig implementation to feature a 45-day timelock, aligning with Stage 2 requirements by L2Beat.
 
-Verification Streak checks: Owner operations from the multisig are blocked, if there has been a liveness disruption for a period of 7 days or more in the last 45 days.
+4. **Verification Streak Checks:** Owner operations via the multisig are blocked if there has been a liveness disruption of 7 days or more within the past 45 days.
 
-Disabled pausing of protocol and peripheral contracts: The owner cannot pause the protocol
+5. **Disabled Pausing:** The owner cannot pause the protocol or peripheral contracts.
 
-2/3 proof verifier as the sole proof verifier: We have three proof systems: SGX, SP1, Risc0. At least 2 of 3 of the provers must agree on a state transition for the transition to be accepted.
+6. **2/3 Proof Verifier:** There are three proof systems (SGX, SP1, and Risc0). At least two of these must agree on a state transition for it to be accepted.
 
-Disabled contestation window as we only have one proving system and no other tiers. This makes Surge a ZkRollup and not an Optimistic one.
+7. **No Contestation Window:** As Surge employs a single ZK approach (no optimistic fallback), it does not require a contestation window. This design choice makes Surge a pure ZK-Rollup rather than an Optimistic Rollup.
