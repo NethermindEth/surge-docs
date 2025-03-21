@@ -56,14 +56,14 @@ jobs:
             if [[ $line == "In file:"* ]]; then
               file_path="${line#In file: }"
               clean_path=$(echo "$file_path" | rev | cut -d'/' -f-3 | rev)
-              echo -e "\n## ${clean_path}\n" >> docs/Troubleshooting/error-codes.mdx
-              echo "| Error | Code |" >> docs/Troubleshooting/error-codes.mdx
-              echo "|-------|------|" >> docs/Troubleshooting/error-codes.mdx
+              echo -e "\n## ${clean_path}\n" >> docs/troubleshooting/error-codes.mdx
+              echo "| Error | Code |" >> docs/troubleshooting/error-codes.mdx
+              echo "|-------|------|" >> docs/troubleshooting/error-codes.mdx
             elif [[ $line == "Error:"* ]]; then
               error_name="${line#Error: }"
             elif [[ $line == "Code:"* ]]; then
               error_code="${line#Code: }"
-              echo "| \`${error_name}\` | \`${error_code}\` |" >> docs/Troubleshooting/error-codes.mdx
+              echo "| \`${error_name}\` | \`${error_code}\` |" >> docs/troubleshooting/error-codes.mdx
             fi
           done < temp_error_codes.txt
 
@@ -74,5 +74,5 @@ jobs:
           
       - name: Commit and push if changed
         run: |
-          git add docs/Troubleshooting/error-codes.mdx
+          git add docs/troubleshooting/error-codes.mdx
           git diff --quiet && git diff --staged --quiet || (git commit -m "docs: update error codes [skip ci]" && git push)
