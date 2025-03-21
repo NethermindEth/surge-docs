@@ -148,13 +148,13 @@ const actions = [
   {
     title: 'Run Surge',
     icon: Info,
-    to: '/docs/Guides/running-surge/',
+    to: '/docs/guides/running-surge/',
     text: 'Set up and run surge locally',
   },
   {
     title: 'Deploy a DApp',
     icon: Info,
-    to: '/docs/Guides/deploy-dapps/deploy-on-surge',
+    to: '/docs/guides/deploy-dapps/deploy-on-surge',
     text: 'Learn how to deploy your DApp to test Surge.',
   },
 ];
@@ -163,12 +163,12 @@ const itemLinks = [
   {
     title: 'Surge Architecture',
     description: 'Learn about the Architecture of Surge rollup',
-    to: 'docs/About/architecture',
+    to: 'docs/about/architecture',
   },
   {
     title: 'Troubleshooting',
     description: 'Get Solutions to common Surge issues and get help',
-    to: 'docs/Troubleshooting/',
+    to: 'docs/troubleshooting/',
   },
 ];
 
