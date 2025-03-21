@@ -40,7 +40,7 @@ jobs:
 
       - name: Update documentation
         run: |
-          cat > docs/Troubleshooting/error-codes.mdx << 'EOL'
+          cat > docs/troubleshooting/error-codes.mdx << 'EOL'
           ---
           sidebar_position: 1
           ---
