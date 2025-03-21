@@ -1,0 +1,99 @@
+"use strict";(self.webpackChunksurge_docs=self.webpackChunksurge_docs||[]).push([[583],{6107:(e,r,i)=>{i.r(r),i.d(r,{default:()=>G});i(6540);var o=i(797),t=i(9143),n=i(6289),a=i(4609),s=i(7213),l=i(3167),d=i(9324),c=i(3705),m=i(4848);const p=c.A.div`
+  width: 100%;
+  position: relative;
+`,g=c.A.header`
+  position: relative;
+  padding: 4rem 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: var(--ifm-container-width);
+  margin: 0 auto;
+  color: var(--ifm-font-color-base);
+`,u=c.A.h1`
+  font-weight: 600;
+  font-size: 3rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`,x=c.A.div`
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+`,h=c.A.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+`,f=c.A.div`
+  background: var(--ifm-card-background-color);
+  border-radius: var(--ifm-card-border-radius);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--ifm-color-emphasis-300);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+  }
+`,A=c.A.h3`
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+`,b=c.A.p`
+  margin-bottom: 1rem;
+`,v=(0,c.A)(n.A)`
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`,j=c.A.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+`,w=c.A.div`
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`,y=c.A.div`
+  flex: 1;
+`,k=(0,c.A)(n.A)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  background-color: var(--ifm-background-surface-color);
+  text-decoration: none;
+  color: var(--ifm-font-color-base);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--ifm-color-emphasis-100);
+    text-decoration: none;
+  }
+`,S=c.A.h3`
+  font-size: 1rem;
+  margin: 0;
+`,z=c.A.p`
+  font-size: 0.875rem;
+  color: var(--ifm-color-emphasis-600);
+  margin: 0.25rem 0 0;
+`,L=c.A.h2`
+  font-weight: 600;
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`,D=[{title:"What is Surge",icon:s.A,to:"/docs/intro",text:"Learn about the Surge Rollup"},{title:"Run Surge",icon:s.A,to:"/docs/guides/running-surge/",text:"Set up and run surge locally"},{title:"Deploy a DApp",icon:s.A,to:"/docs/guides/deploy-dapps/deploy-on-surge",text:"Learn how to deploy your DApp to test Surge."}],C=[{title:"Surge Architecture",description:"Learn about the Architecture of Surge rollup",to:"docs/about/architecture"},{title:"Troubleshooting",description:"Get Solutions to common Surge issues and get help",to:"docs/troubleshooting/"}],R=()=>(0,m.jsx)(j,{children:(0,m.jsx)(w,{children:(0,m.jsxs)(y,{children:[(0,m.jsx)(L,{children:"Quick Links"}),(0,m.jsx)("p",{children:"Get started with Surge rollup development"}),C.map((e=>(0,m.jsxs)(k,{to:e.to,children:[(0,m.jsxs)("div",{children:[(0,m.jsx)(S,{children:e.title}),(0,m.jsx)(z,{children:e.description})]}),(0,m.jsx)(l.A,{size:20})]},e.title)))]})})}),G=()=>{const{siteConfig:e}=(0,o.A)();return(0,m.jsxs)(t.A,{title:e.title,description:e.tagline,children:[(0,m.jsx)(p,{children:(0,m.jsxs)(g,{children:[(0,m.jsx)(d.A,{sources:{light:"/img/Surge Vertical Dark.svg",dark:"/img/Surge Vertical Light.svg"},alt:"Surge Logo",sizes:"s"}),(0,m.jsx)(u,{children:e.title}),(0,m.jsx)("p",{children:"Maximally Aligned, High-Performance Ethereum Rollup"}),(0,m.jsx)(x,{children:(0,m.jsx)(a.A,{})})]})}),(0,m.jsxs)("main",{className:"container",children:[(0,m.jsx)(h,{children:D.map(((e,r)=>(0,m.jsxs)(f,{children:[(0,m.jsx)(A,{children:e.title}),(0,m.jsx)(b,{children:e.text}),(0,m.jsx)(v,{to:e.to,children:"Learn more"})]},r)))}),(0,m.jsx)(R,{})]})]})}}}]);
