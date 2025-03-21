@@ -40,10 +40,11 @@ By showcasing how to remove centralized sequencer risks and eliminate L2 governa
 ## Getting Started
 
 - **Learn More:** Visit the *About* section for details on Surge’s architecture and design choices.
+- **Explore the Code:** Check out [Surge’s GitHub repository](https://github.com/NethermindEth/surge) to dive into the open-source codebase.
 - **Guides:** Explore the *Guides* section to deploy your own dApp or operate a Surge rollup.
 - **Current Testnet:**
-    - Bridge UI: [bridge.holesky.surge.wtf](https://bridge.holesky.surge.wtf/)
-    - Explorer: [explorer.holesky.surge.wtf](https://explorer.holesky.surge.wtf/)
-    - RPC URL: [l2-rpc.surge.staging-nethermind.xyz](https://l2-rpc.surge.staging-nethermind.xyz/)
+  - Bridge UI: [bridge.holesky.surge.wtf](https://bridge.holesky.surge.wtf/)
+  - Explorer: [explorer.holesky.surge.wtf](https://explorer.holesky.surge.wtf/)
+  - RPC URL: [l2-rpc.surge.staging-nethermind.xyz](https://l2-rpc.surge.staging-nethermind.xyz/)
 
 Surge is continually evolving. By taking part in its testnet, you can experience firsthand how a truly decentralized rollup — rooted in Ethereum’s security and designed for long-term sustainability — can shape the future of Layer 2 solutions.
