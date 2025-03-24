@@ -92,3 +92,22 @@ cat ./test/genesis/data/genesis.json | jq ". * {
 :::tip
 You will find the chainspec file in `./test/genesis/data/`.
 :::
+
+## Retrieve the Genesis Hash
+
+To retrieve the genesis hash, you can use Nethermind Client:
+
+```bash
+docker run -d \
+  --name nethermind-genesis-hash \
+  -v ./test/genesis/data/chainspec.json:/chainspec.json \
+  nethermindeth/nethermind:surge-fd87ddb09 \
+  --config=none \
+  --Init.ChainSpecPath=/chainspec.json
+
+docker logs nethermind-genesis-hash 2>/dev/null | grep "Genesis hash" | head -n 1 | sed 's/.*Genesis hash : \(.*\)/\1/'
+```
+
+:::tip
+You will get the genesis hash in the logs.
+:::
