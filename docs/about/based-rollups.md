@@ -36,3 +36,12 @@ Surge fully embraces this model for its rollup architecture. By integrating with
 - **Conventional Rollups**: A centralized sequencer has the final say on transaction order before batches go to L1, introducing potential risks of manipulation or censorship.
 
 ![Conventional Non-Based Rollups: A centralized sequencer decides transaction ordering before submitting them to L1.](./images/conventional-rollups.png)
+
+## Further Reading
+
+To learn more about Based Rollups, explore these helpful resources:
+
+- **Taiko Documentation: [Based Rollups](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-design/based-rollups)**  
+  Official documentation providing an in-depth understanding of Taiko's Based Rollups design and protocol specifications.
+- **Blog Post: [Understanding Based Rollups](https://taiko.mirror.xyz/7dfMydX1FqEx9_sOvhRt3V8hJksKSIWjzhCVu7FyMZU)**  
+  A clear and informative article by the Taiko team, offering valuable insights into how Based Rollups function and their benefits.
