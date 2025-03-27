@@ -112,7 +112,7 @@ docker run -d \
   --config=none \
   --Init.ChainSpecPath=/chainspec.json
 
-# Wait a few seconds for the container to initialize
+sleep 5 # Wait a few seconds for the container to initialize
 
 docker logs nethermind-genesis-hash 2>/dev/null | grep "Genesis hash" | head -n 1 | sed 's/.*Genesis hash : \(.*\)/\1/'
 ```
