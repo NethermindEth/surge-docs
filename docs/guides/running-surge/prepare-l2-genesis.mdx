@@ -100,7 +100,7 @@ cat ./test/genesis/data/genesis.json | jq ". * {
 The chainspec file will be created at `./test/genesis/data/chainspec.json`.
 :::
 
-## Retrieve the Genesis Hash
+### 8. Retrieve the Genesis Hash
 
 Use the Nethermind client Docker container to retrieve the genesis hash:
 
@@ -121,7 +121,7 @@ docker logs nethermind-genesis-hash 2>/dev/null | grep "Genesis hash" | head -n 
 The genesis hash will be printed in the console.
 :::
 
-### Clean Up (Optional)
+### 9. Clean Up (Optional)
 
 Stop and remove the Docker container after obtaining the genesis hash:
 
