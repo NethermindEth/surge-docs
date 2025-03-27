@@ -1,7 +1,7 @@
-"use strict";(self.webpackChunksurge_docs=self.webpackChunksurge_docs||[]).push([[583],{6107:(e,r,i)=>{i.r(r),i.d(r,{default:()=>G});i(6540);var o=i(797),t=i(9143),n=i(6289),a=i(4609),s=i(7213),l=i(3167),d=i(9324),c=i(3705),m=i(4848);const p=c.A.div`
+"use strict";(self.webpackChunksurge_docs=self.webpackChunksurge_docs||[]).push([[583],{6107:(e,r,i)=>{i.r(r),i.d(r,{default:()=>G});i(6540);var o=i(797),t=i(9143),n=i(6289),a=i(4609),s=i(7213),l=i(3167),d=i(9324),c=i(3705),m=i(4848);const g=c.A.div`
   width: 100%;
   position: relative;
-`,g=c.A.header`
+`,u=c.A.header`
   position: relative;
   padding: 4rem 0;
   text-align: center;
@@ -11,7 +11,7 @@
   max-width: var(--ifm-container-width);
   margin: 0 auto;
   color: var(--ifm-font-color-base);
-`,u=c.A.h1`
+`,p=c.A.h1`
   font-weight: 600;
   font-size: 3rem;
   margin-top: 1rem;
@@ -96,4 +96,4 @@
   font-size: 2rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
-`,D=[{title:"What is Surge",icon:s.A,to:"/docs/intro",text:"Learn about the Surge Rollup"},{title:"Run Surge",icon:s.A,to:"/docs/guides/running-surge/",text:"Set up and run surge locally"},{title:"Deploy a DApp",icon:s.A,to:"/docs/guides/deploy-dapps/deploy-on-surge",text:"Learn how to deploy your DApp to test Surge."}],C=[{title:"Surge Architecture",description:"Learn about the Architecture of Surge rollup",to:"docs/about/architecture"},{title:"Troubleshooting",description:"Get Solutions to common Surge issues and get help",to:"docs/troubleshooting/"}],R=()=>(0,m.jsx)(j,{children:(0,m.jsx)(w,{children:(0,m.jsxs)(y,{children:[(0,m.jsx)(L,{children:"Quick Links"}),(0,m.jsx)("p",{children:"Get started with Surge rollup development"}),C.map((e=>(0,m.jsxs)(k,{to:e.to,children:[(0,m.jsxs)("div",{children:[(0,m.jsx)(S,{children:e.title}),(0,m.jsx)(z,{children:e.description})]}),(0,m.jsx)(l.A,{size:20})]},e.title)))]})})}),G=()=>{const{siteConfig:e}=(0,o.A)();return(0,m.jsxs)(t.A,{title:e.title,description:e.tagline,children:[(0,m.jsx)(p,{children:(0,m.jsxs)(g,{children:[(0,m.jsx)(d.A,{sources:{light:"/img/Surge Vertical Dark.svg",dark:"/img/Surge Vertical Light.svg"},alt:"Surge Logo",sizes:"s"}),(0,m.jsx)(u,{children:e.title}),(0,m.jsx)("p",{children:"Maximally Aligned, High-Performance Ethereum Rollup"}),(0,m.jsx)(x,{children:(0,m.jsx)(a.A,{})})]})}),(0,m.jsxs)("main",{className:"container",children:[(0,m.jsx)(h,{children:D.map(((e,r)=>(0,m.jsxs)(f,{children:[(0,m.jsx)(A,{children:e.title}),(0,m.jsx)(b,{children:e.text}),(0,m.jsx)(v,{to:e.to,children:"Learn more"})]},r)))}),(0,m.jsx)(R,{})]})]})}}}]);
+`,D=[{title:"What is Surge",icon:s.A,to:"/docs/intro",text:"Learn about the Surge Rollup"},{title:"Run Surge",icon:s.A,to:"/docs/guides/running-surge/",text:"Set up and run surge locally"},{title:"Deploy a DApp",icon:s.A,to:"/docs/guides/deploy-on-surge",text:"Learn how to deploy your DApp to test Surge."}],C=[{title:"Surge Architecture",description:"Learn about the Architecture of Surge rollup",to:"docs/about/architecture"},{title:"Troubleshooting",description:"Get Solutions to common Surge issues and get help",to:"docs/troubleshooting/"}],R=()=>(0,m.jsx)(j,{children:(0,m.jsx)(w,{children:(0,m.jsxs)(y,{children:[(0,m.jsx)(L,{children:"Quick Links"}),(0,m.jsx)("p",{children:"Get started with Surge rollup development"}),C.map((e=>(0,m.jsxs)(k,{to:e.to,children:[(0,m.jsxs)("div",{children:[(0,m.jsx)(S,{children:e.title}),(0,m.jsx)(z,{children:e.description})]}),(0,m.jsx)(l.A,{size:20})]},e.title)))]})})}),G=()=>{const{siteConfig:e}=(0,o.A)();return(0,m.jsxs)(t.A,{title:e.title,description:e.tagline,children:[(0,m.jsx)(g,{children:(0,m.jsxs)(u,{children:[(0,m.jsx)(d.A,{sources:{light:"/img/Surge Vertical Dark.svg",dark:"/img/Surge Vertical Light.svg"},alt:"Surge Logo",sizes:"s"}),(0,m.jsx)(p,{children:e.title}),(0,m.jsx)("p",{children:"Maximally Aligned, High-Performance Ethereum Rollup"}),(0,m.jsx)(x,{children:(0,m.jsx)(a.A,{})})]})}),(0,m.jsxs)("main",{className:"container",children:[(0,m.jsx)(h,{children:D.map(((e,r)=>(0,m.jsxs)(f,{children:[(0,m.jsx)(A,{children:e.title}),(0,m.jsx)(b,{children:e.text}),(0,m.jsx)(v,{to:e.to,children:"Learn more"})]},r)))}),(0,m.jsx)(R,{})]})]})}}}]);
