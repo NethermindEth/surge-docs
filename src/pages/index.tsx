@@ -154,7 +154,7 @@ const actions = [
   {
     title: 'Deploy a DApp',
     icon: Info,
-    to: '/docs/guides/deploy-dapps/deploy-on-surge',
+    to: '/docs/guides/deploy-on-surge',
     text: 'Learn how to deploy your DApp to test Surge.',
   },
 ];
