@@ -1,27 +1,22 @@
 ---
-sidebar_position: 2
+title: Deploy L1
+sidebar_position: 1
 ---
 
 # Deploy L1
 
-In this guide, we'll walk through the process of deploying the L1 network using Kurtosis. This will also deploy the Taiko protocol on L1.
+This guide explains how to deploy an L1 development network using Kurtosis. This setup includes deploying the Taiko protocol on L1, which is required for launching the Surge L2 development network. By the end, you'll have a fully functional L1 environment running within a Kurtosis enclave.
 
 ## Prerequisites
 
-- Git and Docker installed on your system
-- Terminal access
-- Basic command line knowledge
-
-## Installation Steps
-
 ### 1. Install Kurtosis
 
-First, you'll need to install Kurtosis on your system. Follow the installation guide at:
+First, install Kurtosis by following the official guide:
 
 <div className="flex justify-center my-8">
   <a
     className="button button--primary button--lg"
-    href="https://docs.kurtosis.com/quickstart"
+    href="https://docs.kurtosis.com/install"
     target="_blank"
     rel="noopener noreferrer"
   >
@@ -29,40 +24,101 @@ First, you'll need to install Kurtosis on your system. Follow the installation g
   </a>
 </div>
 
-### 2. Clone the Repository
+After installation, verify Kurtosis is correctly installed by checking the engine status:
 
-Clone the Surge devnet package repository and navigate to the directory:
+```bash
+kurtosis engine status
+```
+
+You should see output similar to:
+
+```
+A Kurtosis engine is running with the following info:
+Version:   1.6.0
+```
+
+### 2. Clone Repository
+
+Next, clone the `surge-devnet-package` repository and navigate into the directory:
 
 ```bash
 git clone https://github.com/NethermindEth/surge-devnet-package.git
-
 cd surge-devnet-package
 ```
 
-### 3. Deploy Using Kurtosis
+## Deploy the L1 Network
 
-Run Kurtosis with the following command to deploy the L1 network:
+Once you've installed Kurtosis and cloned the repository, deploy the L1 network with the following command:
 
 ```bash
 kurtosis run --enclave surge-devnet . --args-file network_params.yaml --production
 ```
 
 :::tip
-This command will also automatically deploy the Taiko protocol on L1 for you. Watch closely for the deployment outputs.
+This command not only deploys the L1 network but also automatically deploys the Taiko protocol on L1. Monitor your terminal output for details on the deployment progress.
 :::
 
-## Verification
+## Verify Your Deployment
 
-After running the deployment command, Kurtosis will start setting up your L1 environment. You should see output in your terminal indicating the progress of the deployment.
+After deployment, verify that your environment is correctly set up by inspecting the Kurtosis enclave:
 
-:::info What's Next?
-Once your L1 deployment is complete, you can proceed with setting up your prover or configuring additional network parameters.
-:::
+```bash
+kurtosis enclave inspect surge-devnet
+```
+
+You should see a list of active services confirming that both the L1 network and the Taiko protocol have been successfully deployed.
+
+### Verify the Execution Layer
+
+Check if the Execution Layer is running correctly by sending a simple [`web3_clientVersion`](https://www.quicknode.com/docs/ethereum/web3_clientVersion) JSON-RPC request:
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+     --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' \
+     http://127.0.0.1:32002
+```
+
+A successful response should look like:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "Nethermind/v1.31.0-unstable+fd87ddb6/linux-x64/dotnet9.0.2",
+  "id": 1
+}
+```
+
+This indicates the Execution Layer is correctly initialized and running.
+
+### Verify the Consensus Layer
+
+Check the Consensus Layer's syncing status by running:
+
+```bash
+curl http://127.0.0.1:33001/eth/v1/node/syncing
+```
+
+A successful response should resemble:
+
+```json
+{
+  "data": {
+    "is_syncing": false,
+    "is_optimistic": false,
+    "el_offline": false,
+    "head_slot": "28046",
+    "sync_distance": "0"
+  }
+}
+```
+
+This confirms the Consensus Layer is successfully running and synchronized.
 
 ## Troubleshooting
 
-If you encounter any issues during deployment:
+If you encounter any issues:
 
-1. Ensure all prerequisites are properly installed
-2. Check that the `network_params.yaml` file exists and is properly configured
-3. Make sure Kurtosis is running correctly on your system
+1. Confirm that the `network_params.yaml` file is present in the `surge-devnet-package` directory.
+2. Verify that Kurtosis is properly installed and running with the correct version (`kurtosis engine status`).
+
+If problems persist, refer to the [Troubleshooting section](docs/troubleshooting/index.mdx) for additional support.

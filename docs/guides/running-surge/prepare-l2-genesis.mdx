@@ -1,30 +1,37 @@
 ---
-sidebar_position: 1
+title: Prepare L2 Genesis
+sidebar_position: 3
 ---
 
 # Prepare L2 Genesis
 
-In this guide, we'll walk through the process of preparing the L2 genesis file, chainspec file and genesis hash later required by deploying L1 Network and L2.
+:::note Skip if Using `simple-surge-node`
+If you're using [`simple-surge-node`](https://github.com/NethermindEth/simple-surge-node) to [deploy L2](docs/guides/running-surge/deploy-l2.mdx), you can **skip this section** since `simple-surge-node` repository already includes a ready-to-use [`chainspec.json` file](https://github.com/NethermindEth/simple-surge-node/blob/main/static/chainspec.json).
+:::
+
+This guide walks you through preparing your own L2 genesis file, chainspec file, and genesis hash which are required to deploy an L2 network.
 
 ## Prerequisites
 
-- Foundry, pnpm and jq installed on your system
-- Terminal access
-- Basic command line knowledge
+Before proceeding, ensure the following tools are installed:
 
-## Deployment Steps
+- [Foundry](https://github.com/foundry-rs/foundry#installation)
+- [pnpm](https://pnpm.io/installation)
+- [jq](https://jqlang.org/download/)
+- [Docker](https://docs.docker.com/get-docker/)
 
-### 1. Clone Repository
+## Steps
 
-First, clone the Surge Taiko Mono repository and navigate to the directory:
+### 1. Clone the Repository
+
+Clone the `surge-taiko-mono` repository and navigate into it:
 
 ```bash
 git clone https://github.com/NethermindEth/surge-taiko-mono.git
-
 cd surge-taiko-mono
 ```
 
-### 2. Switch to the Correct Branch
+### 2. Checkout Correct Branch
 
 Checkout the `surge/devnet` branch:
 
@@ -34,17 +41,17 @@ git checkout surge/devnet
 
 ### 3. Install Dependencies
 
-Navigate to the protocol package and install all required dependencies:
+Navigate to the protocol package and install dependencies:
 
 ```bash
 cd packages/protocol
-
-foundryup && pnpm install
+foundryup
+pnpm install
 ```
 
-### 4. Set Environment Variables
+### 4. Configure Environment Variables
 
-Set the following environment variables as needed:
+Set required environment variables:
 
 ```bash
 export CONTRACT_OWNER=0x8943545177806ED17B9F23F0a21ee5948eCaa776
@@ -52,9 +59,9 @@ export L1_CHAINID=3151908
 export L2_CHAINID=763374
 ```
 
-### 5. Generate L2 Genesis
+### 5. Generate L2 Genesis File
 
-Then compile the L2 contracts and generate the genesis block:
+Compile L2 contracts and generate the genesis block:
 
 ```bash
 pnpm compile:l2
@@ -62,12 +69,12 @@ pnpm genesis:gen
 ```
 
 :::tip
-You will find the genesis file in `./test/genesis/data/`.
+The generated files can be found at `./test/genesis/data/`.
 :::
 
-### 6. Download Genesis to Chainspec Converter
+### 6. Download Genesis-to-Chainspec Converter
 
-In order to convert the genesis file to chainspec file, you can download the following tool:
+Download the script used to convert the genesis file to a chainspec file:
 
 ```bash
 curl -O https://raw.githubusercontent.com/NethermindEth/core-scripts/refs/heads/main/gen2spec/gen2spec.jq
@@ -75,7 +82,7 @@ curl -O https://raw.githubusercontent.com/NethermindEth/core-scripts/refs/heads/
 
 ### 7. Convert Genesis to Chainspec
 
-Then run the following command to convert the genesis file to chainspec file:
+Convert the genesis file into a chainspec file:
 
 ```bash
 cat ./test/genesis/data/genesis.json | jq ". * {
@@ -90,12 +97,12 @@ cat ./test/genesis/data/genesis.json | jq ". * {
 ```
 
 :::tip
-You will find the chainspec file in `./test/genesis/data/`.
+The chainspec file will be created at `./test/genesis/data/chainspec.json`.
 :::
 
 ## Retrieve the Genesis Hash
 
-To retrieve the genesis hash, you can use Nethermind Client:
+Use the Nethermind client Docker container to retrieve the genesis hash:
 
 ```bash
 docker run -d \
@@ -105,9 +112,18 @@ docker run -d \
   --config=none \
   --Init.ChainSpecPath=/chainspec.json
 
+# Wait a few seconds for the container to initialize
+
 docker logs nethermind-genesis-hash 2>/dev/null | grep "Genesis hash" | head -n 1 | sed 's/.*Genesis hash : \(.*\)/\1/'
 ```
 
 :::tip
-You will get the genesis hash in the logs.
+The genesis hash will be printed in the console.
 :::
+
+### Clean Up (Optional)
+
+Stop and remove the Docker container after obtaining the genesis hash:
+
+```bash
+docker rm -f nethermind-genesis-hash

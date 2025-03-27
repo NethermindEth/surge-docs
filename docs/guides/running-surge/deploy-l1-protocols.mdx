@@ -1,5 +1,6 @@
 ---
-sidebar_position: 4
+title: Deploy Protocols on L1
+sidebar_position: 2
 ---
 
 import Tabs from '@theme/Tabs';
@@ -8,16 +9,16 @@ import TabItem from '@theme/TabItem';
 # Deploy Protocols on L1
 
 :::note Skip if Using Kurtosis
-If you're using the Kurtosis Package to deploy L1, you can skip this section.
+If you're using the Kurtosis Package to [deploy L1](docs/guides/running-surge/deploy-l1.mdx), you can skip this section.
 :::
 
 ## 1. Deploy Taiko on L1
 
 ### Prerequisites
 
-- L2 Chain ID (e.g. 763374)
-- L2 Genesis Hash (e.g. `0xbeced3738f1246571cccabc82a1e6cbd9ed9d5f7ed2b6c7ded28f9722317bd9e`)
-- L1 Account with funds
+- L2 Chain ID (e.g., `763374`)
+- L2 Genesis Hash (e.g., `0xbeced3738f1246571cccabc82a1e6cbd9ed9d5f7ed2b6c7ded28f9722317bd9e`)
+- L1 Account with sufficient funds
 - L1 RPC URL
 
 ### Set Environment Variables
@@ -197,7 +198,7 @@ docker run \
 - ATTESTATION_ADDRESS: `0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B`
 - PEM_CERTCHAIN_ADDRESS: `0x303CB317624c74bB20Acbb9E13c8D745C6379826`
 - Quote value (see documentation)
-- L1 Account with funds
+- L1 Account with sufficient funds
 - L1 RPC URL
 
 :::info Full Quote Value

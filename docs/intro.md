@@ -29,14 +29,6 @@ Surge is a [based rollup](https://ethresear.ch/t/based-rollups-superpowers-from-
   - Surge follows a *zero-users* approach, focusing on agents, builders, and developers who want to explore the boundaries of Ethereum — rather than aiming for immediate mass adoption.
 - Competing directly with other rollups
 
-## A Rollup Template for the Future
-
-By showcasing how to remove centralized sequencer risks and eliminate L2 governance, Surge sets an example for decentralized rollup design. Its focus on high performance, open-source collaboration, and minimal overhead paves the way for a more sustainable Ethereum ecosystem:
-
-- **For Developers:** A reliable testing ground for censorship-resistant dApps.
-- **For Builders:** An optimized environment for fast L2 block building.
-- **For Users:** A rollup that stays true to Ethereum’s ethos of trustlessness and decentralization.
-
 ## Getting Started
 
 - **Learn More:** Visit the *About* section for details on Surge’s architecture and design choices.
