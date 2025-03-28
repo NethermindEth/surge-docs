@@ -5,7 +5,7 @@ title: Introduction to Surge
 
 # Introduction to Surge
 
-Surge is a high-performance, [based rollup](https://ethresear.ch/t/based-rollups-superpowers-from-l1-sequencing/15016) template built on a modified [Taiko stack](https://taiko.xyz/) that embodies Ethereum's principles of decentralization, security, and censorship resistance. Developed by [Nethermind](https://github.com/NethermindEth) as a research and experimentation platform, Surge demonstrates what's possible when rollups maximize both performance and trustlessness without compromising on security.
+Surge is a high-performance, [based rollup](https://ethresear.ch/t/based-rollups-superpowers-from-l1-sequencing/15016) template built on a modified [Taiko stack](https://taiko.xyz/) that embodies Ethereum's principles of decentralization, security, and censorship resistance. Developed by [Nethermind](https://nethermind.io) as a research and experimentation platform, Surge demonstrates what's possible when rollups maximize both performance and trustlessness without compromising on security.
 
 Surge stands out by adopting a [Stage 2 security framework](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe#:~:text=Stage%202%20%E2%80%94%20No,from%20governance%20attacks.) from the very beginning, leveraging Ethereum validators rather than a centralized sequencer for transaction ordering, and aiming for gigagas throughput through the [Nethermind Execution Client](https://github.com/NethermindEth/nethermind) (NMC). Surge uses ETH for gas and bonds, avoiding the need for an L2 governance token. This approach ensures robust decentralization and censorship resistance while maintaining alignment with Ethereum's core principles.
 
