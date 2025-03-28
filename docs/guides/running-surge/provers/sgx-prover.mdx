@@ -7,7 +7,7 @@ sidebar_position: 1
 ### Prerequisites
 
 - Machine with SGX support
-- L1 Accounts with funds (One for the Prover, One for Prover Registry)
+- L1 Accounts with funds (one for the prover, one for prover registry)
 - L1 RPC URL
 - L1 Account Private Key
 
@@ -57,7 +57,7 @@ If you're using the Kurtosis Package to deploy L1, you can skip this section.
 
 Use `config_dcap_sgx_verifier.sh` or the script below to register the collaterals and the instance. For more information, see the following:
 <details>
-  ### Set Environment Variables
+  #### Set Environment Variables
 
   ```bash
   export FOUNDRY_PROFILE=layer1
@@ -72,7 +72,7 @@ Use `config_dcap_sgx_verifier.sh` or the script below to register the collateral
   export FMSPC=00906ED50000
   ```
 
-  ### SGX TCB Setup Script
+  #### SGX TCB Setup Script
 
   ```bash
   docker run \
