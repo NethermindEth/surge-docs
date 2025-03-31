@@ -25,7 +25,7 @@ Surge is *not designed to compete with existing rollups* for users or market sha
 2. **Experimentation Platform:** Exploring the boundaries of rollup performance, transaction throughput, and implementation flexibility while maintaining maximum security and decentralization without any compromises.
 3. **Reference Implementation:** Providing the community with an open-source, fully-featured rollup that prioritizes Ethereum's core values, censorship resistance, and cross-rollup composability.
 
-This approach reflects[Nethermind](https://www.nethermind.io/)'s commitment to advancing the [rollup-centric roadmap](https://vitalik.eth.limo/general/2024/10/17/futures2.html) through practical research rather than market competition, focusing on seamless L1 and cross-rollup composability to create a more interconnected Ethereum ecosystem.
+This approach reflects [Nethermind](https://www.nethermind.io/)'s commitment to advancing the [rollup-centric roadmap](https://vitalik.eth.limo/general/2024/10/17/futures2.html) through practical research rather than market competition, focusing on seamless L1 and cross-rollup composability to create a more interconnected Ethereum ecosystem.
 
 ## The "Zero-Users" Philosophy
 Surge adopts a *deliberate zero-users* approach, fundamentally different from traditional rollups seeking mass adoption. This philosophical stance allows Surge to prioritize innovation. The zero-users approach focuses on three key audiences:
