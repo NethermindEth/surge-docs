@@ -43,6 +43,10 @@ cp .env.sample .env
 The `.env.sample` file includes default values for the devnet configuration, based on previously generated data. You can customize these values, such as L1 and L2 settings, genesis hashes, and addresses, as needed.
 :::
 
+:::note
+`host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
+:::
+
 ### 4. Start Components
 
 Deploying L2 involves sequentially starting five components. Ensure you follow the correct order for proper communication between them.
@@ -50,7 +54,7 @@ Deploying L2 involves sequentially starting five components. Ensure you follow t
 :::info Component Order
 Start components in this order:
 
-1. **Driver**: Serves as the L2 consensus client.
+1. **Driver**: Manages network execution via Nethermind Execution Client.
 2. **Proposer**: Handles transaction bundling and block proposals.
 3. **Prover Relayer**: Relays proofs received from provers.
 4. **Metrics**: Monitors network performance using Prometheus and Grafana.
@@ -59,10 +63,14 @@ Start components in this order:
 Following this sequence ensures components initialize correctly.
 :::
 
+:::note
+If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
+:::
+
 <Tabs>
   <TabItem value="driver" label="Driver" default>
 
-    Starts the L2 consensus client:
+    Starts the Nethermind Execution Client for L2 network operation:
 
     ```bash
     docker compose --profile nethermind_execution_l2 up -d
@@ -118,16 +126,16 @@ Following this sequence ensures components initialize correctly.
 
 ## Verification
 
-After deploying all components, ensure everything runs correctly by:
+After deploying all components, ensure everything is running correctly by:
 
-- Checking Docker container statuses.
-- Monitoring logs for startup errors.
+- Checking the status of Docker containers using `docker compose ps`.
+- Monitoring logs for startup errors with `docker compose --profile <profile_name> logs -f --tail 100`.
 - Verifying network connectivity between components.
 - Accessing BlockScout for L1 and L2 chain exploration and verification:
-  - **L1 BlockScout:** [http://localhost:35003](http://localhost:35003)
-  - **L2 BlockScout:** [http://localhost:4000](http://localhost:4000)
+  - *L1 BlockScout:* [http://localhost:35003](http://localhost:35003)
+  - *L2 BlockScout:* [http://localhost:4000](http://localhost:4000)
 
-Full verification of the Surge devnet occurs after deploying additional services in subsequent steps.
+Complete verification of the Surge devnet occurs after deploying additional services in subsequent steps.
 
 :::note
 Depending on your deployment setup, you might need to replace `localhost` with your server's IP address, hostname, or appropriate domain.
