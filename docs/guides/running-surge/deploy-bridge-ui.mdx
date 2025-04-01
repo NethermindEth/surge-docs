@@ -1,4 +1,5 @@
 ---
+title: Deploy Bridge UI
 sidebar_position: 8
 ---
 
@@ -9,17 +10,16 @@ import TabItem from '@theme/TabItem';
 
 This guide walks you through deploying the Surge Bridge UI, including all necessary configurations and services.
 
-## 1. Clone Repository
+## 1. Clone the Repository
 
-First, clone the Surge Taiko Mono repository and navigate to the directory:
+First, clone the [Surge Taiko Mono repository](https://github.com/NethermindEth/surge-taiko-mono) and navigate to the project directory:
 
 ```bash
 git clone https://github.com/NethermindEth/surge-taiko-mono.git
-
 cd surge-taiko-mono
 ```
 
-### 2. Switch to the Correct Branch
+## 2. Switch to the Correct Branch
 
 Checkout the `surge/devnet` branch:
 
@@ -27,14 +27,12 @@ Checkout the `surge/devnet` branch:
 git checkout surge/devnet
 ```
 
-## 3. SSL Certificate Setup
+## 3. Set Up SSL Certificates
 
-Navigate to the bridge-ui package and generate SSL certificates for nginx:
+Navigate to the Bridge UI nginx directory and generate the SSL certificates:
 
 ```bash
-cd packages/bridge-ui
-
-cd ./nginx
+cd packages/bridge-ui/nginx
 chmod +x ./generate-certs.sh
 ./generate-certs.sh
 ```
@@ -42,7 +40,7 @@ chmod +x ./generate-certs.sh
 ## 4. Configure Nginx Reverse Proxy
 
 ### Prerequisites
-
+Ensure you have the following endpoints ready:
 - L1 RPC URL
 - L1 Blockscout URL
 - L1 to L2 Relayer URL
@@ -50,185 +48,158 @@ chmod +x ./generate-certs.sh
 - L2 Blockscout URL
 - L2 to L1 Relayer URL
 
-Update the nginx configuration file `./nginx/nginx.conf` with your specific URLs and endpoints.
+### Update Configuration
 
-Example configuration part:
+Edit the `./nginx/nginx.conf` file with your actual URLs. For example:
 
 ```nginx
 # L1 RPC endpoint
 location /l1-rpc/ {
-    proxy_pass http://placeholder:32002/;
+    proxy_pass http://your-l1-rpc-endpoint:32002/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 }
-
 ```
 
-## 5. Configure Components
-
-### Configuration Files Setup
-
-You'll need to configure several JSON files before deployment. Each has specific requirements:
-
-:::note
-The ULRs specified in the configuration files must use HTTPS.
+:::warning
+Ensure all URLs used in configuration files are accessible via **HTTPS**.
 :::
 
+## 5. Configure Application Components
+
 <Tabs>
-    <TabItem value="bridges" label="Bridges" default>
+  <TabItem value="bridges" label="Bridges" default>
 
-        #### Prerequisites
-        - L1 Chain ID
-        - L1 Contract Addresses:
-        - L1_BRIDGE
-        - L1_ERC20_VAULT
-        - L1_ERC721_VAULT
-        - L1_ERC1155_VAULT
-        - L1_SIGNAL_SERVICE
-        - L2 Chain ID
-        - L2 Contract Addresses:
-        - L2_BRIDGE
-        - L2_ERC20_VAULT
-        - L2_ERC721_VAULT
-        - L2_ERC1155_VAULT
-        - L2_SIGNAL_SERVICE
+    ### Bridges Configuration
 
-        Path: `./config/configuredBridges.json`
+    **Required:**
+    - L1 Chain ID
+    - L1 Contract Addresses:
+    - `L1_BRIDGE`
+    - `L1_ERC20_VAULT`
+    - `L1_ERC721_VAULT`
+    - `L1_ERC1155_VAULT`
+    - `L1_SIGNAL_SERVICE`
+    - L2 Chain ID
+    - L2 Contract Addresses:
+    - `L2_BRIDGE`
+    - `L2_ERC20_VAULT`
+    - `L2_ERC721_VAULT`
+    - `L2_ERC1155_VAULT`
+    - `L2_SIGNAL_SERVICE`
 
-        :::tip
-        The file contains default addresses used in the tutorial. Replace if necessary.
-        :::
+    **Path:** `./config/configuredBridges.json`
 
-    </TabItem>
+    :::tip
+    This file contains default addresses. Replace them if needed.
+    :::
 
-    <TabItem value="chains" label="Chains">
+  </TabItem>
 
-        #### Prerequisites
-        - L1 Chain ID
-        - L1 RPC URL
-        - L2 Chain ID
-        - L2 RPC URL
+  <TabItem value="chains" label="Chains">
 
-        Path: `./config/configuredChains.json`
+    ### Chains Configuration
 
-        Modify `rpcUrls` fields to point to the alias specified in the nginx configuration.
+    **Required:**
+    - L1 Chain ID & RPC URL
+    - L2 Chain ID & RPC URL
 
-        Example configuration parts:
+    **Path:** `./config/configuredChains.json`
 
-        ```json
-        "3151908": {
-            "name": "Kurtosis",
-            "type": "L1",
-            "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-            "rpcUrls": {
-                "default": {
-                    "http": [
-                    "https://placeholder/l1-rpc/"
-                    ]
-                }
-            },
+    Modify the `rpcUrls` fields to match the nginx proxy paths. Example:
 
-            ...
-        }
-        ```
+    ```json
+    "3151908": {
+    "name": "Kurtosis",
+    "type": "L1",
+    "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+    "rpcUrls": {
+    "default": {
+    "http": ["https://your-domain/l1-rpc/"]
+  }
+  }
+  }
+    ```
 
-        ```json
-        "763374": {
-            "name": "Taiko",
-            "type": "L2",
-            "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-            "rpcUrls": {
-                "default": {
-                    "http": [
-                        "https://placeholder/l2-rpc/"
-                    ]
-                }
-            },
+    ```json
+    "763374": {
+    "name": "Taiko",
+    "type": "L2",
+    "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+    "rpcUrls": {
+    "default": {
+    "http": ["https://your-domain/l2-rpc/"]
+  }
+  }
+  }
+    ```
 
-            ...
-        }
-        ```
+  </TabItem>
 
-    </TabItem>
+  <TabItem value="relayer" label="Relayer">
 
-    <TabItem value="relayer" label="Relayer">
+    ### Relayer Configuration
 
-        #### Prerequisites
-        - L1 Chain ID
-        - L1 to L2 Relayer URL
-        - L2 Chain ID
-        - L2 to L1 Relayer URL
+    **Required:**
+    - L1 Chain ID & L1→L2 Relayer URL
+    - L2 Chain ID & L2→L1 Relayer URL
 
-        Path: `./config/configuredRelayer.json`
+    **Path:** `./config/configuredRelayer.json`
 
-        Example configuration:
+    Example:
 
-        ```json
-        {
-            "configuredRelayer": [
-                {
-                "chainIds": [3151908, 763374],
-                "url": "https://placeholder/l1-relayer/"
-                },
-                {
-                "chainIds": [763374, 3151908],
-                "url": "https://placeholder/l2-relayer/"
-                }
-            ]
-        }
+    ```json
+    {
+      "configuredRelayer": [
+    {
+      "chainIds": [3151908, 763374],
+      "url": "https://your-domain/l1-relayer/"
+    },
+    {
+      "chainIds": [763374, 3151908],
+      "url": "https://your-domain/l2-relayer/"
+    }
+      ]
+    }
+    ```
 
-        ```
+  </TabItem>
 
-    </TabItem>
+  <TabItem value="other" label="Additional Configs">
 
-    <TabItem value="other" label="Additional Configs">
+    ### Additional Configuration Files
 
-        These files also need to be configured:
-        - `./config/configuredCustomTokens.json`
-        - `./config/configuredEventIndexer.json`
+    - `./config/configuredCustomTokens.json`
+    - `./config/configuredEventIndexer.json`
 
-        :::tip
-        These files may require minimal or no modification depending on your deployment needs.
-        :::
+    :::tip
+    These files may require minimal or no modification, depending on your needs.
+    :::
 
-    </TabItem>
-
+  </TabItem>
 </Tabs>
 
 ## 6. Deploy Services
 
-Deploy the Bridge UI and nginx services:
+Use Docker Compose to deploy the Bridge UI and nginx services:
 
 ```bash
-# Start Bridge UI
+# Deploy Bridge UI
 docker compose --profile bridge-ui up -d --build
 
-# Start Nginx
+# Deploy Nginx
 docker compose --profile nginx up -d
 ```
 
-## Verification Steps
+## Verification
 
-After deployment, verify:
-
-1. Bridge UI Accessibility
-
-- Check if the UI is accessible via the configured domain
-- Verify SSL certificate is working properly
-
-2. Component Connectivity
-
-- Verify connection to L1 and L2 networks
-- Check relayer connectivity
-- Confirm Blockscout integration
-
-3. Service Health
+Use the following commands to verify your services:
 
 ```bash
-# Check running containers
+# Check container status
 docker compose ps
 
 # View Bridge UI logs
@@ -238,28 +209,7 @@ docker compose logs bridge-ui -f
 docker compose logs nginx -f
 ```
 
-## Troubleshooting
-
-If you encounter issues:
-
-1. **UI Access Issues**
-
-- Check nginx configuration
-- Verify SSL certificate setup
-- Confirm port mappings
-
-2. **Network Connectivity**
-
-- Verify RPC endpoints
-- Check relayer connections
-- Confirm blockchain network access
-
-3. **Configuration Problems**
-
-- Validate JSON syntax in config files
-- Verify contract addresses
-- Check chain IDs match your network
-
 :::warning
-Make sure all URLs in the nginx configuration are accessible and properly secured before deployment.
+Double-check that all URLs in your nginx config are secured and publicly accessible before deployment.
 :::
+

@@ -1,12 +1,25 @@
 ---
-sidebar_position: 3
+title: Set up a Prover
+sidebar_position: 4
 ---
 
 # Set up a Prover
 
-Complete guide for setting up a Surge prover:
+:::note
+You **can** skip launching any provers in a local devnet if you only want to test basic transaction flow and block proposals. However, without a prover:
+- No L2 blocks will ever be proven or finalized on-chain.
+- Any actions requiring finalized state (e.g., bridging back to L1, claiming certain rewards) will remain pending or be unavailable.
 
-- [SGX](sgx-prover.mdx)
-- [RISC0](risc0-prover.mdx)
-- [SP1](sp1-prover.mdx)
+Launching a prover locally can be challenging:
+- **Hardware Requirements**: Certain provers (e.g., SGX) need specialized hardware or enclaves.
+- **Complex Setup**: Installing and configuring toolchains, drivers, or required libraries can be time-consuming.
+:::
 
+In a based rollup like Surge, provers generate proofs that validate L2 blocks proposed by the proposer. These proofs are submitted on-chain via a prover-relayer which marks the blocks as verified (finalized).
+
+Without a prover submitting proofs, blocks remain unverified on-chain, limiting certain functionality (like finalizing cross-chain actions).
+
+This guide explains how to launch and configure a Surge prover. You can choose any of the following provers that Surge supports, each of which has different requirements:
+- [SGX Prover](sgx-prover.mdx)
+- [RISC0 Prover](risc0-prover.mdx)
+- [SP1 Prover](sp1-prover.mdx)
