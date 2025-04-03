@@ -22,10 +22,13 @@ By tying L2 transaction ordering directly to Ethereum’s decentralized block bu
 - **Better Alignment With Ethereum**: Validators, builders, and searchers collectively maintain both L1 and L2 transaction inclusion, strengthening decentralization.
 
 ### Why Surge Uses a Based Rollup Model
+
 Surge fully embraces this model for its rollup architecture. By integrating with Ethereum’s existing infrastructure:
+
 - L2 transactions enter the **same permissionless block-building pipeline** as L1.
 - No single entity can reorder, censor, or halt transactions.
 - Surge becomes **as decentralized as Ethereum itself**, preserving user trust and security.
+- Surge achieves **simplicity and lower costs** by eliminating extra infrastructure, governance, and unnecessary gas overhead.
 
 ## Comparing Based and Non-Based Rollups
 

@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Documentation',
   tagline: 'Surge was created for high-performance Ethereum node management',
-  url: 'https://docs.surge.nethermind.io/',
+  url: 'https://docs.surge.wtf/',
   baseUrl: '/',
   favicon: 'img/favicon.ico',
 
@@ -28,7 +28,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
-          editUrl: 'https://github.com/NethermindEth/surge/tree/main/docs/',
+          editUrl: 'https://github.com/NethermindEth/surge-docs/tree/main/',
           remarkPlugins: [require('remark-gfm')],
           rehypePlugins: [],
           showLastUpdateTime: true,

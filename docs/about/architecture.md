@@ -11,7 +11,7 @@ title: Surge Architecture
 
 Surge’s architecture is composed of several key components, each serving a specific function:
 
-- **Nethermind Execution Client (NMC):** A high-performance Ethereum client that delivers Gigagas performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
+- **Nethermind Execution Client (NMC):** A high-performance Ethereum client that delivers GigaGas performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
 
 - **Taiko Client:** Manages the consensus layer of the rollup. [Taiko Documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client).
 
@@ -34,3 +34,9 @@ Surge has customized aspects of the Taiko architecture to enhance performance an
 5. **Disabled Pausing:** The owner cannot pause the protocol or peripheral contracts.
 6. **2/3 Proof Verifier:** There are three proof systems (SGX, SP1, and Risc0). At least two of these must agree on a state transition for it to be accepted.
 7. **No Contestation Window:** As Surge employs a single ZK approach (no optimistic fallback), it does not require a contestation window. This design choice makes Surge a pure ZK-Rollup rather than an Optimistic Rollup.
+
+## Further Exploration
+
+To deepen your understanding and explore Surge’s architecture in a practical environment, check the detailed guide on deploying and running your own local Surge devnet:
+
+[**Deploy and run your own Surge devnet →**](/docs/guides/running-surge)
