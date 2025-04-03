@@ -6,20 +6,41 @@ sidebar_position: 4
 # Set up a Prover
 
 :::note
-You **can** skip launching any provers in a local devnet if you only want to test basic transaction flow and block proposals. However, without a prover:
+You **can** skip launching provers in a local devnet if you only want to test basic transaction flow and block proposals. However, without **all three** provers:
 - No L2 blocks will ever be proven or finalized on-chain.
-- Any actions requiring finalized state (e.g., bridging back to L1, claiming certain rewards) will remain pending or be unavailable.
+- Any actions requiring finalized state (e.g., bridging back to L1, claiming certain rewards) will remain pending or unavailable.
 
-Launching a prover locally can be challenging:
-- **Hardware Requirements**: Certain provers (e.g., SGX) need specialized hardware or enclaves.
+Launching all three provers locally can be challenging due to:
+- **Hardware Requirements**: Certain provers (e.g., SGX) require specialized hardware or secure enclaves.
 - **Complex Setup**: Installing and configuring toolchains, drivers, or required libraries can be time-consuming.
 :::
 
-In a based rollup like Surge, provers generate proofs that validate L2 blocks proposed by the proposer. These proofs are submitted on-chain via a prover-relayer which marks the blocks as verified (finalized).
+In a based rollup like Surge, provers generate cryptographic proofs verifying L2 blocks proposed by proposers. These proofs are then submitted on-chain through a prover-relayer, marking blocks as verified (finalized).
 
-Without a prover submitting proofs, blocks remain unverified on-chain, limiting certain functionality (like finalizing cross-chain actions).
+Without provers submitting proofs, blocks remain unverified, limiting critical functionalities such as cross-chain finalizations.
 
-This guide explains how to launch and configure a Surge prover. You can choose any of the following provers that Surge supports, each of which has different requirements:
+To see how provers fit into the overall system, refer to the [Surge Architecture documentation](/docs/about/architecture).
+
+## Understanding Provers in Surge
+
+### What is a Prover?
+A prover is a component responsible for generating cryptographic proofs that validate the correctness and integrity of Layer 2 transactions and blocks. Surge leverages multiple provers to ensure the security and reliability of rollup chains.
+
+### Why Do You Need Provers?
+Provers are essential because:
+- They guarantee that only valid transactions and blocks are finalized on-chain.
+- They enable trustless, secure interactions between Layer 2 and Layer 1, facilitating safe bridging and asset transfers.
+- They maintain the integrity and finality of the blockchain, preventing invalid or fraudulent state transitions.
+
+### How Do Provers Work?
+Provers execute computationally intensive algorithms to create succinct proofs that validate batches of L2 transactions. Once generated, these proofs are submitted on-chain via a prover-relayer, which then finalizes and confirms the validity of these transactions on the blockchain.
+
+## Required Provers for Surge
+
+Surge requires the following three provers for complete functionality in production scenarios:
+
 - [SGX Prover](sgx-prover.mdx)
 - [RISC0 Prover](risc0-prover.mdx)
 - [SP1 Prover](sp1-prover.mdx)
+
+Each prover has distinct setup and operational requirements. Follow the respective guides carefully to properly configure, deploy, and maintain each prover.

@@ -1,15 +1,15 @@
 ---
 sidebar_position: 2
-title: Stage 2
+title: Fully Decentralized From Day 1
 ---
 
-# Stage 2
+# Fully Decentralized From Day 1
 
 Surge stands out by embracing a Stage 2 governance model from the very beginning, referencing the [L2Beat’s “Stages” framework](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe) that evaluates rollup maturity. By focusing on immutability and self-executing code, Surge mitigates governance risks commonly seen in other rollups where multi-sigs or admin keys can push upgrades before users can fully withdraw their funds.
 
 ## Key Governance-Free Design Decisions
 
-### Multi-Sig for Upgrades Only
+### Multi-Sig for Timelocked Upgrades Only
 - A Nethermind-controlled multi-sig is responsible solely for **queuing** upgrades.
 - If the multi-sig holders become inactive, chain progression remains uninterrupted.
 

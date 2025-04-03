@@ -28,7 +28,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
-          editUrl: 'https://github.com/NethermindEth/surge/tree/main/docs/',
+          editUrl: 'https://github.com/NethermindEth/surge-docs/tree/main/',
           remarkPlugins: [require('remark-gfm')],
           rehypePlugins: [],
           showLastUpdateTime: true,
