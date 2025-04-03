@@ -3,7 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import SearchBar from '@theme/SearchBar';
-import { Info, HelpCircle, BookOpen, ArrowUpRight as LinkIcon } from 'lucide-react';
+import { ArrowUpRight as LinkIcon, Info } from 'lucide-react';
 import ThemedImage from '@theme/ThemedImage';
 import styled from '@emotion/styled';
 
@@ -146,24 +146,24 @@ const actions = [
     text: 'Learn about the Surge Rollup',
   },
   {
-    title: 'Run Surge',
+    title: 'Deploy Surge Devnet',
     icon: Info,
     to: '/docs/guides/running-surge/',
-    text: 'Set up and run surge locally',
+    text: 'Set up a local Surge development network',
   },
   {
-    title: 'Deploy a DApp',
+    title: 'Surge Architecture',
     icon: Info,
-    to: '/docs/guides/deploy-on-surge',
-    text: 'Learn how to deploy your DApp to test Surge.',
+    to: 'docs/about/architecture',
+    text: 'Learn about the Architecture of Surge rollup',
   },
 ];
 
 const itemLinks = [
   {
-    title: 'Surge Architecture',
-    description: 'Learn about the Architecture of Surge rollup',
-    to: 'docs/about/architecture',
+    title: 'Deploy a DApp',
+    description: 'Learn how to deploy your DApp to test Surge.',
+    to: '/docs/guides/deploy-on-surge',
   },
   {
     title: 'Troubleshooting',
@@ -208,7 +208,8 @@ const HomePage = () => {
             sizes={'s'}
           />
           <Title>{siteConfig.title}</Title>
-          <p>Maximally Aligned, High-Performance Ethereum Rollup</p>
+          <p>Surge is a based rollup on Taiko, featuring decentralized ordering by Ethereum validators and Stage 2
+            trustless security</p>
           <SearchWrapper>
             <SearchBar />
           </SearchWrapper>
@@ -218,11 +219,17 @@ const HomePage = () => {
       <main className="container">
         <CardGrid>
           {actions.map((action, index) => (
-            <Card key={index}>
-              <CardTitle>{action.title}</CardTitle>
-              <CardDescription>{action.text}</CardDescription>
-              <StyledLink to={action.to}>Learn more</StyledLink>
-            </Card>
+            <Link
+              key={index}
+              to={action.to}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <Card key={index}>
+                <CardTitle>{action.title}</CardTitle>
+                <CardDescription>{action.text}</CardDescription>
+                <StyledLink to={action.to}>Learn more</StyledLink>
+              </Card>
+            </Link>
           ))}
         </CardGrid>
         <QuickLinks />
