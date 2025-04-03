@@ -4,8 +4,8 @@
   <ShortName>Documentation</ShortName>
   <Description>Search Documentation</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Image width="16" height="16" type="image/x-icon">https://docs.surge.nethermind.io/img/favicon.ico</Image>
-  <Url type="text/html" method="get" template="https://docs.surge.nethermind.io/false?q={searchTerms}"/>
-  <Url type="application/opensearchdescription+xml" rel="self" template="https://docs.surge.nethermind.io/opensearch.xml" />
-  <moz:SearchForm>https://docs.surge.nethermind.io/</moz:SearchForm>
+  <Image width="16" height="16" type="image/x-icon">https://docs.surge.wtf/img/favicon.ico</Image>
+  <Url type="text/html" method="get" template="https://docs.surge.wtf/false?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://docs.surge.wtf/opensearch.xml" />
+  <moz:SearchForm>https://docs.surge.wtf/</moz:SearchForm>
 </OpenSearchDescription>
