@@ -5,7 +5,7 @@ title: Surge Architecture
 
 # Surge Architecture
 
-![Surge Architecture](./images/Surge-Architecture.svg)
+![Surge Architecture](./images/Diagram.png)
 
 ## Purpose of Each Component
 
