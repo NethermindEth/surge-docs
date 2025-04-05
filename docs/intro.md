@@ -92,9 +92,9 @@ solutions.
   open-source codebase.
 - **Guides:** Explore the [Guides section](./guides) to operate a Surge rollup or deploy your own dApp.
 - **Current Testnet:**
-    - Bridge UI: [bridge.holesky.surge.wtf](https://bridge.holesky.surge.wtf/)
-    - Explorer: [explorer.holesky.surge.wtf](https://explorer.holesky.surge.wtf/)
-    - RPC URL: [l2-rpc.surge.staging-nethermind.xyz](https://l2-rpc.surge.staging-nethermind.xyz/)
+    - Bridge UI: [https://bridge.hoodi.surge.wtf](https://bridge.hoodi.surge.wtf/)
+    - Explorer: [https://explorer.hoodi.surge.wtf](https://explorer.hoodi.surge.wtf/)
+    - RPC URL: [https://l2-rpc.hoodi.surge.wtf](https://l2-rpc.hoodi.surge.wtf/)
 
 Researchers, developers, and ecosystem participants are invited to explore Surge as an example of what truly
 decentralized, high-performance rollups can achieve.
