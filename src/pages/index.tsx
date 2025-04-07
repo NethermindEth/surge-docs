@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import mediumZoom from 'medium-zoom';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import SearchBar from '@theme/SearchBar';
@@ -9,7 +10,6 @@ import styled from '@emotion/styled';
 import GitHub from '@site/static/img/github.svg';
 import Discord from '@site/static/img/discord.svg';
 import { MessageCircle } from 'react-feather';
-
 
 const HeaderWrapper = styled.div`
   width: 100%;
@@ -140,7 +140,6 @@ const LinkRow = styled.div`
   }
 `;
 
-
 const IconWrapper = styled.div`
   width: 32px;
   height: 32px;
@@ -160,7 +159,6 @@ const StyledIcon = styled.div`
 const LinkIconWrapper = styled.div`
   opacity: 0.25;
 `;
-
 
 interface StyledImageProps {
   sources?: { light: string; dark: string };
@@ -237,7 +235,6 @@ const CenterCard = styled(Card)`
   }
 `;
 
-
 const actions = [
   {
     title: 'What is Surge',
@@ -272,7 +269,8 @@ const itemLinks = [
   },
   {
     title: 'Nethermind Execution Client',
-    description: 'Learn how Surge leverages Nethermind Execution Client as its primary Ethereum execution client',
+    description:
+      'Learn how Surge leverages Nethermind Execution Client as its primary Ethereum execution client',
     to: '/docs/about/nethermind',
   },
   {
@@ -346,8 +344,10 @@ const HomePage = () => {
             sizes={'s'}
           />
           <Title>{siteConfig.title}</Title>
-          <p>Surge is a based rollup on Taiko, featuring decentralized ordering by Ethereum validators and Stage 2
-            trustless security</p>
+          <p>
+            Surge is a based rollup on Taiko, featuring decentralized ordering by Ethereum
+            validators and Stage 2 trustless security
+          </p>
           <SearchWrapper>
             <SearchBar />
           </SearchWrapper>
@@ -357,11 +357,7 @@ const HomePage = () => {
       <main className="container">
         <CardGrid>
           {actions.map((action, index) => (
-            <Link
-              key={index}
-              to={action.to}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
+            <Link key={index} to={action.to} style={{ textDecoration: 'none', color: 'inherit' }}>
               <Card key={index}>
                 <CardTitle>{action.title}</CardTitle>
                 <CardDescription>{action.text}</CardDescription>
@@ -389,9 +385,7 @@ const HomePage = () => {
           <div>
             <h2>Developer Links</h2>
             {developerLinks.map((action) => (
-              <Link key={action.href} to={action.href}
-                    style={{ color: 'inherit' }}
-              >
+              <Link key={action.href} to={action.href} style={{ color: 'inherit' }}>
                 <Card key={action.href} style={{ marginBottom: '0.5rem' }}>
                   <LinkRow>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -413,7 +407,10 @@ const HomePage = () => {
         </TwoRow>
         <hr />
         <Row>
-          <Link style={{ textDecoration: 'none', color: 'inherit' }} href={'https://discord.com/invite/PaCMRFdvWT'}>
+          <Link
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            href={'https://discord.com/invite/PaCMRFdvWT'}
+          >
             <CenterCard>
               <StyledIcon>
                 <Discord style={{ width: '48px', height: '48px' }} />
@@ -436,7 +433,10 @@ const HomePage = () => {
               </div>
             </CenterCard>
           </Link>
-          <Link style={{ textDecoration: 'none', color: 'inherit' }} href={'https://github.com/NethermindEth/Surge'}>
+          <Link
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            href={'https://github.com/NethermindEth/Surge'}
+          >
             <CenterCard>
               <StyledIcon>
                 <GitHub style={{ width: '48px', height: '48px' }} />
@@ -448,7 +448,6 @@ const HomePage = () => {
             </CenterCard>
           </Link>
         </Row>
-
       </main>
     </Layout>
   );
