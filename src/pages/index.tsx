@@ -274,6 +274,11 @@ const itemLinks = [
     to: '/docs/about/nethermind',
   },
   {
+    title: 'GigaGas',
+    description: 'Understand how GigaGas enables high-performance transaction processing in Surge.',
+    to: '/docs/about/gigagas',
+  },
+  {
     title: 'Deploy a DApp',
     description: 'Learn how to deploy your DApp on Surge',
     to: '/docs/guides/deploy-on-surge',
