@@ -11,7 +11,7 @@ title: Surge Architecture
 
 Surge’s architecture is composed of several key components, each serving a specific function:
 
-- **Nethermind Execution Client (NMC):** A high-performance Ethereum client that delivers GigaGas performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
+- **[Nethermind Execution Client (NMC):](https://github.com/NethermindEth/nethermind)** A high-performance Ethereum client that delivers [GigaGas performance](./gigagas.md). 
 
 - **Taiko Client:** Manages the consensus layer of the rollup. [Taiko Documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client).
 
@@ -19,9 +19,27 @@ Surge’s architecture is composed of several key components, each serving a spe
 
 The Taiko Client consists of several sub-components:
 
+- **Taiko Proposer:** Proposes new blocks to the rollup.
 - **Taiko Prover:** Generates state transition proofs for the rollup.
 - **Taiko Driver:** Follows and monitors the rollup’s state transitions.
-- **Taiko Proposer:** Proposes new blocks to the rollup.
+
+## Proposing Flow
+
+![Proposing Flow](./images/proposing-flow.png)
+
+The proposing flow diagram illustrates how new blocks are proposed in Surge. The process begins with a proposer submitting a block, which includes transactions and state updates. The block is then validated by the execution client to ensure it adheres to the protocol rules. This ensures that only valid blocks are added to the rollup chain.
+
+## Proving Flow
+
+![Proving Flow](./images/proving-flow.png)
+
+The proving flow diagram shows how state transition proofs are generated and verified. Surge employs a multi-prover system where at least two out of three independent proving systems (SGX, SP1, and Risc0) must agree on the validity of a state transition. This ensures trustless and secure scaling through zero-knowledge proofs.
+
+## Chain Flow
+
+![Chain Flow](./images/chain-flow.png)
+
+The chain flow diagram provides an overview of how the rollup chain interacts with the Ethereum mainnet. Transactions are executed on the rollup, and the resulting state roots are periodically submitted to the Ethereum mainnet for finality. This ensures that the rollup inherits Ethereum's security guarantees while maintaining high throughput.
 
 ## How Surge Differs from the Taiko Stack
 

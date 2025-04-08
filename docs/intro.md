@@ -30,7 +30,7 @@ censorship resistance while maintaining alignment with Ethereum's core principle
 - **GigaGas Performance:** Leveraging Nethermind Client's already
   demonstrated GigaGas ability (as showcased in
   [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), Surge achieves
-  extraordinary throughput capabilities that scale far beyond traditional execution environments.
+  extraordinary throughput capabilities that scale far beyond traditional execution environments. For more details, see the [GigaGas documentation](./about/gigagas.md).
 - **Multi-Prover Proof System:** Employs zero-knowledge proofs for trustless scaling with a 2/3 multi-prover security
   model requiring agreement from at least two of three independent proving systems, one of which must be a ZK proof
   system.
