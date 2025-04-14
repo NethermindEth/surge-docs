@@ -350,7 +350,7 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a based rollup on Taiko, featuring decentralized ordering by Ethereum
+            Surge is a based rollup template of the Taiko Alethia stack, featuring decentralized ordering by Ethereum
             validators and Stage 2 trustless security
           </p>
           <SearchWrapper>
