@@ -1,22 +1,26 @@
 ---
-title: Deploy L2
-sidebar_position: 5
+title: Run L2
+sidebar_position: 2
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Deploy L2
+# Run L2
+
+:::tip
+This guide is fairly similar to the [Deploy L2](../running-surge/deploy-l2.mdx) guide. The main difference is that this guide is focused on running the components of the Surge rollup on the Hoodi testnet, while the other one is more general.
+:::
 
 A Layer 2 network builds on top of Layer 1 to increase scalability and reduce transaction costs, while still inheriting L1’s security. For Surge, the L2 network is where user transactions are executed and blocks are proposed and proven.
 
-This guide provides clear instructions for deploying Surge’s L2 components using the [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node), enabling you to run and test the core rollup logic.
+This guide provides clear instructions for running Surge’s L2 components using the [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node), enabling you to run and test the core rollup logic.
 
 To see how L2 fits into the overall system, refer to the [Surge Architecture documentation](/docs/about/architecture).
 
 ## Setup Process
 
-Follow these steps to set up and deploy your L2 network:
+Follow these steps to set up and run your L2 network:
 
 ### 1. Clone Repository
 
@@ -32,12 +36,8 @@ cd simple-surge-node
 Create your environment configuration file (`.env`) by copying the provided sample:
 
 ```bash
-cp .env.devnet .env
+cp .env.hoodi .env
 ```
-
-:::tip Environment Configuration
-The `.env.devnet` file includes default values for the devnet configuration, based on previously generated data. You can customize these values, such as L1 and L2 settings, genesis hashes, and addresses, as needed.
-:::
 
 :::note
 `host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
@@ -53,8 +53,6 @@ Start components in this order:
 1. **Driver**: Manages network execution via Nethermind Execution Client.
 2. **Proposer**: Handles transaction bundling and block proposals.
 3. **Prover Relayer**: Relays proofs received from provers.
-4. **Metrics**: Monitors network performance using Prometheus and Grafana.
-5. **BlockScout**: Provides blockchain exploration and monitoring interface.
 
 Following this sequence ensures components initialize correctly.
 :::
@@ -94,30 +92,6 @@ If you did not deploy a prover in the previous setup steps, you can safely skip 
 
   </TabItem>
 
-  <TabItem value="metrics" label="Metrics">
-
-    Sets up Prometheus and Grafana for real-time monitoring:
-
-    ```bash
-    docker compose --profile metrics up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="blockscout" label="BlockScout">
-
-    Launches BlockScout that provides a web-based interface to:
-
-    - Explore blocks, transactions, and accounts
-    - Verify smart contracts
-    - Monitor network activity
-    - Track token transfers and balances
-
-    ```bash
-    docker compose --profile blockscout up -d
-    ```
-
-  </TabItem>
 </Tabs>
 
 ## Verification
@@ -127,15 +101,6 @@ After deploying all components, ensure everything is running correctly by:
 - Checking the status of Docker containers using `docker compose ps`.
 - Monitoring logs for startup errors with `docker compose --profile <profile_name> logs -f --tail 100`.
 - Verifying network connectivity between components.
-- Accessing BlockScout for L1 and L2 chain exploration and verification:
-  - *L1 BlockScout:* [http://localhost:35003](http://localhost:35003)
-  - *L2 BlockScout:* [http://localhost:4000](http://localhost:4000)
-
-Complete verification of the Surge devnet occurs after deploying additional services in subsequent steps.
-
-:::note
-Depending on your deployment setup, you might need to replace `localhost` with your server's IP address, hostname, or appropriate domain.
-:::
 
 ## Troubleshooting
 
