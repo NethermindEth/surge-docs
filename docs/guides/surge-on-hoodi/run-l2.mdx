@@ -1,6 +1,6 @@
 ---
 title: Run L2
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 import Tabs from '@theme/Tabs';
@@ -39,13 +39,19 @@ Create your environment configuration file (`.env`) by copying the provided samp
 cp .env.hoodi .env
 ```
 
+:::tip Environment Configuration
+The `.env.hoodi` file contains default configuration values for Hoodi. You can customize these settings — such as L1 and L2 parameters, genesis hashes, and contract addresses — as needed.
+
+And make sure to update the L1 URLs to match the ones you're using.
+:::
+
 :::note
 `host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
 :::
 
 ### 4. Start Components
 
-Deploying L2 involves sequentially starting five components. Ensure you follow the correct order for proper communication between them.
+Running L2 involves sequentially starting three components. Ensure you follow the correct order for proper communication between them.
 
 :::info Component Order
 Start components in this order:
@@ -58,7 +64,7 @@ Following this sequence ensures components initialize correctly.
 :::
 
 :::note
-If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
+If you did not set up a prover in the previous setup steps, you can safely skip launching the prover relayer.
 :::
 
 <Tabs>
@@ -96,7 +102,7 @@ If you did not deploy a prover in the previous setup steps, you can safely skip 
 
 ## Verification
 
-After deploying all components, ensure everything is running correctly by:
+After launching all components, ensure everything is running correctly by:
 
 - Checking the status of Docker containers using `docker compose ps`.
 - Monitoring logs for startup errors with `docker compose --profile <profile_name> logs -f --tail 100`.
@@ -104,9 +110,9 @@ After deploying all components, ensure everything is running correctly by:
 
 ## Troubleshooting
 
-If issues arise during deployment:
+If issues arise during launch:
 
 - Confirm environment variables in `.env` are correctly configured.
 - Review Docker logs for detailed error information.
 - Ensure required ports are open and accessible.
-- Check network connectivity between the deployed components.
+- Check network connectivity between the launched components.

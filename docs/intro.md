@@ -27,10 +27,10 @@ censorship resistance while maintaining alignment with Ethereum's core principle
   featuring a 45-day exit window, no emergency powers, and strictly limited governance capabilities.
 - **Tokenless:** Uses Ether (ETH) for gas and bonds, avoiding the need for an L2 governance token and the misaligned
   incentives that often accompany them.
-- **GigaGas Performance:** Leveraging Nethermind Client's already
-  demonstrated [GigaGas](./about/gigagas.md) ability (as showcased in
-  [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), Surge achieves
-  extraordinary throughput capabilities that scale far beyond traditional execution environments. For more details, see the [GigaGas documentation](./about/gigagas.md).
+- **GigaGas Performance:** Leveraging Nethermind Client's already demonstrated [GigaGas](./about/gigagas.md) ability (as
+  showcased in [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), Surge
+  achieves extraordinary throughput capabilities that scale far
+  beyond traditional execution environments. For more details, see the [GigaGas documentation](./about/gigagas.md).
 - **Multi-Prover Proof System:** Employs zero-knowledge proofs for trustless scaling with a 2/3 multi-prover security
   model requiring agreement from at least two of three independent proving systems, one of which must be a ZK proof
   system.
@@ -45,7 +45,8 @@ Surge is *not designed to compete with existing rollups* for users or market sha
    and rollup design.
 2. **Experimentation Platform:** Exploring the boundaries of rollup performance, transaction throughput, and
    implementation flexibility while maintaining maximum security and decentralization.
-3. **Reference Implementation:** Providing the community with an open-source, fully-featured rollup that prioritizes
+3. **Reference Implementation:** Providing the community with an open-source, fully-featured rollup template that
+   prioritizes
    Ethereum's core values, censorship resistance, and cross-rollup composability.
 
 This approach reflects [Nethermind](https://www.nethermind.io/)'s commitment to advancing

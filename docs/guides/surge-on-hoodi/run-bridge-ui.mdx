@@ -1,0 +1,219 @@
+---
+title: Run Bridge UI
+sidebar_position: 5
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Run Bridge UI
+
+The Bridge UI is the user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge’s cross-chain functionality. It relies on the underlying Relayer and smart contracts to facilitate these transfers securely.
+
+This guide walks you through running the Surge Bridge UI, including all necessary configurations and services.
+
+To see how the Bridge UI fits into the overall system, refer to the [Surge Architecture documentation](/docs/about/architecture).
+
+## 1. Clone the Repository
+
+First, clone the [Surge Taiko Mono repository](https://github.com/NethermindEth/surge-taiko-mono) and navigate to the project directory:
+
+```bash
+git clone https://github.com/NethermindEth/surge-taiko-mono.git
+cd surge-taiko-mono
+```
+
+## 2. Switch to the Correct Branch
+
+Checkout the `surge/hoodi` branch:
+
+```bash
+git checkout surge/hoodi
+```
+
+## 3. Set Up SSL Certificates
+
+Navigate to the Bridge UI nginx directory and generate the SSL certificates:
+
+```bash
+cd packages/bridge-ui/nginx
+chmod +x ./generate-certs.sh
+./generate-certs.sh
+```
+
+## 4. Configure Nginx Reverse Proxy
+
+### Prerequisites
+Ensure you have the following endpoints ready:
+- L1 RPC URL
+- L1 Blockscout URL
+- L1 to L2 Relayer URL
+- L2 RPC URL
+- L2 Blockscout URL
+- L2 to L1 Relayer URL
+
+### Update Configuration
+
+Edit the `./nginx/nginx.conf` file with your actual URLs. For example:
+
+```nginx
+# L1 RPC endpoint
+location /l1-rpc/ {
+    proxy_pass http://your-l1-rpc-endpoint:32002/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+:::warning
+Ensure all URLs used in configuration files are accessible via **HTTPS**.
+:::
+
+## 5. Configure Application Components
+
+<Tabs>
+  <TabItem value="bridges" label="Bridges" default>
+
+    ### Bridges Configuration
+
+    **Required:**
+    - L1 Chain ID
+    - L1 Contract Addresses:
+    - `L1_BRIDGE`
+    - `L1_ERC20_VAULT`
+    - `L1_ERC721_VAULT`
+    - `L1_ERC1155_VAULT`
+    - `L1_SIGNAL_SERVICE`
+    - L2 Chain ID
+    - L2 Contract Addresses:
+    - `L2_BRIDGE`
+    - `L2_ERC20_VAULT`
+    - `L2_ERC721_VAULT`
+    - `L2_ERC1155_VAULT`
+    - `L2_SIGNAL_SERVICE`
+
+    **Path:** `./config/configuredBridges.json`
+
+    :::tip
+    This file contains default addresses. Replace them if needed.
+    :::
+
+  </TabItem>
+
+  <TabItem value="chains" label="Chains">
+
+    ### Chains Configuration
+
+    **Required:**
+    - L1 Chain ID & RPC URL
+    - L2 Chain ID & RPC URL
+
+    **Path:** `./config/configuredChains.json`
+
+    Modify the `rpcUrls` fields to match the nginx proxy paths. Example:
+
+    ```json
+    "3151908": {
+    "name": "Kurtosis",
+    "type": "L1",
+    "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+    "rpcUrls": {
+    "default": {
+    "http": ["https://your-domain/l1-rpc/"]
+  }
+  }
+  }
+    ```
+
+    ```json
+    "763374": {
+    "name": "Taiko",
+    "type": "L2",
+    "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+    "rpcUrls": {
+    "default": {
+    "http": ["https://your-domain/l2-rpc/"]
+  }
+  }
+  }
+    ```
+
+  </TabItem>
+
+  <TabItem value="relayer" label="Relayer">
+
+    ### Relayer Configuration
+
+    **Required:**
+    - L1 Chain ID & L1→L2 Relayer URL
+    - L2 Chain ID & L2→L1 Relayer URL
+
+    **Path:** `./config/configuredRelayer.json`
+
+    Example:
+
+    ```json
+    {
+      "configuredRelayer": [
+    {
+      "chainIds": [3151908, 763374],
+      "url": "https://your-domain/l1-relayer/"
+    },
+    {
+      "chainIds": [763374, 3151908],
+      "url": "https://your-domain/l2-relayer/"
+    }
+      ]
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="other" label="Additional Configs">
+
+    ### Additional Configuration Files
+
+    - `./config/configuredCustomTokens.json`
+    - `./config/configuredEventIndexer.json`
+
+    :::tip
+    These files may require minimal or no modification, depending on your needs.
+    :::
+
+  </TabItem>
+</Tabs>
+
+## 6. Run Services
+
+Use Docker Compose to run the Bridge UI and nginx services:
+
+```bash
+# Run Bridge UI
+docker compose --profile bridge-ui up -d --build
+
+# Run Nginx
+docker compose --profile nginx up -d
+```
+
+## Verification
+
+Use the following commands to verify your services:
+
+```bash
+# Check container status
+docker compose ps
+
+# View Bridge UI logs
+docker compose logs bridge-ui -f
+
+# View Nginx logs
+docker compose logs nginx -f
+```
+
+:::warning
+Double-check that all URLs in your nginx config are secured and publicly accessible before running.
+:::
+

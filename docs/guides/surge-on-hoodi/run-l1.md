@@ -81,6 +81,29 @@ sedge logs
 
 You should see logs confirming block synchronization.
 
+And to confirm your L1 node is running and in sync, you can query its JSON-RPC interface using the following commands:
+
+1. Check Latest Block Number
+    ```bash
+   curl -X POST \
+   -H "Content-Type: application/json" \
+   --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+   http://127.0.0.1:8545
+   ```
+   This returns the latest block number your node has processed (in hex). Compare it with the current block number on
+   the [Hoodi block explorer](https://hoodi.etherscan.io/) to verify it's in sync.
+
+2. Check Sync Status
+    ```bash
+   curl -X POST \
+   -H "Content-Type: application/json" \
+   --data '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}' \
+   http://127.0.0.1:8545
+   ```
+
+   If the result is false, your node is fully synced. If it returns an object, the node is still syncing and will show
+   current progress.
+
 ## Option 2: Using Public RPC Endpoint
 
 If you prefer quick setup without node management, use the public RPC endpoint: https://hoodi.ethpandaops.io/.

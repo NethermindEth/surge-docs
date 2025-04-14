@@ -21,10 +21,11 @@ demands, and optimal performance.
 
 ## Steps
 
-This guide is structured into two main steps:
-
 1. [Run L1](./run-l1.md): Instructions for running or connecting to a Hoodi Layer 1 node.
-2. [Run L2](./run-l2.mdx): Steps to run your Surge Layer 2 node on top of Hoodi.
+2. [Set up a Prover](./provers.md): Instructions for setting up a prover.
+3. [Run L2](./run-l2.mdx): Steps to run your Surge Layer 2 node on top of Hoodi.
+4. [Run Relayer](./run-relayer.mdx): Steps to run your relayer.
+5. [Run Bridge UI](./run-bridge-ui.mdx): Steps to run the Bridge UI.
 
 ## Troubleshooting
 
