@@ -47,55 +47,39 @@ The `.default.env` file contains default values for `L1_RPC_URL` and `L2_RPC_URL
 
 Deploy the relayer components in the following sequence:
 
-<Tabs>
+### Step 1: Initialize Components
 
-  <TabItem value="init" label="1. Initialize Components" default>
+Run the command to start necessary services:
 
-    ### Initialize Components
+```bash
+docker compose --profile init up -d
+```
 
-    Run the command to start necessary services:
+This starts essential services such as the relayer database and queue.
 
-    ```bash
-    docker compose --profile init up -d
-    ```
+### Step 2: Run Database Migrations
 
-    This starts essential services such as the relayer database and queue.
+Allow some time (20 seconds recommended) for services to initialize, then execute migrations:
 
-  </TabItem>
+```bash
+# Wait for services to initialize
+sleep 20
 
-  <TabItem value="migrations" label="2. Run Database Migrations">
+# Execute migrations
+docker compose --profile migrations up
+```
 
-    ### Run Database Migrations
+This step establishes your database schema and initial configurations required by the relayer.
 
-    Allow some time (20 seconds recommended) for services to initialize, then execute migrations:
+### Step 3: Start Relayer Service
 
-    ```bash
-    # Wait for services to initialize
-    sleep 20
+Launch the main relayer services, connecting both L1 and L2:
 
-    # Execute migrations
-    docker compose --profile migrations up
-    ```
+```bash
+docker compose --profile l1 --profile l2 --profile api up -d
+```
 
-    This step establishes your database schema and initial configurations required by the relayer.
-
-  </TabItem>
-
-  <TabItem value="relayer" label="3. Start the Relayer Service">
-
-    ### Start Relayer Service
-
-    Launch the main relayer services, connecting both L1 and L2:
-
-    ```bash
-    docker compose --profile l1 --profile l2 --profile api up -d
-    ```
-
-    This will activate the relayer service along with API interfaces.
-
-  </TabItem>
-
-</Tabs>
+This will activate the relayer service along with API interfaces.
 
 ## Verification
 

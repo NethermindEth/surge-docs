@@ -74,117 +74,100 @@ Ensure all URLs used in configuration files are accessible via **HTTPS**.
 
 ## 5. Configure Application Components
 
-<Tabs>
-  <TabItem value="bridges" label="Bridges" default>
+### Bridges Configuration
 
-    ### Bridges Configuration
+**Required:**
+- L1 Chain ID
+- L1 Contract Addresses:
+- `L1_BRIDGE`
+- `L1_ERC20_VAULT`
+- `L1_ERC721_VAULT`
+- `L1_ERC1155_VAULT`
+- `L1_SIGNAL_SERVICE`
+- L2 Chain ID
+- L2 Contract Addresses:
+- `L2_BRIDGE`
+- `L2_ERC20_VAULT`
+- `L2_ERC721_VAULT`
+- `L2_ERC1155_VAULT`
+- `L2_SIGNAL_SERVICE`
 
-    **Required:**
-    - L1 Chain ID
-    - L1 Contract Addresses:
-    - `L1_BRIDGE`
-    - `L1_ERC20_VAULT`
-    - `L1_ERC721_VAULT`
-    - `L1_ERC1155_VAULT`
-    - `L1_SIGNAL_SERVICE`
-    - L2 Chain ID
-    - L2 Contract Addresses:
-    - `L2_BRIDGE`
-    - `L2_ERC20_VAULT`
-    - `L2_ERC721_VAULT`
-    - `L2_ERC1155_VAULT`
-    - `L2_SIGNAL_SERVICE`
+**Path:** `./config/configuredBridges.json`
 
-    **Path:** `./config/configuredBridges.json`
+:::tip
+This file contains default addresses. Replace them if needed.
+:::
 
-    :::tip
-    This file contains default addresses. Replace them if needed.
-    :::
+### Chains Configuration
 
-  </TabItem>
+**Required:**
+- L1 Chain ID & RPC URL
+- L2 Chain ID & RPC URL
 
-  <TabItem value="chains" label="Chains">
+**Path:** `./config/configuredChains.json`
 
-    ### Chains Configuration
+Modify the `rpcUrls` fields to match the nginx proxy paths. Example:
 
-    **Required:**
-    - L1 Chain ID & RPC URL
-    - L2 Chain ID & RPC URL
+```json
+"3151908": {
+"name": "Kurtosis",
+"type": "L1",
+"icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+"rpcUrls": {
+"default": {
+"http": ["https://your-domain/l1-rpc/"]
+}
+}
+}
+```
 
-    **Path:** `./config/configuredChains.json`
+```json
+"763374": {
+"name": "Taiko",
+"type": "L2",
+"icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
+"rpcUrls": {
+"default": {
+"http": ["https://your-domain/l2-rpc/"]
+}
+}
+}
+```
 
-    Modify the `rpcUrls` fields to match the nginx proxy paths. Example:
+### Relayer Configuration
 
-    ```json
-    "3151908": {
-    "name": "Kurtosis",
-    "type": "L1",
-    "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-    "rpcUrls": {
-    "default": {
-    "http": ["https://your-domain/l1-rpc/"]
-  }
-  }
-  }
-    ```
+**Required:**
+- L1 Chain ID & L1→L2 Relayer URL
+- L2 Chain ID & L2→L1 Relayer URL
 
-    ```json
-    "763374": {
-    "name": "Taiko",
-    "type": "L2",
-    "icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-    "rpcUrls": {
-    "default": {
-    "http": ["https://your-domain/l2-rpc/"]
-  }
-  }
-  }
-    ```
+**Path:** `./config/configuredRelayer.json`
 
-  </TabItem>
+Example:
 
-  <TabItem value="relayer" label="Relayer">
+```json
+{
+  "configuredRelayer": [
+{
+  "chainIds": [3151908, 763374],
+  "url": "https://your-domain/l1-relayer/"
+},
+{
+  "chainIds": [763374, 3151908],
+  "url": "https://your-domain/l2-relayer/"
+}
+  ]
+}
+```
 
-    ### Relayer Configuration
 
-    **Required:**
-    - L1 Chain ID & L1→L2 Relayer URL
-    - L2 Chain ID & L2→L1 Relayer URL
+### Additional Configuration Files
 
-    **Path:** `./config/configuredRelayer.json`
+- `./config/configuredCustomTokens.json`
+- `./config/configuredEventIndexer.json`
 
-    Example:
-
-    ```json
-    {
-      "configuredRelayer": [
-    {
-      "chainIds": [3151908, 763374],
-      "url": "https://your-domain/l1-relayer/"
-    },
-    {
-      "chainIds": [763374, 3151908],
-      "url": "https://your-domain/l2-relayer/"
-    }
-      ]
-    }
-    ```
-
-  </TabItem>
-
-  <TabItem value="other" label="Additional Configs">
-
-    ### Additional Configuration Files
-
-    - `./config/configuredCustomTokens.json`
-    - `./config/configuredEventIndexer.json`
-
-    :::tip
-    These files may require minimal or no modification, depending on your needs.
-    :::
-
-  </TabItem>
-</Tabs>
+:::tip
+These files may require minimal or no modification, depending on your needs.
+:::
 
 ## 6. Deploy Services
 

@@ -53,52 +53,40 @@ And make sure to update the L1 URLs to match the ones you're using.
 
 Running L2 involves sequentially starting three components. Ensure you follow the correct order for proper communication between them.
 
-:::info Component Order
-Start components in this order:
+:::tip
+You can run multiple profiles at once:
 
-1. **Driver**: Manages network execution via Nethermind Execution Client.
-2. **Proposer**: Handles transaction bundling and block proposals.
-3. **Prover Relayer**: Relays proofs received from provers.
-
-Following this sequence ensures components initialize correctly.
+```bash
+docker compose --profile <profile1> --profile <profile2> up -d
+```
 :::
+
+
+#### Step 1: Start the Driver
+The Driver manages network execution via the Nethermind Execution Client:
+
+```bash
+docker compose --profile nethermind_execution_l2 up -d
+```
+
+#### Step 2: Start the Proposer
+The Proposer handles transaction bundling and block proposals:
+
+```bash
+docker compose --profile proposer up -d
+```
+
+#### Step 3: Start the Prover Relayer
+
+The Prover Relayer relays proofs received from provers.
 
 :::note
 If you did not set up a prover in the previous setup steps, you can safely skip launching the prover relayer.
 :::
 
-<Tabs>
-  <TabItem value="driver" label="Driver" default>
-
-    Starts the Nethermind Execution Client for L2 network operation:
-
-    ```bash
-    docker compose --profile nethermind_execution_l2 up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="proposer" label="Proposer">
-
-    Initiates the Proposer service for transaction bundling and block proposals:
-
-    ```bash
-    docker compose --profile proposer up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="prover" label="Prover Relayer">
-
-    Launches the Prover Relayer for proof relay:
-
-    ```bash
-    docker compose --profile prover up -d
-    ```
-
-  </TabItem>
-
-</Tabs>
+```bash
+docker compose --profile prover up -d
+```
 
 ## Verification
 

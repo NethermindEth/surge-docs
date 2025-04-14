@@ -8,6 +8,10 @@ import TabItem from '@theme/TabItem';
 
 # Run Relayer
 
+:::tip
+This guide is fairly similar to the [Deploy Relayer](../running-surge/deploy-relayer.mdx) guide. The main difference is that this guide is focused on running the components of the Surge rollup on the Hoodi testnet, while the other one is for the devnet.
+:::
+
 The Relayer is a key component that facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state. It ensures that Surge’s L2 state transitions are correctly reflected and verified on L1.
 
 This guide walks you through running and configuring the Surge Relayer.
@@ -47,55 +51,40 @@ Make sure to update `.default.env` to match your environment such as updating `L
 
 Launch the relayer components in the following sequence:
 
-<Tabs>
 
-  <TabItem value="init" label="1. Initialize Components" default>
+### Step 1: Initialize Components
 
-    ### Initialize Components
+Run the command to start necessary services:
 
-    Run the command to start necessary services:
+```bash
+docker compose --profile init up -d
+```
 
-    ```bash
-    docker compose --profile init up -d
-    ```
+This starts essential services such as the relayer database and queue.
 
-    This starts essential services such as the relayer database and queue.
+### Step 2: Run Database Migrations
 
-  </TabItem>
+Allow some time (20 seconds recommended) for services to initialize, then execute migrations:
 
-  <TabItem value="migrations" label="2. Run Database Migrations">
+```bash
+# Wait for services to initialize
+sleep 20
 
-    ### Run Database Migrations
+# Execute migrations
+docker compose --profile migrations up
+```
 
-    Allow some time (20 seconds recommended) for services to initialize, then execute migrations:
+This step establishes your database schema and initial configurations required by the relayer.
 
-    ```bash
-    # Wait for services to initialize
-    sleep 20
+### Step 3: Start Relayer Service
 
-    # Execute migrations
-    docker compose --profile migrations up
-    ```
+Launch the main relayer services, connecting both L1 and L2:
 
-    This step establishes your database schema and initial configurations required by the relayer.
+```bash
+docker compose --profile l1 --profile l2 --profile api up -d
+```
 
-  </TabItem>
-
-  <TabItem value="relayer" label="3. Start the Relayer Service">
-
-    ### Start Relayer Service
-
-    Launch the main relayer services, connecting both L1 and L2:
-
-    ```bash
-    docker compose --profile l1 --profile l2 --profile api up -d
-    ```
-
-    This will activate the relayer service along with API interfaces.
-
-  </TabItem>
-
-</Tabs>
+This will activate the relayer service along with API interfaces.
 
 ## Verification
 

@@ -63,62 +63,54 @@ Following this sequence ensures components initialize correctly.
 If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
 :::
 
-<Tabs>
-  <TabItem value="driver" label="Driver" default>
+:::tip
+You can run multiple profiles at once:
 
-    Starts the Nethermind Execution Client for L2 network operation:
+```bash
+docker compose --profile <profile1> --profile <profile2> up -d
+```
+:::
 
-    ```bash
-    docker compose --profile nethermind_execution_l2 up -d
-    ```
+#### Driver
 
-  </TabItem>
+Starts the Nethermind Execution Client for L2 network operation:
 
-  <TabItem value="proposer" label="Proposer">
+```bash
+docker compose --profile nethermind_execution_l2 up -d
+```
 
-    Initiates the Proposer service for transaction bundling and block proposals:
+#### Proposer
+Initiates the Proposer service for transaction bundling and block proposals:
 
-    ```bash
-    docker compose --profile proposer up -d
-    ```
+```bash
+docker compose --profile proposer up -d
+```
 
-  </TabItem>
+#### Prover Relayer
+Launches the Prover Relayer for proof relay:
 
-  <TabItem value="prover" label="Prover Relayer">
+```bash
+docker compose --profile prover up -d
+```
 
-    Launches the Prover Relayer for proof relay:
+#### Metrics
+Sets up Prometheus and Grafana for real-time monitoring:
 
-    ```bash
-    docker compose --profile prover up -d
-    ```
+```bash
+docker compose --profile metrics up -d
+```
 
-  </TabItem>
+#### BlockScout
+Launches BlockScout that provides a web-based interface to:
 
-  <TabItem value="metrics" label="Metrics">
+- Explore blocks, transactions, and accounts
+- Verify smart contracts
+- Monitor network activity
+- Track token transfers and balances
 
-    Sets up Prometheus and Grafana for real-time monitoring:
-
-    ```bash
-    docker compose --profile metrics up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="blockscout" label="BlockScout">
-
-    Launches BlockScout that provides a web-based interface to:
-
-    - Explore blocks, transactions, and accounts
-    - Verify smart contracts
-    - Monitor network activity
-    - Track token transfers and balances
-
-    ```bash
-    docker compose --profile blockscout up -d
-    ```
-
-  </TabItem>
-</Tabs>
+```bash
+docker compose --profile blockscout up -d
+```
 
 ## Verification
 
