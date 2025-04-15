@@ -45,23 +45,7 @@ The `.env.devnet` file includes default values for the devnet configuration, bas
 
 ### 4. Start Components
 
-Deploying L2 involves sequentially starting five components. Ensure you follow the correct order for proper communication between them.
-
-:::info Component Order
-Start components in this order:
-
-1. **Driver**: Manages network execution via Nethermind Execution Client.
-2. **Proposer**: Handles transaction bundling and block proposals.
-3. **Prover Relayer**: Relays proofs received from provers.
-4. **Metrics**: Monitors network performance using Prometheus and Grafana.
-5. **BlockScout**: Provides blockchain exploration and monitoring interface.
-
-Following this sequence ensures components initialize correctly.
-:::
-
-:::note
-If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
-:::
+L2 consists of the following components, feel free to launch the ones specific to your needs.
 
 :::tip
 You can run multiple profiles at once:
@@ -72,6 +56,10 @@ docker compose --profile <profile1> --profile <profile2> up -d
 :::
 
 #### Driver
+
+:::tip
+If you just want to follow the L2 chain, launching just the driver is sufficient.
+:::
 
 Starts the Nethermind Execution Client for L2 network operation:
 
@@ -87,6 +75,11 @@ docker compose --profile proposer up -d
 ```
 
 #### Prover Relayer
+
+:::note
+If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
+:::
+
 Launches the Prover Relayer for proof relay:
 
 ```bash

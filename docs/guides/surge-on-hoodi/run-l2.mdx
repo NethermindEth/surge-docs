@@ -51,7 +51,7 @@ And make sure to update the L1 URLs to match the ones you're using.
 
 ### 4. Start Components
 
-Running L2 involves sequentially starting three components. Ensure you follow the correct order for proper communication between them.
+L2 consists of the following components, feel free to launch the ones specific to your needs.
 
 :::tip
 You can run multiple profiles at once:
@@ -61,31 +61,42 @@ docker compose --profile <profile1> --profile <profile2> up -d
 ```
 :::
 
+#### Driver
 
-#### Step 1: Start the Driver
-The Driver manages network execution via the Nethermind Execution Client:
+:::tip
+If you just want to follow the L2 chain, launching just the driver is sufficient.
+:::
+
+Starts the Nethermind Execution Client for L2 network operation:
 
 ```bash
 docker compose --profile nethermind_execution_l2 up -d
 ```
 
-#### Step 2: Start the Proposer
-The Proposer handles transaction bundling and block proposals:
+#### Proposer
+Initiates the Proposer service for transaction bundling and block proposals:
 
 ```bash
 docker compose --profile proposer up -d
 ```
 
-#### Step 3: Start the Prover Relayer
-
-The Prover Relayer relays proofs received from provers.
+#### Prover Relayer
 
 :::note
-If you did not set up a prover in the previous setup steps, you can safely skip launching the prover relayer.
+If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
 :::
+
+Launches the Prover Relayer for proof relay:
 
 ```bash
 docker compose --profile prover up -d
+```
+
+#### Metrics
+Sets up Prometheus and Grafana for real-time monitoring:
+
+```bash
+docker compose --profile metrics up -d
 ```
 
 ## Verification
