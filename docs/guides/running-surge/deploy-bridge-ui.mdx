@@ -23,12 +23,10 @@ git clone https://github.com/NethermindEth/surge-taiko-mono.git
 cd surge-taiko-mono
 ```
 
-## 2. Switch to the Correct Branch
-
-Checkout the `surge/devnet` branch:
+## 2. Navigate to the Bridge UI Directory
 
 ```bash
-git checkout surge/devnet
+cd packages/bridge-ui
 ```
 
 ## 3. Set Up SSL Certificates
@@ -36,7 +34,7 @@ git checkout surge/devnet
 Navigate to the Bridge UI nginx directory and generate the SSL certificates:
 
 ```bash
-cd packages/bridge-ui/nginx
+cd ./nginx
 chmod +x ./generate-certs.sh
 ./generate-certs.sh
 ```
@@ -74,6 +72,18 @@ Ensure all URLs used in configuration files are accessible via **HTTPS**.
 
 ## 5. Configure Application Components
 
+Create your environment configuration file by copying the provided samples:
+
+```bash
+cd ..
+cp ./config/devnet/configuredBridges.json ./config/
+cp ./config/devnet/configuredChains.json ./config/
+cp ./config/devnet/configuredRelayer.json ./config/
+cp ./config/devnet/configuredCustomTokens.json ./config/
+cp ./config/devnet/configuredEventIndexer.json ./config/
+```
+Or you can create them from scratch.
+
 ### Bridges Configuration
 
 **Required:**
@@ -93,10 +103,6 @@ Ensure all URLs used in configuration files are accessible via **HTTPS**.
 - `L2_SIGNAL_SERVICE`
 
 **Path:** `./config/configuredBridges.json`
-
-:::tip
-This file contains default addresses. Replace them if needed.
-:::
 
 ### Chains Configuration
 

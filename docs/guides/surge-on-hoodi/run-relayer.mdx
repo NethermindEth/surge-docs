@@ -27,24 +27,24 @@ git clone https://github.com/NethermindEth/surge-taiko-mono.git
 cd surge-taiko-mono/
 ```
 
-## Step 2: Checkout the Branch
+## Step 2: Navigate to the Relayer Directory
 
 Switch to the correct branch (`surge/hoodi`):
 
 ```bash
-git checkout surge/hoodi
+cd packages/relayer
 ```
 
 ## Step 3: Environment Configuration
 
-Navigate to the relayer package and set up your environment variables:
+Create your environment configuration file (`.env`) by copying the provided sample:
 
 ```bash
-cd packages/relayer
-cp .default.env .env
+cp .env.hoodi .env
 ```
+
 :::note
-Make sure to update `.default.env` to match your environment such as updating `L1_RPC_URL` and `L2_RPC_URL` to your own node URLs.
+Make sure to update `.env` to match your environment such as updating `L1_RPC_URL` and `L2_RPC_URL` to your own node URLs.
 :::
 
 ## Step 4: Relayer Launch

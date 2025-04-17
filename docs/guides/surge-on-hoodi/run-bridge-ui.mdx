@@ -28,12 +28,10 @@ git clone https://github.com/NethermindEth/surge-taiko-mono.git
 cd surge-taiko-mono
 ```
 
-## 2. Switch to the Correct Branch
-
-Checkout the `surge/hoodi` branch:
+## 2. Navigate to the Bridge UI Directory
 
 ```bash
-git checkout surge/hoodi
+cd packages/bridge-ui
 ```
 
 ## 3. Set Up SSL Certificates
@@ -41,7 +39,7 @@ git checkout surge/hoodi
 Navigate to the Bridge UI nginx directory and generate the SSL certificates:
 
 ```bash
-cd packages/bridge-ui/nginx
+cd ./nginx
 chmod +x ./generate-certs.sh
 ./generate-certs.sh
 ```
@@ -79,110 +77,26 @@ Ensure all URLs used in configuration files are accessible via **HTTPS**.
 
 ## 5. Configure Application Components
 
-### Bridges Configuration
-
-**Required:**
-- L1 Chain ID
-- L1 Contract Addresses:
-- `L1_BRIDGE`
-- `L1_ERC20_VAULT`
-- `L1_ERC721_VAULT`
-- `L1_ERC1155_VAULT`
-- `L1_SIGNAL_SERVICE`
-- L2 Chain ID
-- L2 Contract Addresses:
-- `L2_BRIDGE`
-- `L2_ERC20_VAULT`
-- `L2_ERC721_VAULT`
-- `L2_ERC1155_VAULT`
-- `L2_SIGNAL_SERVICE`
-
-**Path:** `./config/configuredBridges.json`
-
-:::tip
-This file contains default addresses. Replace them if needed.
-:::
-
-### Chains Configuration
-
-**Required:**
-- L1 Chain ID & RPC URL
-- L2 Chain ID & RPC URL
-
-**Path:** `./config/configuredChains.json`
-
-Modify the `rpcUrls` fields to match the nginx proxy paths. Example:
-
-```json
-"3151908": {
-"name": "Kurtosis",
-"type": "L1",
-"icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-"rpcUrls": {
-"default": {
-"http": ["https://your-domain/l1-rpc/"]
-}
-}
-}
-```
-
-```json
-"763374": {
-"name": "Taiko",
-"type": "L2",
-"icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-"rpcUrls": {
-"default": {
-"http": ["https://your-domain/l2-rpc/"]
-}
-}
-}
-```
-
-### Relayer Configuration
-
-**Required:**
-- L1 Chain ID & L1→L2 Relayer URL
-- L2 Chain ID & L2→L1 Relayer URL
-
-**Path:** `./config/configuredRelayer.json`
-
-Example:
-
-```json
-{
-  "configuredRelayer": [
-{
-  "chainIds": [3151908, 763374],
-  "url": "https://your-domain/l1-relayer/"
-},
-{
-  "chainIds": [763374, 3151908],
-  "url": "https://your-domain/l2-relayer/"
-}
-  ]
-}
-```
-
-
-### Additional Configuration Files
-
-- `./config/configuredCustomTokens.json`
-- `./config/configuredEventIndexer.json`
-
-:::tip
-These files may require minimal or no modification, depending on your needs.
-:::
-
-## 6. Run Services
-
-Use Docker Compose to run the Bridge UI and nginx services:
+Create your environment configuration file by copying the provided samples:
 
 ```bash
-# Run Bridge UI
+cd ..
+cp ./config/hoodi/configuredBridges.json ./config/
+cp ./config/hoodi/configuredChains.json ./config/
+cp ./config/hoodi/configuredRelayer.json ./config/
+cp ./config/hoodi/configuredCustomTokens.json ./config/
+cp ./config/hoodi/configuredEventIndexer.json ./config/
+```
+
+## 6. Deploy Services
+
+Use Docker Compose to deploy the Bridge UI and nginx services:
+
+```bash
+# Deploy Bridge UI
 docker compose --profile bridge-ui up -d --build
 
-# Run Nginx
+# Deploy Nginx
 docker compose --profile nginx up -d
 ```
 
@@ -202,6 +116,5 @@ docker compose logs nginx -f
 ```
 
 :::warning
-Double-check that all URLs in your nginx config are secured and publicly accessible before running.
+Double-check that all URLs in your nginx config are secured and publicly accessible before deployment.
 :::
-
