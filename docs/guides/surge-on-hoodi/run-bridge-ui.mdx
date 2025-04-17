@@ -34,7 +34,15 @@ cd surge-taiko-mono
 cd packages/bridge-ui
 ```
 
-## 3. Set Up SSL Certificates
+## 3. Environment Configuration
+
+Create your environment configuration file (`.env`) by copying the provided sample:
+
+```bash
+cp .env.hoodi .env
+```
+
+## 4. Set Up SSL Certificates
 
 Navigate to the Bridge UI nginx directory and generate the SSL certificates:
 
@@ -44,7 +52,7 @@ chmod +x ./generate-certs.sh
 ./generate-certs.sh
 ```
 
-## 4. Configure Nginx Reverse Proxy
+## 5. Configure Nginx Reverse Proxy
 
 ### Prerequisites
 Ensure you have the following endpoints ready:
@@ -75,9 +83,9 @@ location /l1-rpc/ {
 Ensure all URLs used in configuration files are accessible via **HTTPS**.
 :::
 
-## 5. Configure Application Components
+## 6. Configure Application Components
 
-Create your environment configuration file by copying the provided samples:
+Create your network configuration file by copying the provided samples:
 
 ```bash
 cd ..
@@ -88,7 +96,7 @@ cp ./config/hoodi/configuredCustomTokens.json ./config/
 cp ./config/hoodi/configuredEventIndexer.json ./config/
 ```
 
-## 6. Deploy Services
+## 7. Deploy Services
 
 Use Docker Compose to deploy the Bridge UI and nginx services:
 
