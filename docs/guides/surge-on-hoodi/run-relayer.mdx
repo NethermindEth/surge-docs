@@ -1,16 +1,20 @@
 ---
-title: Deploy Relayer
-sidebar_position: 7
+title: Run Relayer
+sidebar_position: 4
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Deploy Relayer
+# Run Relayer
+
+:::tip
+This guide is fairly similar to the [Deploy Relayer](../running-surge/deploy-relayer.mdx) guide. The main difference is that this guide is focused on running the components of the Surge rollup on the Hoodi testnet, while the other one is for the devnet.
+:::
 
 The Relayer is a key component that facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state. It ensures that Surge’s L2 state transitions are correctly reflected and verified on L1.
 
-This guide walks you through deploying and configuring the Surge Relayer.
+This guide walks you through running and configuring the Surge Relayer.
 
 To understand how the Relayer fits into the broader system, check the [Surge Architecture documentation](/docs/about/architecture).
 
@@ -26,7 +30,7 @@ cd surge-taiko-mono/
 ## Step 2: Navigate to the Relayer Directory
 
 ```bash
-cp packages/relayer
+cd packages/relayer
 ```
 
 ## Step 3: Environment Configuration
@@ -34,15 +38,17 @@ cp packages/relayer
 Create your environment configuration file (`.env`) by copying the provided sample:
 
 ```bash
-cp .env.devnet .env
+cp .env.hoodi .env
 ```
+
 :::note
-The `.env.devnet` file contains default values for `L1_RPC_URL` and `L2_RPC_URL` based on the configuration steps completed earlier. These defaults are suitable for most setups, but feel free to update them to match your own environment if needed.
+Make sure to update `.env` to match your environment such as updating `L1_RPC_URL` and `L2_RPC_URL` to your own node URLs.
 :::
 
-## Step 4: Relayer Deployment
+## Step 4: Relayer Launch
 
-Deploy the relayer components in the following sequence:
+Launch the relayer components in the following sequence:
+
 
 ### Step 1: Initialize Components
 
@@ -80,7 +86,7 @@ This will activate the relayer service along with API interfaces.
 
 ## Verification
 
-Post-deployment verification steps:
+Post-launch verification steps:
 
 - Ensure the database initialization succeeded.
 - Confirm database migrations completed without errors.

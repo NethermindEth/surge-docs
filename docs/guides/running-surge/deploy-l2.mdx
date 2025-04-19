@@ -45,80 +45,65 @@ The `.env.devnet` file includes default values for the devnet configuration, bas
 
 ### 4. Start Components
 
-Deploying L2 involves sequentially starting five components. Ensure you follow the correct order for proper communication between them.
+L2 consists of the following components, feel free to launch the ones specific to your needs.
 
-:::info Component Order
-Start components in this order:
+:::tip
+You can run multiple profiles at once:
 
-1. **Driver**: Manages network execution via Nethermind Execution Client.
-2. **Proposer**: Handles transaction bundling and block proposals.
-3. **Prover Relayer**: Relays proofs received from provers.
-4. **Metrics**: Monitors network performance using Prometheus and Grafana.
-5. **BlockScout**: Provides blockchain exploration and monitoring interface.
-
-Following this sequence ensures components initialize correctly.
+```bash
+docker compose --profile <profile1> --profile <profile2> up -d
+```
 :::
+
+#### Driver
+
+:::tip
+If you just want to follow the L2 chain, launching just the driver is sufficient.
+:::
+
+Starts the Nethermind Execution Client for L2 network operation:
+
+```bash
+docker compose --profile nethermind_execution_l2 up -d
+```
+
+#### Proposer
+Initiates the Proposer service for transaction bundling and block proposals:
+
+```bash
+docker compose --profile proposer up -d
+```
+
+#### Prover Relayer
 
 :::note
 If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
 :::
 
-<Tabs>
-  <TabItem value="driver" label="Driver" default>
+Launches the Prover Relayer for proof relay:
 
-    Starts the Nethermind Execution Client for L2 network operation:
+```bash
+docker compose --profile prover up -d
+```
 
-    ```bash
-    docker compose --profile nethermind_execution_l2 up -d
-    ```
+#### Metrics
+Sets up Prometheus and Grafana for real-time monitoring:
 
-  </TabItem>
+```bash
+docker compose --profile metrics up -d
+```
 
-  <TabItem value="proposer" label="Proposer">
+#### BlockScout
+Launches BlockScout that provides a web-based interface to:
 
-    Initiates the Proposer service for transaction bundling and block proposals:
+- Explore blocks, transactions, and accounts
+- Verify smart contracts
+- Monitor network activity
+- Track token transfers and balances
 
-    ```bash
-    docker compose --profile proposer up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="prover" label="Prover Relayer">
-
-    Launches the Prover Relayer for proof relay:
-
-    ```bash
-    docker compose --profile prover up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="metrics" label="Metrics">
-
-    Sets up Prometheus and Grafana for real-time monitoring:
-
-    ```bash
-    docker compose --profile metrics up -d
-    ```
-
-  </TabItem>
-
-  <TabItem value="blockscout" label="BlockScout">
-
-    Launches BlockScout that provides a web-based interface to:
-
-    - Explore blocks, transactions, and accounts
-    - Verify smart contracts
-    - Monitor network activity
-    - Track token transfers and balances
-
-    ```bash
-    docker compose --profile blockscout up -d
-    ```
-
-  </TabItem>
-</Tabs>
+```bash
+docker compose --profile blockscout up -d
+```
 
 ## Verification
 

@@ -1,37 +1,46 @@
 ---
 sidebar_position: 3
-title: Deploying your DApp on Surge
+title: Deploy Your DApp on Surge
 ---
 
-# Deploying your DApp on Surge
+# Deploy Your DApp on Surge
 
-To deploy your DApp on Surge follow these steps:
+This guide will walk you through the steps to successfully deploy your decentralized application (DApp) on the Surge
+Hoodi Testnet.
 
-### Prerequisites
+## Prerequisites
 
-- *Hoodi* ETH on L1: ([Hoodi Faucet](https://hoodi-faucet.pk910.de/))
-- Surge L2 RPC: ([https://l2-rpc.hoodi.surge.wtf](https://l2-rpc.hoodi.surge.wtf/)). Find all the settings and autoconfigure your wallet on ([ChainList](https://chainlist.org/chain/763375))
-- Surge L2 Explorer URL: ([https://explorer.hoodi.surge.wtf](https://explorer.hoodi.surge.wtf/))
+Before deploying your DApp, ensure you have the following:
 
-## Bridge Eth in to Surge
+- **Hoodi ETH on L1**: Get test ETH using the [Hoodi Faucet](https://hoodi-faucet.pk910.de/).
+- **Surge L2 RPC**: Connect your wallet to Surge L2 using the RPC
+  endpoint: [https://l2-rpc.hoodi.surge.wtf](https://l2-rpc.hoodi.surge.wtf/). 
+- **Surge L2 Block Explorer**: Monitor transactions
+  on: [https://explorer.hoodi.surge.wtf](https://explorer.hoodi.surge.wtf/)
 
-You can use the ([bridge UI](https://bridge.hoodi.surge.wtf)) to transfer ETH from L1 to L2
+## Bridge ETH to Surge
 
-Your transfer can be monitored from our ([Blockscout](https://explorer.hoodi.surge.wtf/)) instance.
+To bridge ETH from L1 to L2:
 
-In its default settings, our relayer will automatically claim your bridged ETH for you within a minute after the transfer is confirmed.
+1. Visit the [Bridge UI](https://bridge.hoodi.surge.wtf).
+2. Initiate a transfer of ETH from L1 to L2.
+3. Monitor your transaction using our [Blockscout Explorer](https://explorer.hoodi.surge.wtf/).
 
-## Deploy your DApp
+>  **Note:** Our relayer will automatically claim your bridged ETH within one minute of confirmation, under default settings.
 
-You can now deploy your DApp like you would on any other EVM network. No changes are required to your DApp's code.
-Happy testing!
+## Deploy Your DApp
 
-### Feature set
+Once you’ve received your ETH on L2:
+
+1. Deploy your DApp as you would on any other EVM-compatible network.
+2. No changes to your DApp’s code are required.
+
+Enjoy testing and building on Surge!
+
+## Feature set
 
 Surge Hoodi testnet is currently on the Shanghai Execution Client Fork.
 
 ## Troubleshooting
 
-If you need help, you can consult our ([Troubleshooting section](docs/troubleshooting/index.mdx))
-
-For more information and personalized support, you can also join the [Nethermind Community Channel on Telegram](https://t.me/nethermind_community)
+If you encounter any issues, check out our [Troubleshooting Guide](docs/troubleshooting/index.mdx).

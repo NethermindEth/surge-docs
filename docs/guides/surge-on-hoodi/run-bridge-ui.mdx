@@ -1,16 +1,21 @@
 ---
-title: Deploy Bridge UI
-sidebar_position: 8
+title: Run Bridge UI
+sidebar_position: 5
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Deploy Bridge UI
+# Run Bridge UI
+
+:::tip
+This guide is fairly similar to the [Deploy Bridge UI](../running-surge/deploy-bridge-ui.mdx) guide. The main difference is that this guide is focused on running the components of the Surge rollup on the Hoodi testnet, while the other one is for the devnet.
+:::
+
 
 The Bridge UI is the user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge’s cross-chain functionality. It relies on the underlying Relayer and smart contracts to facilitate these transfers securely.
 
-This guide walks you through deploying the Surge Bridge UI, including all necessary configurations and services.
+This guide walks you through running the Surge Bridge UI, including all necessary configurations and services.
 
 To see how the Bridge UI fits into the overall system, refer to the [Surge Architecture documentation](/docs/about/architecture).
 
@@ -34,7 +39,7 @@ cd packages/bridge-ui
 Create your environment configuration file (`.env`) by copying the provided sample:
 
 ```bash
-cp .env.devnet .env
+cp .env.hoodi .env
 ```
 
 ## 4. Set Up SSL Certificates
@@ -78,109 +83,18 @@ location /l1-rpc/ {
 Ensure all URLs used in configuration files are accessible via **HTTPS**.
 :::
 
-## 6. Configure Network Components
+## 6. Configure Application Components
+
 Create your network configuration file by copying the provided samples:
 
 ```bash
 cd ..
-cp ./config/devnet/configuredBridges.json ./config/
-cp ./config/devnet/configuredChains.json ./config/
-cp ./config/devnet/configuredRelayer.json ./config/
-cp ./config/devnet/configuredCustomTokens.json ./config/
-cp ./config/devnet/configuredEventIndexer.json ./config/
+cp ./config/hoodi/configuredBridges.json ./config/
+cp ./config/hoodi/configuredChains.json ./config/
+cp ./config/hoodi/configuredRelayer.json ./config/
+cp ./config/hoodi/configuredCustomTokens.json ./config/
+cp ./config/hoodi/configuredEventIndexer.json ./config/
 ```
-Or you can create them from scratch.
-
-### Bridges Configuration
-
-**Required:**
-- L1 Chain ID
-- L1 Contract Addresses:
-- `L1_BRIDGE`
-- `L1_ERC20_VAULT`
-- `L1_ERC721_VAULT`
-- `L1_ERC1155_VAULT`
-- `L1_SIGNAL_SERVICE`
-- L2 Chain ID
-- L2 Contract Addresses:
-- `L2_BRIDGE`
-- `L2_ERC20_VAULT`
-- `L2_ERC721_VAULT`
-- `L2_ERC1155_VAULT`
-- `L2_SIGNAL_SERVICE`
-
-**Path:** `./config/configuredBridges.json`
-
-### Chains Configuration
-
-**Required:**
-- L1 Chain ID & RPC URL
-- L2 Chain ID & RPC URL
-
-**Path:** `./config/configuredChains.json`
-
-Modify the `rpcUrls` fields to match the nginx proxy paths. Example:
-
-```json
-"3151908": {
-"name": "Kurtosis",
-"type": "L1",
-"icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-"rpcUrls": {
-"default": {
-"http": ["https://your-domain/l1-rpc/"]
-}
-}
-}
-```
-
-```json
-"763374": {
-"name": "Taiko",
-"type": "L2",
-"icon": "https://cdn.worldvectorlogo.com/logos/ethereum-eth.svg",
-"rpcUrls": {
-"default": {
-"http": ["https://your-domain/l2-rpc/"]
-}
-}
-}
-```
-
-### Relayer Configuration
-
-**Required:**
-- L1 Chain ID & L1→L2 Relayer URL
-- L2 Chain ID & L2→L1 Relayer URL
-
-**Path:** `./config/configuredRelayer.json`
-
-Example:
-
-```json
-{
-  "configuredRelayer": [
-{
-  "chainIds": [3151908, 763374],
-  "url": "https://your-domain/l1-relayer/"
-},
-{
-  "chainIds": [763374, 3151908],
-  "url": "https://your-domain/l2-relayer/"
-}
-  ]
-}
-```
-
-
-### Additional Configuration Files
-
-- `./config/configuredCustomTokens.json`
-- `./config/configuredEventIndexer.json`
-
-:::tip
-These files may require minimal or no modification, depending on your needs.
-:::
 
 ## 7. Deploy Services
 
@@ -212,4 +126,3 @@ docker compose logs nginx -f
 :::warning
 Double-check that all URLs in your nginx config are secured and publicly accessible before deployment.
 :::
-
