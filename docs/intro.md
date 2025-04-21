@@ -14,7 +14,7 @@ compromising on security.
 Surge stands out by adopting
 a [Stage 2 security framework](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe#:~:text=Stage%202%20%E2%80%94%20No,from%20governance%20attacks.)
 from the very beginning, leveraging Ethereum validators rather than a centralized sequencer for transaction ordering,
-and aiming for [GigaGas](./about/gigagas.md) throughput through
+and aiming for [Gigagas](./about/gigagas.md) throughput through
 the [Nethermind Execution Client](https://github.com/NethermindEth/nethermind) (NMC). Surge uses ETH for gas and bonds,
 avoiding the need for an L2 governance token. Together, these design decisions ensure robust decentralization and
 censorship resistance while maintaining alignment with Ethereum's core principles.
@@ -27,10 +27,10 @@ censorship resistance while maintaining alignment with Ethereum's core principle
   featuring a 45-day exit window, no emergency powers, and strictly limited governance capabilities.
 - **Tokenless:** Uses Ether (ETH) for gas and bonds, avoiding the need for an L2 governance token and the misaligned
   incentives that often accompany them.
-- **GigaGas Performance:** Leveraging Nethermind Client's already demonstrated [GigaGas](./about/gigagas.md) ability (as
+- **Gigagas Performance:** Leveraging Nethermind Client's already demonstrated [Gigagas](./about/gigagas.md) ability (as
   showcased in [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), Surge
   achieves extraordinary throughput capabilities that scale far
-  beyond traditional execution environments. For more details, see the [GigaGas documentation](./about/gigagas.md).
+  beyond traditional execution environments. For more details, see the [Gigagas documentation](./about/gigagas.md).
 - **Multi-Prover Proof System:** Employs zero-knowledge proofs for trustless scaling with a 2/3 multi-prover security
   model requiring agreement from at least two of three independent proving systems, one of which must be a ZK proof
   system.
@@ -75,7 +75,7 @@ commercial product demands or mainstream usability expectations.
 
 Surge represents one component of Nethermind's broader rollup roadmap, which includes:
 
-- **Surge Rollup Template:** The core based rollup platform with [GigaGas](./about/gigagas.md) capabilities.
+- **Surge Rollup Template:** The core based rollup platform with [Gigagas](./about/gigagas.md) capabilities.
 - **Surge Power-Ups:** Open-source plugins that can enhance any based rollup with preconfirmations, optimized proving,
   advanced block building, and seamless layer composability.
 

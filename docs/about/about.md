@@ -13,5 +13,5 @@ Explore these topics:
 - [Surge & Nethermind Client](./about/nethermind): Information on Surge's use of the Nethermind Client (NMC) for
   execution.
 - [Surge Architecture](./about/architecture): Explanation of Surge's system architecture and its components.
-- [GigaGas](./about/gigagas): Overview of Surge's GigaGas performance and its implications.
+- [Gigagas](./about/gigagas): Overview of Surge's Gigagas performance and its implications.
 
