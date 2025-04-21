@@ -10,7 +10,7 @@ Surge leverages [Nethermind Client](https://www.nethermind.io/nethermind-client)
 ## Why Nethermind Client?
 
 Nethermind Client stands out for its:
-- **High Performance:** Built for [GigaGas](./gigagas.md) throughput (as showcased in [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), the client ensures quick transaction processing.
+- **High Performance:** Built for [Gigagas](./gigagas.md) throughput (as showcased in [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), the client ensures quick transaction processing.
 - **Efficient Resource Utilization:** Nethermind Client’s optimized architecture helps reduce overhead, enabling Surge to handle large volumes of transactions without excessive costs.
 - **Robust Ethereum Compatibility:** As a proven client in the Ethereum ecosystem, Nethermind Client aligns perfectly with Surge’s rollup strategy, ensuring reliable execution for developers and end users.
 

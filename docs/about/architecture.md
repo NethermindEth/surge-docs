@@ -11,7 +11,7 @@ title: Surge Architecture
 
 Surge’s architecture is composed of several key components, each serving a specific function:
 
-- **[Nethermind Execution Client (NMC):](https://github.com/NethermindEth/nethermind)** A high-performance Ethereum client that delivers [GigaGas performance](./gigagas.md). 
+- **[Nethermind Execution Client (NMC):](https://github.com/NethermindEth/nethermind)** A high-performance Ethereum client that delivers [Gigagas performance](./gigagas.md). 
 
 - **Taiko Client:** Manages the consensus layer of the rollup. [Taiko Documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client).
 

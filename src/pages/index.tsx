@@ -274,8 +274,8 @@ const itemLinks = [
     to: '/docs/about/nethermind',
   },
   {
-    title: 'GigaGas',
-    description: 'Understand how GigaGas enables high-performance transaction processing in Surge.',
+    title: 'Gigagas',
+    description: 'Understand how Gigagas enables high-performance transaction processing in Surge.',
     to: '/docs/about/gigagas',
   },
   {
@@ -350,7 +350,7 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a based rollup template of the Taiko Alethia stack, featuring GigaGas performance, decentralized ordering by Ethereum
+            Surge is a based rollup template of the Taiko Alethia stack, featuring Gigagas performance, decentralized ordering by Ethereum
             validators, and Stage 2 trustless security
           </p>
           <SearchWrapper>
