@@ -275,7 +275,7 @@ const itemLinks = [
   },
   {
     title: 'Gigagas',
-    description: 'Understand how Gigagas enables high-performance transaction processing in Surge.',
+    description: 'Understand what is Gigagas and its benefits',
     to: '/docs/about/gigagas',
   },
   {
