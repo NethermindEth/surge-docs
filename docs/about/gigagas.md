@@ -5,7 +5,7 @@ title: Gigagas
 
 # Gigagas in Surge
 
-Surge Rollup is built on the Nethermind client, chosen for its proven performance at gigagas-scale throughput. Compatible across based, optimistic, and custom EVM rollups, it enables fast, reliable execution without compromise. [Learn more about Nethermind Execution Client](https://github.com/NethermindEth/nethermind).
+Surge Rollup is built on the Nethermind client, chosen for its proven performance at gigagas scale throughput. Compatible across based, optimistic, and custom EVM rollups, it enables fast, reliable execution without compromise. [Learn more about Nethermind Execution Client](https://github.com/NethermindEth/nethermind).
 
 ## What is Gigagas?
 
@@ -26,12 +26,12 @@ Gigagas is critical for evaluating the performance of rollups and execution clie
 
 ![Base-Mainnet Validation Throughput](./images/gigagas-throughput.png)
 
-The graph above demonstrates the performance of the Nethermind Execution Client, achieving gigagas-scale throughput. 
+The graph above demonstrates the performance of the Nethermind Execution Client, achieving gigagas scale throughput. 
 
-## Gigagas Implementation 
+## Gigagas with the Nethermind Execution Client
 
-The foundation of Gigagas performance in Surge lies in the **Nethermind Execution Client (NMC)**, a highly optimized Ethereum client designed to handle massive transaction throughput. Here’s how the Nethermind Execution Client enables Gigagas-scale performance:
+The foundation of Gigagas performance in Surge lies in the **Nethermind Execution Client (NMC)**, a highly optimized Ethereum client designed to handle massive transaction throughput. The Nethermind Execution Client achieves Gigagas scale performance through the following features:
 
 1. **Optimized Execution Engine:** The Nethermind Execution Client is designed to process transactions with minimal latency, ensuring high throughput.
-2. **Optimized Database Access:** The client implements mechanisms tightly integrated with optimized database access patterns. By reducing the overhead of reading and writing state data during transaction execution, the client ensures that gas usage is tracked efficiently without bottlenecks, enabling higher throughput.
-3. **Parallel Processing:** By utilizing multi-threading and parallel processing techniques, the client can handle multiple transactions simultaneously, further boosting performance.
+2. **Optimized Database Access:** The client reduces the overhead of reading and writing state data during transaction execution. This ensures efficient gas usage tracking without bottlenecks.
+3. **Parallel Processing:** By utilizing multithreading and parallel processing techniques, the client can handle multiple transactions simultaneously, further boosting performance.
