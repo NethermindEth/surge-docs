@@ -126,9 +126,24 @@ const config: Config = {
       insights: true,
 
       debug: false,
-      
+
     },
   } satisfies Preset.ThemeConfig,
+
+  plugins: [
+    [
+      '@gabrielcsapo/docusaurus-plugin-matomo',
+      {
+        siteId: '6',
+        matomoUrl: 'https://nethermind.matomo.cloud/',
+        siteUrl: 'https://www.surge.wtf',
+        trackerUrl: 'https://nethermind.matomo.cloud/matomo.php',
+        cookieDomain: '*.www.surge.wtf',
+        domains: ['*.www.surge.wtf', '*.docs.surge.wtf'],
+        enableCrossDomainLinking: true,
+      },
+    ],
+  ],
 };
 
 export default config;
