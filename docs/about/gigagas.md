@@ -5,7 +5,7 @@ title: Gigagas
 
 # Gigagas in Surge
 
-Surge Rollup is built on the Nethermind client, chosen for its proven performance at gigagas-scale throughput. Compatible across based, optimistic, and custom EVM rollups, it enables fast, reliable execution without compromise. [Learn more about Nethermind Execution Client](https://github.com/NethermindEth/nethermind).
+Surge Rollup is built on the Nethermind client, chosen for its proven performance at gigagas scale throughput. Compatible across based, optimistic, and custom EVM rollups, it enables fast, reliable execution without compromise. [Learn more about Nethermind Execution Client](https://github.com/NethermindEth/nethermind).
 
 ## What is Gigagas?
 
@@ -22,24 +22,16 @@ Gigagas is critical for evaluating the performance of rollups and execution clie
 
 - **Faster Transactions:** More transactions can be processed in less time.
 - **Scalability:** The system can handle a growing number of users and applications without performance degradation.
-- **Cost Efficiency:** Improved processing speeds can lead to lower transaction fees for users.
+- **Cost Efficiency:** Improved processing speeds result in lower transaction fees for users.
 
 ![Base-Mainnet Validation Throughput](./images/gigagas-throughput.png)
 
-The graph above demonstrates the performance of the Nethermind Execution Client, achieving gigagas-scale throughput. It highlights the client’s ability to process over 1000 MGas/s, far exceeding the Ethereum mainnet target of 1.25 MGas/s and the base mainnet target of 15 MGas/s.
+The graph above demonstrates the performance of the Nethermind Execution Client, achieving gigagas scale throughput. 
 
-## How Gigagas is Implemented in Surge
+## Gigagas with the Nethermind Execution Client
 
-Surge leverages the Nethermind Execution Client to achieve Gigagas performance. Here’s how it works:
+The foundation of Gigagas performance in Surge lies in the **Nethermind Execution Client (NMC)**, a highly optimized Ethereum client designed to handle massive transaction throughput. The Nethermind Execution Client achieves Gigagas scale performance through the following features:
 
 1. **Optimized Execution Engine:** The Nethermind Execution Client is designed to process transactions with minimal latency, ensuring high throughput.
-2. **Efficient Gas Accounting:** The client implements advanced gas accounting mechanisms to maximize the number of transactions processed per second.
-3. **Parallel Processing:** By utilizing multi-threading and parallel processing techniques, the client can handle multiple transactions simultaneously, further boosting performance.
-
-## Why Gigagas Matters for Surge Users
-
-For users of Surge, Gigagas translates to a seamless and efficient experience. Whether you are deploying smart contracts, interacting with decentralized applications, or simply transferring Ether, the high Gigagas performance ensures:
-
-- **Quick Confirmation Times:** Transactions are confirmed faster, reducing wait times.
-- **Reliable Performance:** Even during periods of high network activity, Surge maintains consistent performance.
-- **Future-Proof Scalability:** As the Ethereum ecosystem grows, Surge is well-equipped to handle increased demand.
+2. **Optimized Database Access:** The client reduces the overhead of reading and writing state data during transaction execution.
+3. **Parallel Processing:** By utilizing multithreading and parallel processing techniques, the client can handle multiple transactions simultaneously, further boosting performance.
