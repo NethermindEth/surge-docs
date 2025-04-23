@@ -33,5 +33,5 @@ The graph above demonstrates the performance of the Nethermind Execution Client,
 The foundation of Gigagas performance in Surge lies in the **Nethermind Execution Client (NMC)**, a highly optimized Ethereum client designed to handle massive transaction throughput. The Nethermind Execution Client achieves Gigagas scale performance through the following features:
 
 1. **Optimized Execution Engine:** The Nethermind Execution Client is designed to process transactions with minimal latency, ensuring high throughput.
-2. **Optimized Database Access:** The client reduces the overhead of reading and writing state data during transaction execution. This ensures efficient gas usage tracking without bottlenecks.
+2. **Optimized Database Access:** The client reduces the overhead of reading and writing state data during transaction execution.
 3. **Parallel Processing:** By utilizing multithreading and parallel processing techniques, the client can handle multiple transactions simultaneously, further boosting performance.
