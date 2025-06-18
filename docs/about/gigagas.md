@@ -9,7 +9,7 @@ Surge Rollup is built on the Nethermind client, chosen for its proven performanc
 
 ## What is Gigagas?
 
-If you’re new to Gigagas, think of it as a way to measure how fast an Ethereum client can process transactions. Ethereum transactions consume "gas", a unit that represents the computational effort required to execute operations. Gigagas (GPS) measures how many millions of gas units a client can process per second. 
+If you’re new to Gigagas, think of it as a way to measure how fast an Ethereum client can process transactions. Ethereum transactions consume "gas", a unit that represents the computational effort required to execute operations. Gigagas (GPS) measures how many billions of gas units a client can process per second. 
 
 For example:
 - A client processing **1 Gigagas per second** can handle transactions consuming 1 million gas units in one second.
