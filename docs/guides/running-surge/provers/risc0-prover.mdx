@@ -188,6 +188,33 @@ cargo --version
     TARGET=risc0 make install
     ```
 
+## Setting up Bento
+
+Bento is a proving server designed for RISC Zero applications. It handles proof generation requests and provides a dedicated service for ZK proof computation. The Raiko prover will request proofs from Bento to generate the necessary cryptographic proofs for the rollup. Learn more at the [RISC0 Bento repository](https://github.com/NethermindEth/risc0-bento/tree/main).
+
+### How to Run Bento
+
+1. Clone the Bento repository:
+    ```bash
+    git clone https://github.com/NethermindEth/risc0-bento.git
+    cd risc0-bento
+    ```
+
+2. Copy the sample environment file:
+    ```bash
+    cp bento/dockerfiles/sample.env ./
+    ```
+
+3. Build the Docker images:
+    ```bash
+    docker compose --file compose.yml --env-file sample.env up --build
+    ```
+
+4. Invoke the Bento CLI:
+    ```bash
+    RUST_LOG=info cargo run --bin bento_cli -- -e -c 32
+    ```
+
 ## Build Risc0 Program
 
 Run the following command:
@@ -220,7 +247,7 @@ You can retrieve the genesis timestamp from http://placeholder:33001/eth/v1/beac
 
 Run the following command:
 ```bash
-cargo build -F cuda --release --features risc0 -F raiko-tasks/in-memory
+cargo build -F cuda --release --features risc0 
 ```
 
 ## Run Raiko
@@ -230,7 +257,7 @@ Set the required environment variables:
 ```bash
 export GROTH16_VERIFIER_ADDRESS=0x7E2E7DD2Aead92e2e6d05707F21D4C36004f8A2B
 export GROTH16_VERIFIER_RPC_URL=http://placeholder:32002
-export RISC0_PROVER=local
+export BONSAI_API_URL=http://0.0.0.0:8081 # Your Bonsai (Bento) API URL
 ```
 Run Raiko in the background:
 ```bash
