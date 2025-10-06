@@ -1,0 +1,15 @@
+Both `chain_spec_list.json` and `config.json` files are placed in `raiko/host/config/devnet` for devnet and `raiko/host/config/testnet` for testnet.
+You could edit existing ones or create new ones based on your chain configuration.
+
+Here are the most important parameters to check in config.json:
+
+- `address`: the address of the prover server
+- `network`: the network name of the l2
+- `concurrency_limit`: the number of concurrent proving tasks the prover can handle
+- `l1_network`: the network name of the l1
+- `ballot_zk`: configuration for `zk_any` request.
+- `ballot_sgx`: configuration for `sgx_any` request.
+
+Basically this `config.json` file is used as default proof request config, but client could override it with specific values.
+
+File `chain_spec_list.json` is generated while deploying the protocol, you should just copy it. Don't change anything here unless you know what you are doing.
