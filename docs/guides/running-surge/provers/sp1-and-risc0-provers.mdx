@@ -1,0 +1,350 @@
+---
+sidebar_position: 3
+---
+
+import ConfigSetup from './_common/configs-setup.mdx';
+
+# SP1 & RISC Zero Provers
+
+This guide provides step-by-step instructions to set up the SP1 and RISC Zero provers for Surge using Docker.
+Due to the compatible nature of SP1 and RISC Zero, they can be run on the same machine, so the instructions for both provers are combined in this guide.
+
+### Prerequisites
+
+- Machine with CUDA support
+- Docker
+- L1 Accounts with funds (one for the prover, one for prover registry)
+- L1 RPC URL
+
+## Overview
+
+This guide covers setting up CUDA, CUDA Container Toolkit, and other dependencies required to run SP1 and RISC Zero provers on an x86 machine.
+
+For detailed information, refer to:
+- [**Succinct Documentation**](https://docs.succinct.xyz/introduction.html) 
+- [**RISC Zero Documentation**](https://dev.risczero.com/api/)
+
+
+---
+
+## Uninstall Existing CUDA (optional)
+
+Reference: [NVIDIA CUDA Installation Guide - Handle Conflicting Installation Methods](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#handle-conflicting-installation-methods)
+
+<details> 
+    Use the following command to uninstall a Toolkit runfile installation:
+    ```bash
+    sudo /usr/local/cuda-X.Y/bin/cuda-uninstaller
+    ```
+
+    Steps to Uninstall CUDA
+
+    1. Stop NVIDIA Persistenced Service (if running):
+        ```bash
+        sudo service nvidia-persistenced stop
+        ```
+    2. Remove CUDA Toolkit:
+        ```bash
+        sudo apt-get --purge remove "*cublas*" "cuda*" "nsight*"
+        ```
+    3. Remove NVIDIA Drivers:
+        ```bash
+        sudo apt-get --purge remove "*nvidia*"
+        ```
+    4. Remove Source File Installations (if applicable): Assuming the default installation location is /usr/local, remove it using:
+        ```bash
+        sudo rm -rf /usr/local/cuda*
+        ```
+</details>
+
+## Install CUDA
+
+Refer to the [CUDA Quick Start Guide](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#runfile-installer) for more information.
+
+1. Download and run the CUDA installer:
+    
+    Download the runfile CUDA installer from [here](https://developer.nvidia.com/cuda-downloads) for your OS.
+    The website will provide commands similar to:
+    ```bash
+    wget https://developer.download.nvidia.com/compute/cuda/13.0.1/local_installers/cuda_13.0.1_580.82.07_linux.run
+    sudo sh cuda_13.0.1_580.82.07_linux.run
+    ```
+
+2. If you encounter an error, the installer will create a file at:
+    ```bash
+    /etc/modprobe.d/nvidia-installer-disable-nouveau.conf
+    ```
+
+3. Reboot the system:
+    ```bash
+    sudo reboot
+    ```
+
+4. After rebooting, rerun the installer:
+    ```bash
+    sudo sh cuda_13.0.1_580.82.07_linux.run
+    ```
+
+5. Verify CUDA installation:
+    ```bash
+    ls /usr/local/ | grep cuda
+    ```
+
+6. Add environment variables:
+   
+   Open the `.bashrc` file:
+    ```bash
+    nano ~/.bashrc
+    ```
+    
+    Append the following lines to the end of the file:
+    ```bash
+    export PATH="/usr/local/cuda/bin:$PATH"
+    export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+    ```
+
+7. Apply the changes:
+    ```bash
+    source ~/.bashrc
+    ```
+
+## Installing the NVIDIA Container Toolkit
+
+Refer to the [NVIDIA Documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+### Installing with Apt
+
+1. Configure the production repository:
+   ```bash
+   curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg    && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |      sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |      sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+   ```
+
+2. Optionally, configure the repository to use experimental packages:
+   ```bash
+   sed -i -e '/experimental/ s/^#//g' /etc/apt/sources.list.d/nvidia-container-toolkit.list
+   ```
+
+3. Update the packages list from the repository:
+   ```bash
+   sudo apt-get update
+   ```
+
+4. Install the NVIDIA Container Toolkit packages:
+   ```bash
+   sudo apt-get install -y nvidia-container-toolkit
+   ```
+
+### Configuring Docker
+
+1. Configure the container runtime by using the `nvidia-ctk` command:
+   ```bash
+   sudo nvidia-ctk runtime configure --runtime=docker
+   ```
+
+   The `nvidia-ctk` command modifies the `/etc/docker/daemon.json` file on the host. The file is updated so that Docker can use the NVIDIA Container Runtime.
+
+2. Restart the Docker daemon:
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+
+---
+
+## RISC Zero Specific Setup
+
+If you intend to run the RISC Zero prover, you need to set up Bonsai (Bento):
+
+```bash 
+git clone https://github.com/NethermindEth/risc0-bento.git
+cd risc0-bento
+cp bento/dockerfiles/sample.env ./sample.env
+docker compose --file compose.yml --env-file sample.env up -d --build 
+```
+
+
+## Running Raiko in Docker
+
+### 1. Clone Raiko Repository
+```bash
+git clone https://github.com/NethermindEth/raiko.git
+cd raiko
+```
+
+### 2. Setup Chain Spec and Config
+
+<ConfigSetup/>
+
+### 3. Configure Environment Variables
+
+Copy the sample `.env` file:
+
+```bash
+cd raiko/docker
+cp .env.sample.zk .env
+```
+
+Edit the `.env` file and configure the following important variables:
+
+* `RAIKO_CONF_DIR` - Directory where your Raiko configuration files are stored. 
+* `BASE_CONFIG_FILE` - Base configuration file for Raiko inside $RAIKO_CONF_DIR.
+* `BASE_CHAINSPEC_FILE` - Base chainspec file for Raiko inside $RAIKO_CONF_DIR.
+* `SP1_PROVER` - Set to `local` to use local SP1 prover.
+* `SP1_VERIFIER_RPC_URL` - RPC URL of the L1 network where the SP1 verifier contract is deployed.
+* `SP1_VERIFIER_ADDRESS` - Address of the deployed SP1 verifier contract.
+* `GROTH16_VERIFIER_RPC_URL` - RPC URL of the L1 network
+* `GROTH16_VERIFIER_ADDRESS` - Address of the deployed Groth16 verifier contract.
+* `BONSAI_API_URL` - URL of the Bonsai API server.
+* `RUST_LOG` - Log level for Rust. Could be `info`, `debug`, `warn`, `error` or `trace`.
+
+### 4. Build and Run the Prover
+
+You have two options to run the prover:
+
+* Use a pre-built image from Docker Hub
+* Build the image yourself
+
+#### Using Pre-built Image from Docker Hub
+
+The `docker-compose.yml` file uses the latest Raiko SGX image from Docker Hub by default.
+Run the following commands:
+
+```bash
+cd docker 
+docker compose -f docker-compose-zk.yml up -d --force-recreate  # Run the prover in detached mode
+```
+
+To use a specific version, update the image tag in the `docker-compose.yml` file.
+Check the [Raiko repository](https://github.com/NethermindEth/raiko) for available releases.
+Update the `image` field in `docker/docker-compose.yml` for both `raiko` and `init` services.
+
+For example, if the latest release is v1.8.5-surge:
+
+```yaml
+services:
+  init:
+    image: nethermind.jfrog.io/core-oci-local-prod/raiko-sgx:v1.8.5-surge
+    ...
+  raiko:
+    image: nethermind.jfrog.io/core-oci-local-prod/raiko-sgx:v1.8.5-surge
+    ...
+```
+
+#### Build the Image Yourself
+
+You may want to build the image yourself if you have made local changes to the Raiko codebase or want to use a specific commit.
+
+To build the image from the `raiko` directory:
+
+```bash
+cd docker # Navigate to the docker directory inside raiko
+docker compose -f docker-compose-zk.yml up -d --force-recreate --build # Build and Run the prover
+```
+
+### 5. Verify the Prover is Running
+
+Your SP1/RISC Zero prover should now be operational. To verify it's running correctly, check the container logs:
+
+```bash
+docker logs -f raiko
+```
+
+The next step is to register your prover in the protocol. Follow the instructions in the [Register Provers](../register-provers.mdx) guide.
+
+
+
+
+## Non-Docker Setup Instructions
+
+If you need to run the prover without Docker, follow these instructions.
+Note that this is not the preferred method for running the prover.
+
+### 1. Install Dependencies
+
+For running without Docker (not preferred), you first need to install dependencies. See the details below:
+
+<details>
+Install Rust
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Install openssl
+```bash
+sudo apt-get install libssl-dev
+```
+
+Install package-config
+```bash
+sudo apt-get update
+sudo apt-get install pkg-config
+```
+
+Install sccache
+```bash
+cargo install sccache
+```
+
+Install gcc-12
+```bash
+sudo apt install gcc-12
+cd /usr/bin
+sudo rm gcc
+sudo ln -s gcc-12 gcc
+gcc --version
+```
+
+Install g++-12
+```bash
+sudo apt install g++-12
+sudo rm g++
+sudo ln -s g++-12 g++
+g++ --version
+```
+
+Install clang
+```bash
+sudo apt install clang
+```
+</details>
+
+### 2. Build SP1 and RISC Zero Provers
+
+Install SP1 and RISC Zero dependencies:
+```bash
+TARGET=sp1 make install
+TARGET=risc0 make install
+``` 
+
+Build guest files: 
+```bash
+cargo run --release --bin sp1-builder
+cargo run --release --bin risc0-builder
+```
+
+Build the prover with both SP1 and RISC Zero features (you can also build them separately if needed):
+```bash
+cargo build --release --features sp1,risc0
+```
+
+### 3. Run SP1 and RISC Zero Provers
+
+Set up environment variables:
+```bash
+export SP1_PROVER=local
+export SP1_VERIFIER_ADDRESS=<SP1_VERIFIER_ADDRESS>
+export SP1_VERIFIER_RPC_URL=<SP1_VERIFIER_RPC_URL>
+export GROTH16_VERIFIER_RPC_URL=<GROTH16_VERIFIER_RPC_URL>
+export GROTH16_VERIFIER_ADDRESS=<GROTH16_VERIFIER_ADDRESS>
+export BONSAI_API_URL=http://0.0.0.0:8081
+```
+
+Run the provers:
+
+```bash
+./target/release/raiko-host --chain-spec-path=host/config/devnet/chain_spec_list.json --config-path=host/config/devnet/config.json
+```
+
+:::note 
+If you compiled Raiko with both SP1 and RISC Zero features, both provers will be available in the same binary.
+:::
