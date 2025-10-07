@@ -1,0 +1,103 @@
+---
+title: Register Provers
+sidebar_position: 4
+---
+
+
+# Register Provers
+
+The Surge protocol requires provers to be registered before they can participate in block finalization. This guide walks you through the steps to register your provers in the Surge protocol.
+
+Registration is performed using the `surge-protocol-deployer.sh` script. 
+
+
+## 1. Obtain Registration Data from Each Running Prover
+
+This command returns a JSON object containing the necessary registration data for the prover:
+
+```bash
+curl $PROVER_ADDRESS:8080/guest_data
+```
+
+**Example response for SGX Prover:**
+```json
+[
+    {
+        "mr_enclave":"52050dea14b21eeb406f5a601cde76a63ac31e0cc0af1302d35d325ea06a9ddf",
+        "mr_signer":"a7317f292bbae4c7e6ef7bf0e384f6ed205684ce491e41f5b44a104f0e85b7ac",
+        "quote":"030002..."
+    }
+]
+```
+
+**Example response for SP1 & RISC Zero Prover:**
+```json
+[
+    {
+        "sp1":{
+            "aggregation_program_hash":"0x0051e71d61816e1a72571d433ebfb3ce67a92554d1ab8c9e18b0cafef23f969a",
+            "block_program_hash":"59ab1b8808734549005fcf7d37c05bfa45fbae2131d9a7451dba2e873dd23858"
+        },
+        "risc0":{
+            "aggregation_program_hash":"0c3e8d8db4f671fe408ce82baade219cb14113edb87ff456aff28f31920875e3",
+            "block_program_hash":"8d83a5bdbb90d40c3d0b335802d27de4e66d55d172496d833940a3758ac01204"
+        }
+    }
+]
+```
+
+## 2. Update Environment Variables
+
+:::tip
+If your deployment script is active at the moment, don't worry and just stop it by pressing `CTRL+C`. 
+You can safely restart it after you finish updating the environment variables.
+:::
+
+Update the corresponding environment variables in `simple-surge-node/.env` with the data obtained from each prover.
+
+**For SGX Prover:**
+- `MR_ENCLAVE`
+- `MR_SIGNER`
+- `V3_QUOTE_BYTES`
+
+**For SP1 & RISC Zero Prover:**
+- `SP1_AGGREGATION_PROGRAM_HASH`
+- `SP1_BLOCK_PROGRAM_HASH`
+- `RISC0_AGGREGATION_PROGRAM_HASH`
+- `RISC0_BLOCK_PROGRAM_HASH`
+
+## 3. Register the Provers
+
+Run the `surge-protocol-deployer.sh` script with the `register-provers` command to register your provers:
+
+```bash
+./surge-protocol-deployer.sh 
+```
+
+Follow the prompts and type "`true`" when the script asks:
+
+```
+Running provers? (true/false) [default: false] 
+```
+
+The script will then register the provers you specified and output the required environment variables to be set in your provers. You can update them in the `.env` files of each prover.
+
+:::note
+At this point you should have already set these values in your prover's `.env` file. Double-check them before proceeding.
+:::
+
+**Example output:**
+```bash 
+export SGX_INSTANCE_ID=0
+export SGX_ONTAKE_INSTANCE_ID=0
+export SGX_PACAYA_INSTANCE_ID=0
+export GROTH16_VERIFIER_ADDRESS=0x84BdbFC6B4196F5AEbe4eC4BC630BDA80b3f4511
+export SP1_VERIFIER_ADDRESS=0x7010CD7Cfe9D7b3b0CD96dFFF5e9b56bc131103E
+```
+
+## 4. Next Steps
+
+Now you can resume your [L2 Deployment process](../deploy-l2.mdx#5-depositing-bond) if you haven't completed that step yet. 
+
+
+
