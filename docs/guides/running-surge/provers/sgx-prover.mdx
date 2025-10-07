@@ -10,9 +10,9 @@ This guide provides step-by-step instructions to set up the SGX prover for Surge
 The SGX prover utilizes Intel's Software Guard Extensions (SGX) to create a secure environment for generating 
 cryptographic proofs that validate Layer 2 blocks.
 
-Sgx prover contains two components:
-- `sgx-reth` prover - Rust sgx prover that generates proofs for the rollup.
-- `sgx-geth` (Gaiko) prover - Golang sgx prover that generates proofs for the rollup.
+The SGX prover contains two components:
+- `sgx-reth` prover - Rust SGX prover that generates proofs for the rollup
+- `sgx-geth` (Gaiko) prover - Golang SGX prover that generates proofs for the rollup
 
 
 ### Prerequisites
@@ -23,6 +23,10 @@ Sgx prover contains two components:
 - L1 RPC URL
 
 ### 1. Fetch Collateral Information
+
+:::tip
+You can skip this section if you have already set up the PCCS configuration before.
+:::
 
 First, fetch the collateral information from Intel:
 
@@ -40,6 +44,11 @@ jq '.tcbInfo.fmspc |= ascii_downcase' ${TCB_FILE} > temp.json && mv temp.json ${
 
 
 ### 2. Generating PCCS Certificates
+
+:::tip
+You can skip this section if you have already generated the PCCS configuration before.
+:::
+
 Before running the Raiko Docker container, you need to fulfill some SGX-specific prerequisites, 
 which include setting up the PCCS (Provisioning Certificate Caching Service) configuration. 
 The PCCS service is responsible for retrieving PCK Certificates and other collaterals on-demand 
@@ -65,27 +74,21 @@ Download the configuration file:
 curl -s https://raw.githubusercontent.com/taikoxyz/raiko/refs/heads/main/docs/default.json > ~/.config/sgx-pccs/default.json
 ```
 
-Make sure you've copied the default.json into the `.config/sgx-pccs` directory you created earlier. 
-The raiko container will mount this as a volume. After copying the file, open it for editing and 
-fill in the below listed parameters as recommended by Intel's manual:
+Copy the `default.json` file to the `.config/sgx-pccs` directory you created earlier. The Raiko container will mount this as a volume. Open the file for editing and configure the following parameters as recommended by Intel's manual:
 
-* `ApiKey`: The PCCS uses this API key to request collaterals from Intel's Provisioning Certificate Service. User needs to subscribe first to obtain an API key. Use either the primary or secondary key you obtained from the previous step Subscribing to Intel PCS Service.
+* `ApiKey`: The PCCS uses this API key to request collaterals from Intel's Provisioning Certificate Service. You need to subscribe first to obtain an API key. Use either the primary or secondary key obtained from subscribing to Intel PCS Service.
 
-* `UserTokenHash`: SHA512 hash of the user token for the PCCS client user to register a platform. For example, PCK Cert ID retrieval tool will use the user token to send platform information to PCCS. (echo -n "user_password" | sha512sum | tr -d '[:space:]-').
+* `UserTokenHash`: SHA512 hash of the user token for the PCCS client to register a platform. The PCK Cert ID retrieval tool uses this token to send platform information to PCCS. Generate using: `echo -n "user_password" | sha512sum | tr -d '[:space:]-'`
 
-* `AdminTokenHash`: SHA512 hash of the administrator token for the PCCS administrator to perform a manual refresh of cached artifacts (echo -n "admin_password" | sha512sum | tr -d '[:space:]-').
+* `AdminTokenHash`: SHA512 hash of the administrator token for manual refresh of cached artifacts. Generate using: `echo -n "admin_password" | sha512sum | tr -d '[:space:]-'`
 
-* `hosts`: Replace it with "0.0.0.0".
+* `hosts`: Replace with `"0.0.0.0"`
 
 Ensure Docker can access the file by modifying its permissions:
 
 ```bash
 chmod 644 default.json
 ```
-
-:::note
-This configuration only needs to be done once. You can skip this section for subsequent deployments.
-:::
 
 
 ### 3. Setup Chain Spec and Config
@@ -96,26 +99,37 @@ This configuration only needs to be done once. You can skip this section for sub
 
 ### 4. Configure Environment Variables
 
-Copy sample `.env` file:
+Copy the sample `.env` file:
 
 ```bash
 cd raiko/docker
 cp .env.sample .env
 ```
 
-Update .env file if needed, here are the important variables to check:
+Edit the `.env` file and configure the following important variables:
 
-* `RAIKO_CONF_DIR` - Directory where your Raiko configuration files are stored. 
-* `BASE_CONFIG_FILE` - Base configuration file for Raiko inside $RAIKO_CONF_DIR.
-* `BASE_CHAINSPEC_FILE` - Base chainspec file for Raiko inside $RAIKO_CONF_DIR.
-* `SGX_*_INSTANCE_ID` - Sgx Instance Id for specific hardfork.
-* `SGXGETH_*_INSTANCE_ID` - SgxGeth (Gaiko) Instance Id for specific hardfork.
-* `RUST_LOG` - Log level for Rust. Could be `info`, `debug`, `warn`, `error` or `trace`.
+* `RAIKO_CONF_DIR` - Directory where your Raiko configuration files are stored
+* `BASE_CONFIG_FILE` - Base configuration file for Raiko inside `$RAIKO_CONF_DIR`
+* `BASE_CHAINSPEC_FILE` - Base chainspec file for Raiko inside `$RAIKO_CONF_DIR`
+* `SGX_*_INSTANCE_ID` - SGX Instance ID for specific hardfork
+* `SGXGETH_*_INSTANCE_ID` - SGXGeth (Gaiko) Instance ID for specific hardfork
+* `RUST_LOG` - Log level for Rust (`info`, `debug`, `warn`, `error`, or `trace`)
+
+:::tip
+You can leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE`, and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
+
+For `SGX_*_INSTANCE_ID` and `SGXGETH_*_INSTANCE_ID`, you can set all of them to `0` if it's your first time setting up the prover.
+:::
+
+:::note
+`SGX_*_INSTANCE_ID` and `SGXGETH_*_INSTANCE_ID` values represent the ID of registered SGX Instance. 
+If you haven't registered your prover yet, you should set them to `0`. Each subsequent re-registration will increase the ID by `1`.
+:::
 
 
-### 5. Build and Run 
+### 5. Build and Run the Prover
 
-Now you could run the prover. For that, you could either:
+You have two options to run the prover:
 
 * Use a pre-built image from Docker Hub
 * Build the image yourself
@@ -127,8 +141,8 @@ Run the following commands:
 
 ```bash
 cd docker # Navigate to the docker directory inside raiko
-docker compose up init                    # Initialize the prover
-docker compose up raiko -d --force-recreate  # Run the prover in detached mode
+docker compose up init # Initialize the prover
+docker compose up raiko -d --force-recreate # Run the prover in detached mode
 ```
 
 To use a specific version, update the image tag in the `docker-compose.yml` file.
@@ -167,9 +181,14 @@ Your SGX prover should now be operational. To verify it's running correctly, che
 docker logs -f raiko
 ```
 
-The next step is to register your prover in the protocol. Follow the instructions in the [Register Provers](../register-provers.mdx) guide.
-
 :::note
 If you encounter any issues while following these instructions, refer to the [Raiko Docker and RA Documentation](https://github.com/NethermindEth/raiko/blob/main/docs/README_Docker_and_RA.md) for additional guidance.
 :::
+
+### 7. Next Steps
+
+Next you can set up an SP1 & RISC Zero prover by following the instructions in the [SP1 & RISC Zero Prover](./sp1-and-risc0-provers.mdx) guide.
+
+If you have already done it, the next step is to register your provers in the protocol. Follow the instructions in the [Register Provers](./register-provers.mdx) guide.
+
 

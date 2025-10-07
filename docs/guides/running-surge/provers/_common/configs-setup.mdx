@@ -1,15 +1,23 @@
 Both `chain_spec_list.json` and `config.json` files are placed in `raiko/host/config/devnet` for devnet and `raiko/host/config/testnet` for testnet.
-You could edit existing ones or create new ones based on your chain configuration.
+You can edit existing configs or create new ones based on your chain configuration.
 
-Here are the most important parameters to check in config.json:
+:::tip
+If you are deploying a new chain with [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node) `surge-protocol-deployer.sh` script, `chain_spec_list.json` will be generated for you. 
+You just need to copy it from `simple-surge-node/configs/chain_spec_list_default.json` into your prover config folder
+(e.g. `raiko/host/config/devnet/chain_spec_list.json`).
+:::
 
-- `address`: the address of the prover server
-- `network`: the network name of the l2
-- `concurrency_limit`: the number of concurrent proving tasks the prover can handle
-- `l1_network`: the network name of the l1
-- `ballot_zk`: configuration for `zk_any` request.
-- `ballot_sgx`: configuration for `sgx_any` request.
+Here are the most important parameters to check in `config.json`:
 
-Basically this `config.json` file is used as default proof request config, but client could override it with specific values.
+- `address`: The address of the prover server
+- `network`: The network name of the L2
+- `concurrency_limit`: The number of concurrent proving tasks the prover can handle
+- `l1_network`: The network name of the L1
+- `ballot_zk`: Configuration for `zk_any` request
+- `ballot_sgx`: Configuration for `sgx_any` request
 
-File `chain_spec_list.json` is generated while deploying the protocol, you should just copy it. Don't change anything here unless you know what you are doing.
+This `config.json` file is used as the default proof request config, but clients can override it with specific values.
+
+:::note 
+The `chain_spec_list.json` file is generated when deploying the protocol. You should copy it as-is. Don't change anything in this file unless you know what you are doing.
+:::

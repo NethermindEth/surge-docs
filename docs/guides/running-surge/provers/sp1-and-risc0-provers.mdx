@@ -1,12 +1,22 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 import ConfigSetup from './_common/configs-setup.mdx';
 
 # SP1 & RISC Zero Provers
 
-This guide provides step-by-step instructions to set up the SP1 and RISC Zero provers for Surge using Docker.
+This guide provides step-by-step instructions to set up the SP1 and RISC Zero provers f:::tip
+You can leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE`, and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
+
+You can find `SP1_VERIFIER_ADDRESS` and `GROTH16_VERIFIER_ADDRESS` addresses 
+in the output of the `surge-protocol-deployer.sh` script under `Extracting Surge L1 SCs deployment results...` section. 
+`SP1_VERIFIER_ADDRESS` is called `SUCCINCT_VERIFIER` and `GROTH16_VERIFIER_ADDRESS` is called `RISC0_GROTH16_VERIFIER`.
+
+For `SP1_VERIFIER_RPC_URL` and `GROTH16_VERIFIER_RPC_URL`, you can use the same L1 RPC URL that you used while deploying the protocol.
+
+`BONSAI_API_URL` should be set to `http://0.0.0.0:8081` by default, if you didn't change the Bonsai configuration.
+:::ing Docker.
 Due to the compatible nature of SP1 and RISC Zero, they can be run on the same machine, so the instructions for both provers are combined in this guide.
 
 ### Prerequisites
@@ -186,16 +196,28 @@ cp .env.sample.zk .env
 
 Edit the `.env` file and configure the following important variables:
 
-* `RAIKO_CONF_DIR` - Directory where your Raiko configuration files are stored. 
-* `BASE_CONFIG_FILE` - Base configuration file for Raiko inside $RAIKO_CONF_DIR.
-* `BASE_CHAINSPEC_FILE` - Base chainspec file for Raiko inside $RAIKO_CONF_DIR.
-* `SP1_PROVER` - Set to `local` to use local SP1 prover.
-* `SP1_VERIFIER_RPC_URL` - RPC URL of the L1 network where the SP1 verifier contract is deployed.
-* `SP1_VERIFIER_ADDRESS` - Address of the deployed SP1 verifier contract.
+* `RAIKO_CONF_DIR` - Directory where your Raiko configuration files are stored
+* `BASE_CONFIG_FILE` - Base configuration file for Raiko inside `$RAIKO_CONF_DIR`
+* `BASE_CHAINSPEC_FILE` - Base chainspec file for Raiko inside `$RAIKO_CONF_DIR`
+* `SP1_PROVER` - Set to `local` to use local SP1 prover
+* `SP1_VERIFIER_RPC_URL` - RPC URL of the L1 network where the SP1 verifier contract is deployed
+* `SP1_VERIFIER_ADDRESS` - Address of the deployed SP1 verifier contract
 * `GROTH16_VERIFIER_RPC_URL` - RPC URL of the L1 network
-* `GROTH16_VERIFIER_ADDRESS` - Address of the deployed Groth16 verifier contract.
-* `BONSAI_API_URL` - URL of the Bonsai API server.
-* `RUST_LOG` - Log level for Rust. Could be `info`, `debug`, `warn`, `error` or `trace`.
+* `GROTH16_VERIFIER_ADDRESS` - Address of the deployed Groth16 verifier contract
+* `BONSAI_API_URL` - URL of the Bonsai API server
+* `RUST_LOG` - Log level for Rust (`info`, `debug`, `warn`, `error`, or `trace`)
+
+:::tip
+You could leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE` and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
+
+You could find `SP1_VERIFIER_ADDRESS` and `GROTH16_VERIFIER_ADDRESS` addresses 
+in the output of the `surge-protocol-deployer.sh` script under `Extracting Surge L1 SCs deployment results...` variable 
+`SP1_VERIFIER_ADDRESS` is called `SUCCINCT_VERIFIER` and `GROTH16_VERIFIER_ADDRESS` is called `RISC0_GROTH16_VERIFIER`.
+
+For `SP1_VERIFIER_RPC_URL` and `GROTH16_VERIFIER_RPC_URL`, you could use the same L1 RPC URL that you used while deploying the protocol.
+
+`BONSAI_API_URL` should be set to `http://0.0.0.0:8081` by default, if you didn't change the Bonsai configuration.
+:::
 
 ### 4. Build and Run the Prover
 
@@ -206,7 +228,7 @@ You have two options to run the prover:
 
 #### Using Pre-built Image from Docker Hub
 
-The `docker-compose.yml` file uses the latest Raiko SGX image from Docker Hub by default.
+The `docker-compose-zk.yml` file uses the latest Raiko ZK image from Docker Hub by default.
 Run the following commands:
 
 ```bash
@@ -214,19 +236,16 @@ cd docker
 docker compose -f docker-compose-zk.yml up -d --force-recreate  # Run the prover in detached mode
 ```
 
-To use a specific version, update the image tag in the `docker-compose.yml` file.
+To use a specific version, update the image tag in the `docker-compose-zk.yml` file.
 Check the [Raiko repository](https://github.com/NethermindEth/raiko) for available releases.
-Update the `image` field in `docker/docker-compose.yml` for both `raiko` and `init` services.
+Update the `image` field in `docker/docker-compose-zk.yml` for the `raiko` service.
 
 For example, if the latest release is v1.8.5-surge:
 
 ```yaml
 services:
-  init:
-    image: nethermind.jfrog.io/core-oci-local-prod/raiko-sgx:v1.8.5-surge
-    ...
   raiko:
-    image: nethermind.jfrog.io/core-oci-local-prod/raiko-sgx:v1.8.5-surge
+    image: nethermind.jfrog.io/core-oci-local-prod/raiko-zk:v1.8.5-surge
     ...
 ```
 
@@ -249,7 +268,11 @@ Your SP1/RISC Zero prover should now be operational. To verify it's running corr
 docker logs -f raiko
 ```
 
-The next step is to register your prover in the protocol. Follow the instructions in the [Register Provers](../register-provers.mdx) guide.
+### 6. Next Steps
+
+Next you can set up an SGX prover by following the instructions in the [SGX Prover](./sgx-prover.mdx) guide.
+
+If you have already done it, the next step is to register your provers in the protocol. Follow the instructions in the [Register Provers](./register-provers.mdx) guide.
 
 
 
@@ -339,6 +362,11 @@ export GROTH16_VERIFIER_ADDRESS=<GROTH16_VERIFIER_ADDRESS>
 export BONSAI_API_URL=http://0.0.0.0:8081
 ```
 
+:::tip
+Check the [3. Configure Environment Variables](#3-configure-environment-variables) 
+section above for more details on how to get these values.
+:::
+
 Run the provers:
 
 ```bash
@@ -348,3 +376,9 @@ Run the provers:
 :::note 
 If you compiled Raiko with both SP1 and RISC Zero features, both provers will be available in the same binary.
 :::
+
+### 4. Next Steps
+
+Next you can set up an SGX prover by following the instructions in the [SGX Prover](./sgx-prover.mdx) guide.
+
+If you have already done it, the next step is to register your provers in the protocol. Follow the instructions in the [Register Provers](./register-provers.mdx) guide.
