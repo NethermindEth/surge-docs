@@ -6,24 +6,14 @@ import ConfigSetup from './_common/configs-setup.mdx';
 
 # SP1 & RISC Zero Provers
 
-This guide provides step-by-step instructions to set up the SP1 and RISC Zero provers f:::tip
-You can leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE`, and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
-
-You can find `SP1_VERIFIER_ADDRESS` and `GROTH16_VERIFIER_ADDRESS` addresses 
-in the output of the `surge-protocol-deployer.sh` script under `Extracting Surge L1 SCs deployment results...` section. 
-`SP1_VERIFIER_ADDRESS` is called `SUCCINCT_VERIFIER` and `GROTH16_VERIFIER_ADDRESS` is called `RISC0_GROTH16_VERIFIER`.
-
-For `SP1_VERIFIER_RPC_URL` and `GROTH16_VERIFIER_RPC_URL`, you can use the same L1 RPC URL that you used while deploying the protocol.
-
-`BONSAI_API_URL` should be set to `http://0.0.0.0:8081` by default, if you didn't change the Bonsai configuration.
-:::ing Docker.
+This guide provides step-by-step instructions to set up SP1 and RISC Zero provers.
 Due to the compatible nature of SP1 and RISC Zero, they can be run on the same machine, so the instructions for both provers are combined in this guide.
 
 ### Prerequisites
 
 - Machine with CUDA support
 - Docker
-- L1 Accounts with funds (one for the prover, one for prover registry)
+- L1 accounts with funds (one for the prover, one for prover registry)
 - L1 RPC URL
 
 ## Overview
@@ -42,12 +32,12 @@ For detailed information, refer to:
 Reference: [NVIDIA CUDA Installation Guide - Handle Conflicting Installation Methods](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#handle-conflicting-installation-methods)
 
 <details> 
-    Use the following command to uninstall a Toolkit runfile installation:
+    <summary>Use the following command to uninstall a Toolkit runfile installation:</summary>
     ```bash
     sudo /usr/local/cuda-X.Y/bin/cuda-uninstaller
     ```
 
-    Steps to Uninstall CUDA
+    **Steps to Uninstall CUDA**
 
     1. Stop NVIDIA Persistenced Service (if running):
         ```bash
@@ -61,7 +51,7 @@ Reference: [NVIDIA CUDA Installation Guide - Handle Conflicting Installation Met
         ```bash
         sudo apt-get --purge remove "*nvidia*"
         ```
-    4. Remove Source File Installations (if applicable): Assuming the default installation location is /usr/local, remove it using:
+    4. **Remove Source File Installations (if applicable):** Assuming the default installation location is `/usr/local`, remove it using:
         ```bash
         sudo rm -rf /usr/local/cuda*
         ```
@@ -71,7 +61,7 @@ Reference: [NVIDIA CUDA Installation Guide - Handle Conflicting Installation Met
 
 Refer to the [CUDA Quick Start Guide](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#runfile-installer) for more information.
 
-1. Download and run the CUDA installer:
+1. **Download and run the CUDA installer:**
     
     Download the runfile CUDA installer from [here](https://developer.nvidia.com/cuda-downloads) for your OS.
     The website will provide commands similar to:
@@ -80,27 +70,27 @@ Refer to the [CUDA Quick Start Guide](https://docs.nvidia.com/cuda/cuda-quick-st
     sudo sh cuda_13.0.1_580.82.07_linux.run
     ```
 
-2. If you encounter an error, the installer will create a file at:
+2. **If you encounter an error,** the installer will create a file at:
     ```bash
     /etc/modprobe.d/nvidia-installer-disable-nouveau.conf
     ```
 
-3. Reboot the system:
+3. **Reboot the system:**
     ```bash
     sudo reboot
     ```
 
-4. After rebooting, rerun the installer:
+4. **After rebooting, rerun the installer:**
     ```bash
     sudo sh cuda_13.0.1_580.82.07_linux.run
     ```
 
-5. Verify CUDA installation:
+5. **Verify CUDA installation:**
     ```bash
     ls /usr/local/ | grep cuda
     ```
 
-6. Add environment variables:
+6. **Add environment variables:**
    
    Open the `.bashrc` file:
     ```bash
@@ -113,7 +103,7 @@ Refer to the [CUDA Quick Start Guide](https://docs.nvidia.com/cuda/cuda-quick-st
     export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
     ```
 
-7. Apply the changes:
+7. **Apply the changes:**
     ```bash
     source ~/.bashrc
     ```
@@ -124,36 +114,36 @@ Refer to the [NVIDIA Documentation](https://docs.nvidia.com/datacenter/cloud-nat
 
 ### Installing with Apt
 
-1. Configure the production repository:
+1. **Configure the production repository:**
    ```bash
    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg    && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |      sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |      sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
    ```
 
-2. Optionally, configure the repository to use experimental packages:
+2. **Optionally, configure the repository to use experimental packages:**
    ```bash
    sed -i -e '/experimental/ s/^#//g' /etc/apt/sources.list.d/nvidia-container-toolkit.list
    ```
 
-3. Update the packages list from the repository:
+3. **Update the packages list from the repository:**
    ```bash
    sudo apt-get update
    ```
 
-4. Install the NVIDIA Container Toolkit packages:
+4. **Install the NVIDIA Container Toolkit packages:**
    ```bash
    sudo apt-get install -y nvidia-container-toolkit
    ```
 
 ### Configuring Docker
 
-1. Configure the container runtime by using the `nvidia-ctk` command:
+1. **Configure the container runtime** by using the `nvidia-ctk` command:
    ```bash
    sudo nvidia-ctk runtime configure --runtime=docker
    ```
 
    The `nvidia-ctk` command modifies the `/etc/docker/daemon.json` file on the host. The file is updated so that Docker can use the NVIDIA Container Runtime.
 
-2. Restart the Docker daemon:
+2. **Restart the Docker daemon:**
    ```bash
    sudo systemctl restart docker
    ```
@@ -208,15 +198,12 @@ Edit the `.env` file and configure the following important variables:
 * `RUST_LOG` - Log level for Rust (`info`, `debug`, `warn`, `error`, or `trace`)
 
 :::tip
-You could leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE` and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
+You can leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE`, and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
 
-You could find `SP1_VERIFIER_ADDRESS` and `GROTH16_VERIFIER_ADDRESS` addresses 
-in the output of the `surge-protocol-deployer.sh` script under `Extracting Surge L1 SCs deployment results...` variable 
-`SP1_VERIFIER_ADDRESS` is called `SUCCINCT_VERIFIER` and `GROTH16_VERIFIER_ADDRESS` is called `RISC0_GROTH16_VERIFIER`.
+Some SP1 and GROTH16 environment variables will be generated for you in [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node) 
+`surge-protocol-deployer.sh` deployment script after the `Running provers? (true/false) [default: false]` prompt. Just use them.
 
-For `SP1_VERIFIER_RPC_URL` and `GROTH16_VERIFIER_RPC_URL`, you could use the same L1 RPC URL that you used while deploying the protocol.
-
-`BONSAI_API_URL` should be set to `http://0.0.0.0:8081` by default, if you didn't change the Bonsai configuration.
+`BONSAI_API_URL` should be set to `http://0.0.0.0:8081` by default if you didn't change the Bonsai configuration.
 :::
 
 ### 4. Build and Run the Prover
@@ -240,7 +227,7 @@ To use a specific version, update the image tag in the `docker-compose-zk.yml` f
 Check the [Raiko repository](https://github.com/NethermindEth/raiko) for available releases.
 Update the `image` field in `docker/docker-compose-zk.yml` for the `raiko` service.
 
-For example, if the latest release is v1.8.5-surge:
+For example, if the latest release is `v1.8.5-surge`:
 
 ```yaml
 services:
@@ -287,28 +274,30 @@ Note that this is not the preferred method for running the prover.
 For running without Docker (not preferred), you first need to install dependencies. See the details below:
 
 <details>
-Install Rust
+<summary>Install Dependencies</summary>
+
+**Install Rust**
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-Install openssl
+**Install openssl**
 ```bash
 sudo apt-get install libssl-dev
 ```
 
-Install package-config
+**Install package-config**
 ```bash
 sudo apt-get update
 sudo apt-get install pkg-config
 ```
 
-Install sccache
+**Install sccache**
 ```bash
 cargo install sccache
 ```
 
-Install gcc-12
+**Install gcc-12**
 ```bash
 sudo apt install gcc-12
 cd /usr/bin
@@ -317,7 +306,7 @@ sudo ln -s gcc-12 gcc
 gcc --version
 ```
 
-Install g++-12
+**Install g++-12**
 ```bash
 sudo apt install g++-12
 sudo rm g++
@@ -325,7 +314,7 @@ sudo ln -s g++-12 g++
 g++ --version
 ```
 
-Install clang
+**Install clang**
 ```bash
 sudo apt install clang
 ```
