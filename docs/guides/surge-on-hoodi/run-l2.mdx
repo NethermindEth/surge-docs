@@ -111,6 +111,69 @@ Provides a web-based interface to:
 - Monitor network activity
 - Track token transfers and balances
 
+## Regarding P2P Synchronization
+
+A bare-minimum Surge L2 node consists of two components: the **Driver** (from taiko-client) and an **Execution Client** (Nethermind in our case). When launching a node for the first time, you have two options to build the chain state:
+
+### Two Synchronization Methods
+
+**1. Manual Sync via L1**
+
+The driver iterates through all blocks from the L1 origin of L2 genesis to the latest L1 head, fetching `BatchProposed` events and blob sidecars (if present), then inserts blocks into the execution client one by one.
+
+This approach becomes problematic on mature chains because older L2 blobs may have already been pruned from the L1 beacon node (typically after ~18 days). To work around this, you would need either:
+- An archive L1 node that preserves all historical blobs in its consensus layer
+- A blob storage service (such as BlobScan) configured in the driver
+- P2P sync instead (recommended)
+
+**2. P2P Sync (Recommended)**
+
+P2P synchronization allows your node to build its chain state by downloading blocks directly from peer nodes in the network, bypassing the blob pruning limitation. The driver triggers beacon synchronization by making RPC calls to the execution client, which then initiates P2P sync using the provided bootnodes.
+
+:::tip Surge Testnet Default
+For Surge Testnet (Hoodi), P2P sync is enabled by default in the `.env.hoodi` configuration file. We provide our own checkpoint sync URL and bootnode addresses, so your node can synchronize quickly without any additional configuration.
+:::
+
+### Key Terminology
+
+**Bootnode**: A specialized node that serves as an entry point for new nodes joining the network via P2P. Bootnodes maintain information about active peer nodes and help newcomers discover and connect to the network. When your node starts with P2P sync enabled, it contacts the bootnode to obtain a list of peers to synchronize with.
+
+**Enode (Ethereum Node)**: A unique identifier for each node in the network, consisting of the node's public key and network address. It allows nodes to locate and establish connections with each other. An enode looks like:
+```
+enode://[node-id]@[ip-address]:[port]
+```
+
+The bootnode's enode address is what you configure in the `BOOT_NODES` environment variable.
+
+### Configuration Variables
+
+The simple-surge-node implementation provides these environment variables to control P2P synchronization:
+
+**`ENABLE_P2P_SYNC`**: Set to `true` to enable P2P synchronization or `false` to disable it. When enabled, your node will connect to bootnodes and synchronize via P2P instead of fetching all data from L1.
+
+**`BOOT_NODES`**: Enode addresses of bootnode(s) that your node will connect to for P2P synchronization. For Surge Testnet, these are pre-configured in the `.env.hoodi` file.
+
+**`P2P_SYNC_URL`**: A valid L2 HTTP RPC URL used as a checkpoint for faster synchronization. This helps your node determine the target block height to sync to.
+
+**`L2_NETWORK_DISCOVERY_PORT`**: The network port used for P2P communication and peer discovery.
+
+### When to Use P2P Sync
+
+**Enable P2P sync (recommended) when:**
+- Joining Surge Testnet or any established Surge network
+- The L1 beacon node has pruned older blobs (chains older than ~18 days)
+- You want faster synchronization by downloading blocks from existing peers
+- You don't have access to an archive L1 node or blob storage service
+
+**Disable P2P sync only when:**
+- You're setting up a completely new isolated network for development
+- You have a fresh chain where all blobs are still available on L1
+- You explicitly want to sync exclusively via L1 despite slower performance
+
+:::note Network Requirements
+If your node operates behind firewalls or NAT, ensure the P2P port specified in `L2_NETWORK_DISCOVERY_PORT` is open and properly forwarded to allow peer connections. This enables your node to participate fully in the P2P network.
+:::
+
 ## Verification
 
 After launching all components, ensure everything is running correctly by:
