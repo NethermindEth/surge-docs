@@ -47,11 +47,12 @@ Version:   1.6.0
 
 ### 2. Clone Repository
 
-Next, clone the `surge-devnet-package` repository and navigate into the directory:
+Next, clone the `surge-ethereum-package` repository and navigate into the directory:
 
 ```bash
-git clone https://github.com/NethermindEth/surge-devnet-package.git
-cd surge-devnet-package
+git clone https://github.com/NethermindEth/surge-ethereum-package.git
+cd surge-ethereum-package
+git checkout feat/surge-on-pacaya-fork
 ```
 
 ## Deploy the L1 Network
@@ -59,12 +60,8 @@ cd surge-devnet-package
 Once you've installed Kurtosis and cloned the repository, deploy the L1 network with the following command:
 
 ```bash
-kurtosis run --enclave surge-devnet . --args-file network_params.yaml --production
+./prepare-surge-devnet.sh
 ```
-
-:::tip
-This command not only deploys the L1 network but also automatically deploys the Taiko protocol on L1. Monitor your terminal output for details on the deployment progress.
-:::
 
 ## Verify Your Deployment
 
@@ -83,7 +80,7 @@ Check if the Execution Layer is running correctly by sending a simple [`web3_cli
 ```bash
 curl -X POST -H "Content-Type: application/json" \
      --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' \
-     http://127.0.0.1:32002
+     http://127.0.0.1:32003
 ```
 
 A successful response should look like:
