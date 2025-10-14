@@ -118,13 +118,11 @@ Edit the `.env` file and configure the following important variables:
 :::tip
 You can leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE`, and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
 
-For `SGX_*_INSTANCE_ID` and `SGXGETH_*_INSTANCE_ID`, you can set all of them to `0` if it's your first time setting up the prover.
+Environment variables `SGX_*_INSTANCE_ID` and `SGXGETH_*_INSTANCE_ID` will be generated for you
+in [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node) `surge-protocol-deployer.sh` deployment script 
+after `Running provers? (true/false) [default: false]` prompt.
 :::
 
-:::note
-`SGX_*_INSTANCE_ID` and `SGXGETH_*_INSTANCE_ID` values represent the ID of registered SGX Instance. 
-If you haven't registered your prover yet, you should set them to `0`. Each subsequent re-registration will increase the ID by `1`.
-:::
 
 
 ### 5. Build and Run the Prover
@@ -145,11 +143,18 @@ docker compose up init # Initialize the prover
 docker compose up raiko -d --force-recreate # Run the prover in detached mode
 ```
 
+:::tip
+If you want to re-initialize the prover, keep in mind that you need to delete existing keys:
+```bash
+rm -r ~/.config/raiko/secrets
+```
+:::
+
 To use a specific version, update the image tag in the `docker-compose.yml` file.
 Check the [Raiko repository](https://github.com/NethermindEth/raiko) for available releases.
 Update the `image` field in `docker/docker-compose.yml` for both `raiko` and `init` services.
 
-For example, if the latest release is v1.8.5-surge:
+For example, if the latest release is `v1.8.5-surge`:
 
 ```yaml
 services:
@@ -172,6 +177,13 @@ cd docker # Navigate to the docker directory inside raiko
 docker compose up init --build # Build and Init the prover
 docker compose up raiko -d --force-recreate --build # Build and Run the prover
 ```
+
+:::tip
+If you want to re-initialize the prover, keep in mind that you need to delete existing keys:
+```bash
+rm -r ~/.config/raiko/secrets
+```
+:::
 
 ### 6. Verify the Prover is Running
 
