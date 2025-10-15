@@ -49,20 +49,75 @@ And make sure to update the L1 URLs to match the ones you're using.
 `host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
 :::
 
+### 3. Start Components
 
-### 3. Start Script 
+You have two options to start the L2 components:
 
-Start the script for deploying Surge stack components:
+<Tabs>
+<TabItem value="docker" label="Option A: Docker Compose (Simpler)" default>
+
+This is the recommended approach for most users. L2 consists of the following components - launch the ones specific to your needs.
+
+:::tip
+You can run multiple profiles at once:
+
+```bash
+docker compose --profile <profile1> --profile <profile2> up -d
+```
+:::
+
+#### Driver
+
+:::tip
+If you just want to follow the L2 chain, launching just the driver is sufficient.
+:::
+
+Starts the Driver + Nethermind Execution Client for L2 network operation:
+
+```bash
+docker compose --profile driver up -d
+```
+
+#### Proposer
+
+Initiates the Proposer service for transaction bundling and block proposals:
+
+```bash
+docker compose --profile proposer up -d
+```
+
+#### Prover Relayer
+
+:::note
+If you did not deploy a prover in the previous setup steps, you can safely skip launching the prover relayer.
+:::
+
+Launches the Prover Relayer for proof relay:
+
+```bash
+docker compose --profile prover up -d
+```
+
+</TabItem>
+
+<TabItem value="script" label="Option B: Shell Script">
+
+Use the provided shell script for an interactive setup experience.
+
+#### Start Script
+
+Start the script for running Surge stack components:
+
 ```bash 
 ./surge-stack-deployer.sh
 ```
 
-You'll see the same prompts as in the [3. Start Protocol Deployment Script section](#3-start-protocol-deployment-script).
-Set the same values as before to ensure the script uses the correct configuration. 
+You'll see the same prompts as in the [3. Start Protocol Deployment Script section](../running-surge/deploy-l2.mdx#3-start-protocol-deployment-script).
+Set the same values as before to ensure the script uses the correct configuration.
 
-### 4. Stack Components
+#### Stack Components
 
-The script will ask you which components you want to deploy:
+The script will ask you which components you want to run:
 
 ```bash
 ╔══════════════════════════════════════════════════════════════╗
@@ -76,17 +131,14 @@ The script will ask you which components you want to deploy:
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
-- `Driver` - Starts the Nethermind Execution Client for L2 network operation
+- **Driver** - Starts the Nethermind Execution Client for L2 network operation
+- **Proposer** - Initiates the Proposer service for transaction bundling and block proposals
+- **Prover** - Starts the Prover Relayer for proof relay, this component requests proofs from your provers and submits them on-chain
+- **Spammer** - Launches a transaction spammer to generate load on the L2 network for testing purposes
 
-- `Proposer` - Initiates the Proposer service for transaction bundling and block proposals
+Choose the option that best fits your testing or running needs. For a full setup, select option `5` to run all components except the spammer.
 
-- `Prover` - Starts the Prover Relayer for proof relay, this component requests proofs from your provers and submits them on-chain.
-
-- `Spammer` - Launches a transaction spammer to generate load on the L2 network for testing purposes
-
-Choose the option that best fits your testing or deployment needs. For a full setup, select option `5` to deploy all components except the spammer.
-
-### 5. Relayer and Bridge UI
+#### Relayer and Bridge UI
 
 The script will ask you:
 
@@ -96,20 +148,16 @@ The script will ask you:
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
-In this step the script starts the relayer for L1 and L2 communication, starts several other components like Bridge UI and BlockScout.
+In this step the script starts the relayer for L1 and L2 communication, along with several other components like Bridge UI and BlockScout.
 
-#### Bridge UI
-The Bridge UI is the user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge’s cross-chain functionality. It relies on the underlying Relayer and smart contracts to facilitate these transfers securely.
+**Bridge UI**: The user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge's cross-chain functionality.
 
-#### Relayer 
-The Relayer is a key component that facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state. It ensures that Surge’s L2 state transitions are correctly reflected and verified on L1.
+**Relayer**: Facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state.
 
-#### BlockScout
-Provides a web-based interface to:
-- Explore blocks, transactions, and accounts
-- Verify smart contracts
-- Monitor network activity
-- Track token transfers and balances
+**BlockScout**: Provides a web-based interface to explore blocks, transactions, accounts, verify smart contracts, and monitor network activity.
+
+</TabItem>
+</Tabs>
 
 ## Regarding P2P Synchronization
 
