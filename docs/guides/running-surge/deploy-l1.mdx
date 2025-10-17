@@ -45,27 +45,98 @@ A Kurtosis engine is running with the following info:
 Version:   1.6.0
 ```
 
-### 2. Clone Repository
+### 2. Install Dependencies
+
+The deployment script requires the following tools:
+
+```bash
+# Install curl for HTTP requests (usually pre-installed on most systems)
+# On macOS (if not already installed)
+brew install curl
+
+# On Ubuntu/Debian (if not already installed)
+sudo apt-get install curl
+
+# On CentOS/RHEL (if not already installed)
+sudo yum install curl
+
+# Install jq for JSON processing (if not already installed)
+# On macOS
+brew install jq
+
+# On Ubuntu/Debian
+sudo apt-get install jq
+
+# On CentOS/RHEL
+sudo yum install jq
+```
+
+:::note
+`curl` is typically pre-installed on most modern systems, but the deployment script will check for its availability and notify you if it's missing.
+:::
+
+### 3. Clone Repository
 
 Next, clone the `surge-ethereum-package` repository and navigate into the directory:
 
 ```bash
 git clone https://github.com/NethermindEth/surge-ethereum-package.git
 cd surge-ethereum-package
-git checkout feat/surge-on-pacaya-fork
 ```
 
 ## Deploy the L1 Network
 
-Once you've installed Kurtosis and cloned the repository, deploy the L1 network with the following command:
+### Interactive Deployment
+
+The simplest way to deploy the L1 network is using the interactive deployment script:
 
 ```bash
-./prepare-surge-devnet.sh
+./deploy-surge-devnet-l1.sh
 ```
+
+The script will prompt you to choose:
+
+1. **Deployment Environment:**
+```bash 
+╔══════════════════════════════════════════════════════════════╗
+  ⚠️ Select deployment environment:                             
+║══════════════════════════════════════════════════════════════║
+║  0 for local (default)                                       ║
+║  1 for remote                                                ║
+╚══════════════════════════════════════════════════════════════╝
+```
+2. **Deployment Mode:**
+```bash 
+╔══════════════════════════════════════════════════════════════╗
+  ⚠️ Select deployment mode:                                    
+║══════════════════════════════════════════════════════════════║
+║  0 for silence (default)                                     ║
+║  1 for debug                                                 ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### Command Line Deployment
+
+For automated deployments or CI/CD pipelines, you can specify options directly:
+
+```bash
+# Local deployment in silence mode (default)
+./deploy-surge-devnet-l1.sh --environment local --mode silence
+
+# Remote deployment in debug mode
+./deploy-surge-devnet-l1.sh --environment remote --mode debug
+```
+
+### Deployment Options
+
+- **Local Environment**: Services are configured to be accessible via `localhost` or `127.0.0.1`
+- **Remote Environment**: Services are configured to be accessible via the machine's IP address, useful for accessing from other machines
+- **Silence Mode**: Shows minimal output with a progress indicator
+- **Debug Mode**: Shows detailed output for troubleshooting deployment issues
 
 ## Verify Your Deployment
 
-After deployment, verify that your environment is correctly set up by inspecting the Kurtosis enclave:
+After deployment, you can manually verify that your environment is correctly set up by inspecting the Kurtosis enclave:
 
 ```bash
 kurtosis enclave inspect surge-devnet
@@ -119,9 +190,93 @@ A successful response should resemble:
 
 This confirms the Consensus Layer is successfully running and synchronized.
 
+## Service Endpoints
+
+After successful deployment, the following services will be available:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Execution Layer RPC | `http://127.0.0.1:32003` | JSON-RPC endpoint for blockchain interactions |
+| Execution Layer WebSocket | `ws://127.0.0.1:32004` | WebSocket endpoint for real-time updates |
+| Consensus Layer API | `http://127.0.0.1:33001` | Beacon chain API endpoint |
+| Block Explorer | `http://127.0.0.1:36005` | Blockscout web interface |
+| Transaction Spammer UI | `http://127.0.0.1:36000` | Tool for generating test transactions |
+
+:::note
+If you deployed in remote mode, replace `127.0.0.1` with your machine's IP address.
+:::
+
+## Remove the L1 Network
+
+When you're done with the L1 network, you can clean it up using the removal script:
+
+### Interactive Removal
+
+```bash
+./remove-surge-devnet-l1.sh
+```
+
+The script will:
+1. Check if the Surge DevNet L1 enclave exists
+2. Display a confirmation prompt with details about what will be removed
+3. Remove all services, containers, and associated data
+4. Clean up system resources
+
+### Force Removal
+
+For automated cleanup without confirmation prompts:
+
+```bash
+./remove-surge-devnet-l1.sh --force
+```
+
+### What Gets Removed
+
+The removal process will permanently delete:
+- All running services and containers
+- Network configuration and data
+- Generated keys and artifacts
+- Unused Docker images and volumes (via `kurtosis clean`)
+
+:::warning
+The removal process is irreversible. Make sure to backup any important data before proceeding.
+:::
+
 ## Troubleshooting
 
-If you encounter any issues:
+### Common Issues
 
-1. Confirm that the `network_params.yaml` file is present in the `surge-ethereum-package` directory.
-2. Verify that Kurtosis is properly installed and running with the correct version (`kurtosis engine status`).
+If you encounter any issues during deployment:
+
+1. **Docker Issues**: Ensure Docker is running and your user has docker permissions
+2. **Port Conflicts**: Check if the required ports (32003, 32004, 33001, 36005, 36000) are available
+3. **Resource Issues**: Ensure sufficient system resources (CPU, memory, disk space)
+4. **Network Issues**: For remote deployments, verify network connectivity and firewall settings
+
+### Debug Mode
+
+If deployment fails, run with debug mode for detailed output:
+
+```bash
+./deploy-surge-devnet-l1.sh --mode debug
+```
+
+### Getting Help
+
+1. Check the deployment output saved in `/tmp/surge_devnet_l1_output_*`
+2. Verify that the `network_params.yaml` file is present in the repository
+3. Confirm Kurtosis is properly installed: `kurtosis engine status`
+4. Contact the Surge team with the deployment output for assistance
+
+### Redeployment
+
+If an enclave already exists, the deployment script will:
+1. Detect the existing enclave
+2. Prompt whether to redeploy (remove existing and create new)
+3. If you choose not to redeploy, it will show the current service endpoints
+
+To force a clean redeployment:
+```bash
+./remove-surge-devnet-l1.sh --force
+./deploy-surge-devnet-l1.sh
+```
