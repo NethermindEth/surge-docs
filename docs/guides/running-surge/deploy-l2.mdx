@@ -8,9 +8,9 @@ import TabItem from '@theme/TabItem';
 
 # Deploy L2 and Surge Protocols
 
-A Layer 2 network builds on top of Layer 1 to increase scalability and reduce transaction costs, while still inheriting L1’s security. For Surge, the L2 network is where user transactions are executed and blocks are proposed and proven.
+A Layer 2 network builds on top of Layer 1 to increase scalability and reduce transaction costs, while still inheriting L1's security. For Surge, the L2 network is where user transactions are executed and blocks are proposed and proven.
 
-This guide provides clear instructions for deploying Surge’s L2 components using the [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node), enabling you to run and test the core rollup logic.
+This guide provides clear instructions for deploying Surge's L2 components using the [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node), enabling you to run and test the core rollup logic.
 
 To see how L2 fits into the overall system, refer to the [Surge Architecture documentation](/docs/about/architecture).
 
@@ -29,14 +29,20 @@ cd simple-surge-node
 
 ### 2. Configure Environment
 
-Create your environment configuration file (`.env`) by copying the provided sample:
+The deployment script will automatically handle environment configuration. For Devnet deployments, if no `.env` file exists, the script will automatically copy `.env.devnet` to `.env`.
+
+For Staging or Testnet environments, you'll need to manually copy the appropriate environment file:
 
 ```bash
-cp .env.devnet .env
+# For Staging
+cp .env.staging .env
+
+# For Testnet  
+cp .env.testnet .env
 ```
 
 :::tip Environment Configuration
-The `.env.devnet` file includes default values for the devnet configuration, based on previously generated data. You can customize these values, such as L1 and L2 settings, genesis hashes, and addresses, as needed.
+The environment files include default values for each configuration (devnet, staging, testnet), based on previously generated data. You can customize these values, such as L1 and L2 settings, genesis hashes, and addresses, as needed.
 :::
 
 :::note
@@ -52,7 +58,7 @@ Run the deployment script with:
 ./surge-protocol-deployer.sh
 ```
 
-You'll be prompted to confirm the deployment parameters. Here are some of them:
+You'll be prompted to confirm the deployment parameters. Here are the main prompts:
 
 ```bash 
 ╔══════════════════════════════════════════════════════════════╗
@@ -64,13 +70,6 @@ You'll be prompted to confirm the deployment parameters. Here are some of them:
 ║ [default: Devnet]                                            ║
 ╚══════════════════════════════════════════════════════════════╝
 
-1
-
-╔══════════════════════════════════════════════════════════════╗
-  🚀 Using Devnet Environment
-╚══════════════════════════════════════════════════════════════╝
-
-
 ╔══════════════════════════════════════════════════════════════╗
   ⚠️ Select remote or local:
 ║══════════════════════════════════════════════════════════════║
@@ -78,8 +77,6 @@ You'll be prompted to confirm the deployment parameters. Here are some of them:
 ║ 1 for remote                                                 ║
 ║ [default: local]                                             ║
 ╚══════════════════════════════════════════════════════════════╝
-
-1
 
 ╔══════════════════════════════════════════════════════════════╗
   ⚠️ Select which devnet machine to use:
@@ -89,12 +86,6 @@ You'll be prompted to confirm the deployment parameters. Here are some of them:
 ║ [default: others]                                            ║
 ╚══════════════════════════════════════════════════════════════╝
 
-2
-
-╔══════════════════════════════════════════════════════════════╗
-  🚀 Using Devnet 2 (taiko-client)
-╚══════════════════════════════════════════════════════════════╝
-
 ╔══════════════════════════════════════════════════════════════╗
 ║ Use timelocked owner? (true/false) [default: false]          ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -102,17 +93,24 @@ You'll be prompted to confirm the deployment parameters. Here are some of them:
 
 #### Surge Environment
 
-The script is configured for Surge devnet, staging, and testnet environments.
-You can use devnet for local testing. 
+- **Devnet (1)**: For local testing and development. Deploys full protocol contracts.
+- **Staging (2)**: Uses pre-deployed staging environment. Skips protocol deployment and directs you to run `surge-stack-deployer.sh` directly.
+- **Testnet (3)**: Uses pre-deployed testnet environment. Skips protocol deployment and directs you to run `surge-stack-deployer.sh` directly.
+
+:::note Staging and Testnet
+For Staging and Testnet environments, the protocol contracts are already deployed. The script will exit and instruct you to copy the appropriate `.env` file and run `surge-stack-deployer.sh` directly.
+:::
 
 #### Remote or Local
 
-Choose `local` if you are deploying everything on a single machine. Choose `remote` if you are deploying across multiple machines.
+Choose `local` if you are deploying everything on a single machine. Choose `remote` if you are deploying across multiple machines or connecting to remote devnet instances.
 
-#### Devnet Machine
+#### Devnet Machine (Devnet + Remote only)
 
-This option is only available when you select `Devnet` environment. 
-If you are deploying custom devnet, choose `others`.
+This option is only available when you select `Devnet` environment and `remote` deployment:
+- **Devnet 1 (prover)**: Connects to `devnet-one.surge.wtf`
+- **Devnet 2 (taiko-client)**: Connects to `devnet-two.surge.wtf`  
+- **Others**: Uses your machine's IP address for custom devnet deployment
 
 #### Timelocked Owner 
 
@@ -124,15 +122,13 @@ For testing and non-production environments, you can safely choose `false` to si
 
 Note that with a timelocked owner you won't be able to re-register provers and change these parameters later without redeploying the protocol.
 
-
-
 :::tip 
 After these prompts, the script will deploy protocol contracts and output addresses of created smart contracts.
 Some of these addresses (e.g. `SUCCINCT_VERIFIER`, `RISC0_GROTH16_VERIFIER`) are required for prover configuration.
 You can also find these addresses in the `deployment/deploy_l1.json` file.
 :::
 
-:::tip
+:::tip Resuming Deployment
 You can safely cancel the script at any time by pressing `Ctrl + C`. The script saves the progress and you can resume later.
 If you have already deployed the protocol contracts, the script will ask you: 
 ```bash
@@ -146,21 +142,35 @@ If you have already deployed the protocol contracts, the script will ask you:
 Here you can redeploy the protocol or just use the existing deployment.
 :::
 
-
 ### 4. Prover Deployment
 
 In Surge, provers are required to be registered in the protocol before they can start proving tasks.
-In the next step you will be asked whether provers are running and ready for registration:
+The script will ask whether provers are running and ready for registration:
 
 ```bash
 ╔══════════════════════════════════════════════════════════════╗
 ║ Running provers? (true/false) [default: false]               ║
 ╚══════════════════════════════════════════════════════════════╝
 ```
-You can type `false` and skip this step if you don't want to run provers.
-Otherwise, if you want to run provers, just type `true` and follow the instructions in the 
-[Provers Setup Guide](provers/index.mdx) to deploy and register your provers before continuing.
 
+If you choose `true`, the script will guide you through setting up different prover types:
+
+#### SGX Provers
+- **SGX Raiko (RETH)**: For SGX-based proving with RETH execution
+- **SGX Gaiko (GETH)**: For SGX-based proving with GETH execution
+
+#### ZK Provers  
+- **SP1**: For SP1-based zero-knowledge proving
+- **RISC0**: For RISC0-based zero-knowledge proving
+
+For each prover type you choose to run, the script will:
+1. Retrieve guest data from your prover endpoints
+2. Validate required parameters (MR_ENCLAVE, MR_SIGNER, program keys, etc.)
+3. Set up and register the verifier contracts
+
+You can type `false` and skip this step if you don't want to run provers.
+Otherwise, if you want to run provers, follow the instructions in the 
+[Provers Setup Guide](provers/index.mdx) to deploy and register your provers before continuing.
 
 ### 5. Depositing Bond 
 
@@ -170,15 +180,22 @@ The script will ask you whether you want to deposit the proving liveness bond fo
 ╔══════════════════════════════════════════════════════════════╗
 ║ Deposit bond? (true/false) [default: true]                   ║
 ╚══════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════╗
+║ Enter bond amount (in ETH, default: 1000)                    ║
+╚══════════════════════════════════════════════════════════════╝
 ```
 
 It's recommended to deposit the bond to ensure your provers remain active and available for proving tasks.
-Type `true` and then follow the prompts to complete the bond deposit process.
+The default bond amount is 1000 ETH (converted to wei automatically).
 
 ### 6. Next Steps
 
-After completing the protocol deployment, you can proceed to deploy Surge stack components.
+After completing the protocol deployment, you can proceed to deploy Surge stack components using:
 
+```bash
+./surge-stack-deployer.sh
+```
 
 ## Stack Deployment
 
@@ -189,12 +206,16 @@ Start the script for deploying Surge stack components:
 ./surge-stack-deployer.sh
 ```
 
-You'll see the same prompts as in the [3. Start Protocol Deployment Script section](#3-start-protocol-deployment-script).
-Set the same values as before to ensure the script uses the correct configuration. 
+You'll see the same environment selection prompts as in the protocol deployment script.
+Set the same values as before to ensure the script uses the correct configuration.
+
+:::tip Environment File
+The stack deployer will check for an existing `.env` file. If not found, it will exit with an error asking you to create one first by running the protocol deployer.
+:::
 
 ### 2. Stack Components
 
-The script will ask you which components you want to deploy:
+The script will ask you which L2 stack components you want to deploy:
 
 ```bash
 ╔══════════════════════════════════════════════════════════════╗
@@ -208,15 +229,13 @@ The script will ask you which components you want to deploy:
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
-- `Driver` - Starts the Nethermind Execution Client for L2 network operation
+- **Driver** - Starts the Nethermind Execution Client for L2 network operation
+- **Proposer** - Initiates the Proposer service for transaction bundling and block proposals  
+- **Prover** - Starts the Prover Relayer for proof relay, this component requests proofs from your provers and submits them on-chain
+- **Spammer** - Launches a transaction spammer to generate load on the L2 network for testing purposes
+- **BlockScout** - Block explorer for L2 (included in all options)
 
-- `Proposer` - Initiates the Proposer service for transaction bundling and block proposals
-
-- `Prover` - Starts the Prover Relayer for proof relay, this component requests proofs from your provers and submits them on-chain.
-
-- `Spammer` - Launches a transaction spammer to generate load on the L2 network for testing purposes
-
-Choose the option that best fits your testing or deployment needs. For a full setup, select option `5` to deploy all components except the spammer.
+Choose the option that best fits your testing or deployment needs. For a full setup, select the default (all components) or option `5` to deploy all components except the spammer.
 
 ### 3. Relayer and L2 Smart Contracts
 
@@ -228,14 +247,27 @@ The script will ask you:
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
-In this step the script starts the relayer for L1 and L2 communication, deploys L2 smart contracts 
-and starts several other components like Bridge UI and BlockScout.
+If you choose `true`, the script will:
+
+1. **Deploy L2 Smart Contracts** (for Devnet only) - Deploys the L2 side of the bridge contracts
+2. **Initialize Services** - Sets up database and message queues
+3. **Run Migrations** - Executes database schema migrations  
+4. **Start Relayers** - Launches L1 and L2 relayer services
+5. **Generate Bridge UI Configs** - Creates configuration files for the Bridge UI
+6. **Start Bridge UI** - Launches the user interface for cross-chain transfers
 
 #### Bridge UI
-The Bridge UI is the user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge’s cross-chain functionality. It relies on the underlying Relayer and smart contracts to facilitate these transfers securely.
+The Bridge UI is the user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge's cross-chain functionality. It relies on the underlying Relayer and smart contracts to facilitate these transfers securely.
+
+The script automatically generates configuration files including:
+- `configs/configuredBridges.json` - Bridge contract addresses
+- `configs/configuredChains.json` - Chain configurations  
+- `configs/configuredRelayer.json` - Relayer endpoints
+- `configs/configuredEventIndexer.json` - Event indexer configuration
+- `configs/configuredCustomTokens.json` - Custom token configurations
 
 #### Relayer 
-The Relayer is a key component that facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state. It ensures that Surge’s L2 state transitions are correctly reflected and verified on L1.
+The Relayer is a key component that facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state. It ensures that Surge's L2 state transitions are correctly reflected and verified on L1.
 
 #### BlockScout
 Provides a web-based interface to:
@@ -244,17 +276,45 @@ Provides a web-based interface to:
 - Monitor network activity
 - Track token transfers and balances
 
+## Cleanup and Management
 
+### Removing Deployment
+
+To clean up your deployment, use the removal script:
+
+```bash
+./surge-remover.sh
+```
+
+This script will:
+- Stop and remove all Docker containers
+- Clean up databases and data directories
+- Remove generated configuration files
+- Remove Docker networks
+- Preserve the `.env` file (commented out by default)
+
+:::warning Data Loss
+The removal script will permanently delete all blockchain data, databases, and configurations. Make sure to backup any important data before running this script.
+:::
 
 ## Verification
 
 After deploying all components, ensure everything is running correctly by:
 
-- Checking the status of Docker containers using `docker compose ps`.
-- Checking prover logs to ensure they are operating correctly.
-- Sending test transactions on L2 and verifying they are processed and finalized on L1.
+- Checking the status of Docker containers using `docker compose ps`
+- Checking prover logs to ensure they are operating correctly
+- Sending test transactions on L2 and verifying they are processed and finalized on L1
 - Accessing BlockScout for L1 and L2 chain exploration and verification:
-  - *L1 BlockScout:* [http://localhost:36004](http://localhost:36004)
-  - *L2 BlockScout:* [http://localhost:4000](http://localhost:4000)
+  - **L1 BlockScout:** `http://localhost:36005` (or your configured port)
+  - **L2 BlockScout:** `http://localhost:3000` (or your configured `BLOCKSCOUT_FRONTEND_PORT`)
+- Accessing the Bridge UI: `http://localhost:3001` (or your configured port)
+- Checking relayer APIs:
+  - **L1 Relayer:** `http://localhost:4102`
+  - **L2 Relayer:** `http://localhost:4103`
 
-
+:::tip Port Configuration
+The actual ports may vary based on your `.env` configuration. Check your environment variables for the exact ports:
+- `L2_HTTP_PORT` (default: 8547) for L2 RPC
+- `BLOCKSCOUT_FRONTEND_PORT` (default: 3000) for BlockScout
+- Relayer ports are typically 4102 (L1) and 4103 (L2)
+:::
