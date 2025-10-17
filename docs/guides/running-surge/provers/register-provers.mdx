@@ -1,0 +1,57 @@
+---
+title: Register Provers
+sidebar_position: 4
+---
+
+
+# Register Provers
+
+The Surge protocol requires provers to be registered before they can participate in block finalization. 
+This guide walks you through the steps to register your provers in the Surge protocol.
+
+Registration is performed using the `surge-protocol-deployer.sh` script, right after the 
+`Running provers? (true/false) [default: false]` prompt. 
+
+:::tip
+If you skipped the `Running provers?` step during deployment or 
+canceled the script, you can run it again to register your provers.
+
+The deployment script will find the existing deployment and ask you whether you want to continue with it or start a new one.
+:::
+
+
+## 1. Specify Prover Machine Addresses
+
+Right after the `Running provers? (true/false) [default: false]` prompt, 
+you will be prompted to enter the addresses of your running provers.
+Simply type the address (e.g. `http://localhost:8080`) for each machine. 
+
+:::tip
+Typically, prover machines should be two: one for SGX (both SGX_RETH and SGX_GETH) and one for 
+ZK provers (SP1 and RISC Zero).
+:::
+
+
+## 2. Specify Provers You Want to Register 
+
+The script will generate `chain_spec_list.json` and environment variables for your provers.
+
+Next, it will ask you to specify which provers you want to register:
+
+```bash
+╔══════════════════════════════════════════════════════════════╗
+║ Running SGX Raiko? (true/false) [default: false]              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Simply type "`true`" for provers you want to register and "`false`" for the others.
+The script will automatically pull the registration data from each running prover and register 
+them for you.
+
+
+## 3. Next Steps
+
+Now you can resume your [L2 Deployment process](../deploy-l2.mdx#5-depositing-bond) if you haven't completed that step yet. 
+
+
+

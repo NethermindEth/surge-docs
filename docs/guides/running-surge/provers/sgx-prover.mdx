@@ -2,16 +2,31 @@
 sidebar_position: 1
 ---
 
-# Deploy SGX Prover
+import ConfigSetup from './_common/configs-setup.mdx';
+
+# SGX Prover
+
+This guide provides step-by-step instructions to set up the SGX prover for Surge using Docker. 
+The SGX prover utilizes Intel's Software Guard Extensions (SGX) to create a secure environment for generating 
+cryptographic proofs that validate Layer 2 blocks.
+
+The SGX prover contains two components:
+- `sgx-reth` prover - Rust SGX prover that generates proofs for the rollup
+- `sgx-geth` (Gaiko) prover - Golang SGX prover that generates proofs for the rollup
+
 
 ### Prerequisites
 
 - Machine with SGX support
+- Docker
 - L1 Accounts with funds (one for the prover, one for prover registry)
 - L1 RPC URL
-- L1 Account Private Key
 
 ### 1. Fetch Collateral Information
+
+:::tip
+You can skip this section if you have already set up the PCCS configuration before.
+:::
 
 First, fetch the collateral information from Intel:
 
@@ -27,94 +42,165 @@ curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/qe/ident
 jq '.tcbInfo.fmspc |= ascii_downcase' ${TCB_FILE} > temp.json && mv temp.json ${TCB_FILE}
 ```
 
-### 2. Build and Initialize Image
 
-Follow the instructions at [Raiko Docker and RA Documentation](https://github.com/NethermindEth/raiko/blob/main/docs/README_Docker_and_RA.md) to build and initialize the image.
+### 2. Generating PCCS Certificates
 
-### 3. Get Quote and Measurement Values
-
-Retrieve the `quote`, `MRENCLAVE`, and `MRSIGNER` values:
-
-```bash
-# Get quote
-cat ~/.config/raiko/config/bootstrap.json | jq -r '.quote'
-
-# Get MRENCLAVE and MRSIGNER
-cat ~/.config/raiko/config/bootstrap.json | jq -r '.quote' | xxd -r -p > quote.bin
-gramine-sgx-quote-view quote.bin
-```
-
-The output will contain important measurement values including:
-
-- MRENCLAVE: `14c4362d5dd0af9721ef9bdea2c92bf84b67fe34a102c892182ce2be7a81f2c5`
-- MRSIGNER: `ca0583a715534a8c981b914589a7f0dc5d60959d9ae79fb5353299a4231673d5`
-
-### 4. Register Collaterals 
-
-:::note Skip if Using Kurtosis
-If you're using the Kurtosis Package to deploy L1, you can skip this section.
+:::tip
+You can skip this section if you have already generated the PCCS configuration before.
 :::
 
-Use `config_dcap_sgx_verifier.sh` or the script below to register the collaterals and the instance. For more information, see the following:
-<details>
-  #### Set Environment Variables
+Before running the Raiko Docker container, you need to fulfill some SGX-specific prerequisites, 
+which include setting up the PCCS (Provisioning Certificate Caching Service) configuration. 
+The PCCS service is responsible for retrieving PCK Certificates and other collaterals on-demand 
+from the internet at runtime, and then caching them in a local database. 
+The PCCS exposes similar HTTPS interfaces as Intel's Provisioning Certificate Service.
 
-  ```bash
-  export FOUNDRY_PROFILE=layer1
-  export MR_ENCLAVE=14c4362d5dd0af9721ef9bdea2c92bf84b67fe34a102c892182ce2be7a81f2c5
-  export MR_SIGNER=ca0583a715534a8c981b914589a7f0dc5d60959d9ae79fb5353299a4231673d5
-  export QEID_PATH="/test/qe_identity"
-  export TCB_INFO_PATH="/test/tcb"
-  export V3_QUOTE_BYTES=${Quote}
-  export SGX_VERIFIER_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
-  export ATTESTATION_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
-  export PEM_CERTCHAIN_ADDRESS=0x303CB317624c74bB20Acbb9E13c8D745C6379826
-  export FMSPC=00906ED50000
-  ```
-
-  #### SGX TCB Setup Script
-
-  ```bash
-  docker run \
-    -e TASK_ENABLE="[1,1,1,1,1,1]" \
-    -e MR_ENCLAVE=${MR_ENCLAVE} \
-    -e MR_SIGNER=${MR_SIGNER} \
-    -e QEID_PATH=${QEID_PATH} \
-    -e TCB_INFO_PATH=${TCB_INFO_PATH} \
-    -e V3_QUOTE_BYTES=${V3_QUOTE_BYTES} \
-    -e SGX_VERIFIER_ADDRESS=${SGX_VERIFIER_ADDRESS} \
-    -e ATTESTATION_ADDRESS=${ATTESTATION_ADDRESS} \
-    -e PEM_CERTCHAIN_ADDRESS=${PEM_CERTCHAIN_ADDRESS} \
-    -e FMSPC=${FMSPC} \
-    -e TCB_FILE=${TCB_FILE} \
-    -e QE_IDENTITY_FILE=${QE_IDENTITY_FILE} \
-    -e PRIVATE_KEY=${PRIVATE_KEY} \
-    nethsurge/protocol:surge-devnet \
-    sh -c 'curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/tcb?fmspc=${FMSPC}" > ${TCB_FILE} && \
-          curl -X GET "https://api.trustedservices.intel.com/sgx/certification/v3/qe/identity" > ${QE_IDENTITY_FILE} && \
-          jq ".tcbInfo.fmspc |= ascii_downcase" ${TCB_FILE} > temp.json && \
-          mv temp.json ${TCB_FILE} && \
-          forge script ./script/layer1/SetDcapParams.s.sol:SetDcapParams \
-          --private-key ${PRIVATE_KEY} \
-          --fork-url ${L1_RPC_URL} \
-          --broadcast --evm-version cancun --ffi -vvvv --block-gas-limit 100000000 --legacy'
-  ```
-</details>
-
-### 5. Configure and Run Raiko
-
-Set up the following environment variables:
+Begin the configuration process by generating an SSL certificate:
 
 ```bash
-export SGX_INSTANCE_ID=0
-export L1_NETWORK=surge_dev_l1
-export NETWORK=surge_dev
-export SGX_VERIFIER_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
-export ATTESTATION_ADDRESS=0xaE37C7A711bcab9B0f8655a97B738d6ccaB6560B
-export PEM_CERTCHAIN_ADDRESS=0x303CB317624c74bB20Acbb9E13c8D745C6379826
-export PROVER_PRIVATE_KEY=0x53321db7c1e331d93a11a41d16f004d7ff63972ec8ec7c25db329728ceeb1710
-export PRIVATE_KEY=0x53321db7c1e331d93a11a41d16f004d7ff63972ec8ec7c25db329728ceeb1710
-export FORK_URL=https://placeholder:32002
+mkdir ~/.config
+mkdir ~/.config/sgx-pccs
+cd ~/.config/sgx-pccs
+openssl genrsa -out private.pem 2048
+chmod 644 private.pem  # Docker container needs access
+openssl req -new -key private.pem -out csr.pem
+openssl x509 -req -days 365 -in csr.pem -signkey private.pem -out file.crt
+rm csr.pem
 ```
 
-Then run Raiko following the configuration instructions in the [Raiko Docker and RA Documentation](https://github.com/NethermindEth/raiko/blob/main/docs/README_Docker_and_RA.md#running-raiko).
+Download the configuration file:
+
+```bash
+curl -s https://raw.githubusercontent.com/taikoxyz/raiko/refs/heads/main/docs/default.json > ~/.config/sgx-pccs/default.json
+```
+
+Copy the `default.json` file to the `.config/sgx-pccs` directory you created earlier. The Raiko container will mount this as a volume. Open the file for editing and configure the following parameters as recommended by Intel's manual:
+
+* `ApiKey`: The PCCS uses this API key to request collaterals from Intel's Provisioning Certificate Service. You need to subscribe first to obtain an API key. Use either the primary or secondary key obtained from subscribing to Intel PCS Service.
+
+* `UserTokenHash`: SHA512 hash of the user token for the PCCS client to register a platform. The PCK Cert ID retrieval tool uses this token to send platform information to PCCS. Generate using: `echo -n "user_password" | sha512sum | tr -d '[:space:]-'`
+
+* `AdminTokenHash`: SHA512 hash of the administrator token for manual refresh of cached artifacts. Generate using: `echo -n "admin_password" | sha512sum | tr -d '[:space:]-'`
+
+* `hosts`: Replace with `"0.0.0.0"`
+
+Ensure Docker can access the file by modifying its permissions:
+
+```bash
+chmod 644 default.json
+```
+
+
+### 3. Setup Chain Spec and Config
+
+<ConfigSetup/>
+
+
+
+### 4. Configure Environment Variables
+
+Copy the sample `.env` file:
+
+```bash
+cd raiko/docker
+cp .env.sample .env
+```
+
+Edit the `.env` file and configure the following important variables:
+
+* `RAIKO_CONF_DIR` - Directory where your Raiko configuration files are stored
+* `BASE_CONFIG_FILE` - Base configuration file for Raiko inside `$RAIKO_CONF_DIR`
+* `BASE_CHAINSPEC_FILE` - Base chainspec file for Raiko inside `$RAIKO_CONF_DIR`
+* `SGX_*_INSTANCE_ID` - SGX Instance ID for specific hardfork
+* `SGXGETH_*_INSTANCE_ID` - SGXGeth (Gaiko) Instance ID for specific hardfork
+* `RUST_LOG` - Log level for Rust (`info`, `debug`, `warn`, `error`, or `trace`)
+
+:::tip
+You can leave `RAIKO_CONF_DIR`, `BASE_CONFIG_FILE`, and `BASE_CHAINSPEC_FILE` as default if you have placed your config files in `raiko/host/config/devnet`.
+
+Environment variables `SGX_*_INSTANCE_ID` and `SGXGETH_*_INSTANCE_ID` will be generated for you
+in [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node) `surge-protocol-deployer.sh` deployment script 
+after `Running provers? (true/false) [default: false]` prompt.
+:::
+
+
+
+### 5. Build and Run the Prover
+
+You have two options to run the prover:
+
+* Use a pre-built image from Docker Hub
+* Build the image yourself
+
+#### Using Pre-built Image from Docker Hub
+
+The `docker-compose.yml` file uses the latest Raiko SGX image from Docker Hub by default.
+Run the following commands:
+
+```bash
+cd docker # Navigate to the docker directory inside raiko
+docker compose up init # Initialize the prover
+docker compose up raiko -d --force-recreate # Run the prover in detached mode
+```
+
+:::tip
+If you want to re-initialize the prover, keep in mind that you need to delete existing keys:
+```bash
+rm -r ~/.config/raiko/secrets
+```
+:::
+
+To use a specific version, update the image tag in the `docker-compose.yml` file.
+Check the [Raiko repository](https://github.com/NethermindEth/raiko) for available releases.
+Update the `image` field in `docker/docker-compose.yml` for both `raiko` and `init` services.
+
+For example, if the latest release is `v1.8.5-surge`:
+
+```yaml
+services:
+  init:
+    image: nethermind.jfrog.io/core-oci-local-prod/raiko-sgx:v1.8.5-surge
+    ...
+  raiko:
+    image: nethermind.jfrog.io/core-oci-local-prod/raiko-sgx:v1.8.5-surge
+    ...
+```
+
+#### Build the Image Yourself
+
+You may want to build the image yourself if you have made local changes to the Raiko codebase or want to use a specific commit.
+
+To build the image from the `raiko` directory:
+
+```bash
+cd docker # Navigate to the docker directory inside raiko
+docker compose up init --build # Build and Init the prover
+docker compose up raiko -d --force-recreate --build # Build and Run the prover
+```
+
+:::tip
+If you want to re-initialize the prover, keep in mind that you need to delete existing keys:
+```bash
+rm -r ~/.config/raiko/secrets
+```
+:::
+
+### 6. Verify the Prover is Running
+
+Your SGX prover should now be operational. To verify it's running correctly, check the container logs:
+
+```bash
+docker logs -f raiko
+```
+
+:::note
+If you encounter any issues while following these instructions, refer to the [Raiko Docker and RA Documentation](https://github.com/NethermindEth/raiko/blob/main/docs/README_Docker_and_RA.md) for additional guidance.
+:::
+
+### 7. Next Steps
+
+Next you can set up an SP1 & RISC Zero prover by following the instructions in the [SP1 & RISC Zero Prover](./sp1-and-risc0-provers.mdx) guide.
+
+If you have already done it, the next step is to register your provers in the protocol. Follow the instructions in the [Register Provers](./register-provers.mdx) guide.
+
+

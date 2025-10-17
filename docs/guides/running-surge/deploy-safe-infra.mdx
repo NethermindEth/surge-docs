@@ -1,0 +1,103 @@
+---
+title: Deploy Safe Infrastructure
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Safe Contracts and Infrastructure
+
+Safe is a multisig wallet infrastructure that provides secure, timelocked governance for Surge's protocol upgrades, ensuring Stage 2 security compliance with a 45-day delay for any changes while maintaining decentralization.
+
+To see how more details on Safe, refer to the [Safe Infrastructure documentation](https://docs.safe.global/core-api/api-overview).
+
+## Safe Contracts Deployment
+
+:::tip
+You can skip this if you are using Surge default setup and you don't need to customize the chain id. 
+:::
+
+Follow these steps to add your custom chain id to the Safe contracts:
+
+### 1. Clone Repository
+
+Clone the [Safe Deployments](https://github.com/safe-global/safe-deployments) repository and navigate into the directory:
+
+```bash
+git clone https://github.com/safe-global/safe-deployments.git
+cd safe-deployments
+```
+
+### 2. Next Steps
+
+After completing the protocol deployment, you can proceed to deploy Surge stack components.
+
+
+## Safe Infrastructure Deployment
+
+### 1. Clone Repository
+
+Clone the [Safe Infrastructure](https://github.com/NethermindEth/safe-infrastructure) repository and navigate into the directory:
+
+```bash
+git clone https://github.com/NethermindEth/safe-infrastructure.git
+cd safe-infrastructure
+```
+
+### 2. Configure Environment
+
+Create your environment configuration file (`.env`) by copying the provided sample:
+
+```bash
+cp .env.sample .env
+```
+
+Make sure to update the `RPC_NODE_URL` to your RPC endpoint.
+
+### 3. Run Safe Infrastructure Setup Script
+
+```bash
+./scripts/run_locally.sh
+```
+
+The script will prompt you for setting up Django admin credentials, please follow the prompts to set up the credentials.
+
+### 4. Add ChainInfo
+
+Access http://localhost:8000/cfg/admin/chains/chain/add/ and add the following information:
+
+- Chain id: 763374
+- Chain name: Surge
+- EIP-3770 short name: surge
+- L2: true
+- Is testnet: true
+- Rpc authentication: No Authentication
+- Rpc uri: http://localhost:8547
+- Safe apps rpc uri: http://localhost:8547
+- Public rpc uri: http://localhost:8547
+- Block explorer uri address template: http://localhost:3001/address/{{address}}
+- Block explorer uri tx hash template: http://localhost:3001/tx/{{txHash}}
+- Block explorer uri api template:  http://localhost:3001/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}
+- Currency name: Ether
+- Currency symbol: ETH
+- Currency decimals: 18
+- Transaction service uri: http://nginx:8000/txs
+- Vpc transaction service uri: http://nginx:8000/txs
+- Recommended master copy version: 1.4.1
+
+And save the chain info.
+
+### 5. Configure Transaction Service
+
+By default, tx service will auto setup MasterCopies and Proxy Factories for Surge. Or you can add the addresses manually in http://localhost:8000/txs/admin/:
+
+- Visit http://localhost:8000/txs/admin/history/proxyfactory/ and confirm if you have `0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67` listed. If not, click on top right ADD PROXY FACTORY button.
+- Visit http://localhost:8000/txs/admin/history/safemastercopy/ and confirm if you have `0x41675C099F32341bf84BFc5382aF534df5C7461a` and `0x29fcB43b46531BcA003ddC8FCB67FFE91900C762` listed. If not, click on top right ADD SAFE MASTER COPY button.
+
+
+## Verification
+
+After http://localhost:8000/ is accessible, ensure everything is running correctly by:
+
+- Checking the chain info in https://safe-ui.surge.wtf/cgw/v1/chains/, make sure the chain info is there and is correct.

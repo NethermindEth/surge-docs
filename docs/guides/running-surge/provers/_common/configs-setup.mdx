@@ -1,0 +1,26 @@
+Both `chain_spec_list.json` and `config.json` files are placed in `raiko/host/config/devnet` for devnet and `raiko/host/config/testnet` for testnet.
+You can edit existing configs or create new ones based on your chain configuration.
+
+:::tip
+In [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node), the `surge-protocol-deployer.sh` deployment script 
+will generate `chain_spec_list.json` for you after the `Running provers? (true/false) [default: false]` prompt.
+
+You just need to copy it from `simple-surge-node/configs/chain_spec_list_default.json` into your prover config folder
+(e.g., `raiko/host/config/devnet/chain_spec_list.json`).
+:::
+
+Here are the most important parameters to check in `config.json`:
+
+- `address`: The address of the prover server
+- `network`: The network name of the L2
+- `concurrency_limit`: The number of concurrent proving tasks the prover can handle. Note that this 
+value should be set to the number of GPUs available on the prover machine.
+- `l1_network`: The network name of the L1
+- `ballot_zk`: Configuration for `zk_any` request
+- `ballot_sgx`: Configuration for `sgx_any` request
+
+This `config.json` file is used as the default proof request config, but clients can override it with specific values.
+
+:::note 
+The `chain_spec_list.json` file is generated when deploying the protocol. You should copy it as-is. Don't change anything in this file unless you know what you're doing.
+:::

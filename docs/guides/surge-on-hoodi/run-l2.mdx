@@ -49,9 +49,14 @@ And make sure to update the L1 URLs to match the ones you're using.
 `host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
 :::
 
-### 4. Start Components
+### 3. Start Components
 
-L2 consists of the following components, feel free to launch the ones specific to your needs.
+You have two options to start the L2 components:
+
+<Tabs>
+<TabItem value="docker" label="Option A: Docker Compose (Simpler)" default>
+
+This is the recommended approach for most users. L2 consists of the following components - launch the ones specific to your needs.
 
 :::tip
 You can run multiple profiles at once:
@@ -67,13 +72,14 @@ docker compose --profile <profile1> --profile <profile2> up -d
 If you just want to follow the L2 chain, launching just the driver is sufficient.
 :::
 
-Starts the Nethermind Execution Client for L2 network operation:
+Starts the Driver + Nethermind Execution Client for L2 network operation:
 
 ```bash
-docker compose --profile nethermind_execution_l2 up -d
+docker compose --profile driver up -d
 ```
 
 #### Proposer
+
 Initiates the Proposer service for transaction bundling and block proposals:
 
 ```bash
@@ -92,12 +98,129 @@ Launches the Prover Relayer for proof relay:
 docker compose --profile prover up -d
 ```
 
-#### Metrics
-Sets up Prometheus and Grafana for real-time monitoring:
+</TabItem>
+
+<TabItem value="script" label="Option B: Shell Script">
+
+Use the provided shell script for an interactive setup experience.
+
+#### Start Script
+
+Start the script for running Surge stack components:
+
+```bash 
+./surge-stack-deployer.sh
+```
+
+You'll see the same prompts as in the [3. Start Protocol Deployment Script section](../running-surge/deploy-l2.mdx#3-start-protocol-deployment-script).
+Set the same values as before to ensure the script uses the correct configuration.
+
+#### Stack Components
+
+The script will ask you which components you want to run:
 
 ```bash
-docker compose --profile metrics up -d
+╔══════════════════════════════════════════════════════════════╗
+║ Enter L2 stack option:                                       ║
+║ 1 for driver only                                            ║
+║ 2 for driver + proposer                                      ║
+║ 3 for driver + proposer + spammer                            ║
+║ 4 for driver + proposer + prover + spammer                   ║
+║ 5 for all except spammer                                     ║
+║ [default: all]                                               ║
+╚══════════════════════════════════════════════════════════════╝
 ```
+
+- **Driver** - Starts the Nethermind Execution Client for L2 network operation
+- **Proposer** - Initiates the Proposer service for transaction bundling and block proposals
+- **Prover** - Starts the Prover Relayer for proof relay, this component requests proofs from your provers and submits them on-chain
+- **Spammer** - Launches a transaction spammer to generate load on the L2 network for testing purposes
+
+Choose the option that best fits your testing or running needs. For a full setup, select option `5` to run all components except the spammer.
+
+#### Relayer and Bridge UI
+
+The script will ask you:
+
+```bash
+╔══════════════════════════════════════════════════════════════╗
+║ Start relayers? (true/false) [default: true]                 ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+In this step the script starts the relayer for L1 and L2 communication, along with several other components like Bridge UI and BlockScout.
+
+**Bridge UI**: The user-facing interface for transferring assets between Layer 1 and Layer 2, enabling seamless interaction with Surge's cross-chain functionality.
+
+**Relayer**: Facilitates cross-layer communication between Layer 1 and Layer 2, such as submitting proofs or syncing finalized state.
+
+**BlockScout**: Provides a web-based interface to explore blocks, transactions, accounts, verify smart contracts, and monitor network activity.
+
+</TabItem>
+</Tabs>
+
+## Regarding P2P Synchronization
+
+A bare-minimum Surge L2 node consists of two components: the **Driver** (from taiko-client) and an **Execution Client** (Nethermind in our case). When launching a node for the first time, you have two options to build the chain state:
+
+### Two Synchronization Methods
+
+**1. Manual Sync via L1**
+
+The driver iterates through all blocks from the L1 origin of L2 genesis to the latest L1 head, fetching `BatchProposed` events and blob sidecars (if present), then inserts blocks into the execution client one by one.
+
+This approach becomes problematic on mature chains because older L2 blobs may have already been pruned from the L1 beacon node (typically after ~18 days). To work around this, you would need either:
+- An archive L1 node that preserves all historical blobs in its consensus layer
+- A blob storage service (such as BlobScan) configured in the driver
+- P2P sync instead (recommended)
+
+**2. P2P Sync (Recommended)**
+
+P2P synchronization allows your node to build its chain state by downloading blocks directly from peer nodes in the network, bypassing the blob pruning limitation. The driver triggers beacon synchronization by making RPC calls to the execution client, which then initiates P2P sync using the provided bootnodes.
+
+:::tip Surge Testnet Default
+For Surge Testnet (Hoodi), P2P sync is enabled by default in the `.env.hoodi` configuration file. We provide our own checkpoint sync URL and bootnode addresses, so your node can synchronize quickly without any additional configuration.
+:::
+
+### Key Terminology
+
+**Bootnode**: A specialized node that serves as an entry point for new nodes joining the network via P2P. Bootnodes maintain information about active peer nodes and help newcomers discover and connect to the network. When your node starts with P2P sync enabled, it contacts the bootnode to obtain a list of peers to synchronize with.
+
+**Enode (Ethereum Node)**: A unique identifier for each node in the network, consisting of the node's public key and network address. It allows nodes to locate and establish connections with each other. An enode looks like:
+```
+enode://[node-id]@[ip-address]:[port]
+```
+
+The bootnode's enode address is what you configure in the `BOOT_NODES` environment variable.
+
+### Configuration Variables
+
+The simple-surge-node implementation provides these environment variables to control P2P synchronization:
+
+**`ENABLE_P2P_SYNC`**: Set to `true` to enable P2P synchronization or `false` to disable it. When enabled, your node will connect to bootnodes and synchronize via P2P instead of fetching all data from L1.
+
+**`BOOT_NODES`**: Enode addresses of bootnode(s) that your node will connect to for P2P synchronization. For Surge Testnet, these are pre-configured in the `.env.hoodi` file.
+
+**`P2P_SYNC_URL`**: A valid L2 HTTP RPC URL used as a checkpoint for faster synchronization. This helps your node determine the target block height to sync to.
+
+**`L2_NETWORK_DISCOVERY_PORT`**: The network port used for P2P communication and peer discovery.
+
+### When to Use P2P Sync
+
+**Enable P2P sync (recommended) when:**
+- Joining Surge Testnet or any established Surge network
+- The L1 beacon node has pruned older blobs (chains older than ~18 days)
+- You want faster synchronization by downloading blocks from existing peers
+- You don't have access to an archive L1 node or blob storage service
+
+**Disable P2P sync only when:**
+- You're setting up a completely new isolated network for development
+- You have a fresh chain where all blobs are still available on L1
+- You explicitly want to sync exclusively via L1 despite slower performance
+
+:::note Network Requirements
+If your node operates behind firewalls or NAT, ensure the P2P port specified in `L2_NETWORK_DISCOVERY_PORT` is open and properly forwarded to allow peer connections. This enables your node to participate fully in the P2P network.
+:::
 
 ## Verification
 
