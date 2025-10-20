@@ -18,20 +18,9 @@ To see how more details on Safe, refer to the [Safe Infrastructure documentation
 You can skip this if you are using Surge default setup and you don't need to customize the chain id. 
 :::
 
-Follow these steps to add your custom chain id to the Safe contracts:
-
-### 1. Clone Repository
-
-Clone the [Safe Deployments](https://github.com/safe-global/safe-deployments) repository and navigate into the directory:
-
-```bash
-git clone https://github.com/safe-global/safe-deployments.git
-cd safe-deployments
-```
-
-### 2. Next Steps
-
-After completing the protocol deployment, you can proceed to deploy Surge stack components.
+:::note
+Adding custom chain id to Safe deployments is still a work in progress.
+:::
 
 
 ## Safe Infrastructure Deployment
@@ -53,7 +42,11 @@ Create your environment configuration file (`.env`) by copying the provided samp
 cp .env.sample .env
 ```
 
-Make sure to update the `RPC_NODE_URL` to your RPC endpoint.
+Make sure to update the `RPC_NODE_URL` to your RPC endpoint, and set the `NEXT_PUBLIC_DEFAULT_MAINNET_CHAIN_ID` to your chain id.
+
+:::tip
+If you need Wallet Connect feature, you also need to set the `NEXT_PUBLIC_WC_PROJECT_ID`.
+:::
 
 ### 3. Run Safe Infrastructure Setup Script
 
@@ -94,6 +87,17 @@ By default, tx service will auto setup MasterCopies and Proxy Factories for Surg
 
 - Visit http://localhost:8000/txs/admin/history/proxyfactory/ and confirm if you have `0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67` listed. If not, click on top right ADD PROXY FACTORY button.
 - Visit http://localhost:8000/txs/admin/history/safemastercopy/ and confirm if you have `0x41675C099F32341bf84BFc5382aF534df5C7461a` and `0x29fcB43b46531BcA003ddC8FCB67FFE91900C762` listed. If not, click on top right ADD SAFE MASTER COPY button.
+
+### 6. Configure Wallet Connect feature
+
+Access http://localhost:8000/cfg/admin/chains/feature/add, select your chain and add the following information:
+
+- Key: NATIVE_WALLETCONNECT
+- Description: Wallet Connect feature
+
+:::note
+Double confirm if you have set the `NEXT_PUBLIC_WC_PROJECT_ID` in the `.env` file, and make sure the feature is enabled in the chain info.
+:::
 
 
 ## Verification
