@@ -27,29 +27,8 @@ git clone https://github.com/NethermindEth/simple-surge-node.git
 cd simple-surge-node
 ```
 
-### 2. Configure Environment
 
-The deployment script will automatically handle environment configuration. For Devnet deployments, if no `.env` file exists, the script will automatically copy `.env.devnet` to `.env`.
-
-For Staging or Testnet environments, you'll need to manually copy the appropriate environment file:
-
-```bash
-# For Staging
-cp .env.staging .env
-
-# For Testnet  
-cp .env.testnet .env
-```
-
-:::tip Environment Configuration
-The environment files include default values for each configuration (devnet, staging, testnet), based on previously generated data. You can customize these values, such as L1 and L2 settings, genesis hashes, and addresses, as needed.
-:::
-
-:::note
-`host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
-:::
-
-### 3. Start Protocol Deployment Script
+### 2. Start Protocol Deployment Script
 
 [Simple Surge Node](https://github.com/NethermindEth/simple-surge-node) automates the deployment of L2 and Surge protocol components using a convenient script.
 Run the deployment script with:
@@ -101,6 +80,13 @@ You'll be prompted to confirm the deployment parameters. Here are the main promp
 For Staging and Testnet environments, the protocol contracts are already deployed. The script will exit and instruct you to copy the appropriate `.env` file and run `surge-stack-deployer.sh` directly.
 :::
 
+:::tip Environment Configuration
+After you choose the environment, the script will create a corresponding `.env` file in the root directory.
+The environment file includes default values for configuration. 
+You can customize these values, such as L1 and L2 settings, genesis hashes, and addresses, as needed, but typically no changes are required for standard deployments.
+:::
+
+
 #### Remote or Local
 
 Choose `local` if you are deploying everything on a single machine. Choose `remote` if you are deploying across multiple machines or connecting to remote devnet instances.
@@ -142,7 +128,7 @@ If you have already deployed the protocol contracts, the script will ask you:
 Here you can redeploy the protocol or just use the existing deployment.
 :::
 
-### 4. Prover Deployment
+### 3. Prover Deployment
 
 In Surge, provers are required to be registered in the protocol before they can start proving tasks.
 The script will ask whether provers are running and ready for registration:
@@ -172,7 +158,7 @@ You can type `false` and skip this step if you don't want to run provers.
 Otherwise, if you want to run provers, follow the instructions in the 
 [Provers Setup Guide](provers/index.mdx) to deploy and register your provers before continuing.
 
-### 5. Depositing Bond 
+### 4. Depositing Bond 
 
 The script will ask you whether you want to deposit the proving liveness bond for your provers:
 
@@ -189,7 +175,7 @@ The script will ask you whether you want to deposit the proving liveness bond fo
 It's recommended to deposit the bond to ensure your provers remain active and available for proving tasks.
 The default bond amount is 1000 ETH (converted to wei automatically).
 
-### 6. Next Steps
+### 5. Next Steps
 
 After completing the protocol deployment, you can proceed to deploy Surge stack components using:
 

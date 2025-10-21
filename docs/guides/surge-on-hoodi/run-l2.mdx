@@ -31,7 +31,18 @@ git clone https://github.com/NethermindEth/simple-surge-node.git
 cd simple-surge-node
 ```
 
-### 2. Configure Environment
+
+### 2. Start Components
+
+You have two options to start the L2 components:
+
+<Tabs>
+<TabItem value="docker" label="Option A: Docker Compose (Simpler)" default>
+
+
+This is the recommended approach for most users. First, you need to configure the `.env` file.
+
+#### 1. Configure Environment
 
 Create your environment configuration file (`.env`) by copying the provided sample:
 
@@ -49,14 +60,9 @@ And make sure to update the L1 URLs to match the ones you're using.
 `host.docker.internal` values in the `.env` file might not work in all environments. If you encounter issues, replace `host.docker.internal` with your server's IP address or hostname.
 :::
 
-### 3. Start Components
+#### 2. Start Docker Compose Components
 
-You have two options to start the L2 components:
-
-<Tabs>
-<TabItem value="docker" label="Option A: Docker Compose (Simpler)" default>
-
-This is the recommended approach for most users. L2 consists of the following components - launch the ones specific to your needs.
+L2 consists of the following components below, launch the ones specific to your needs.
 
 :::tip
 You can run multiple profiles at once:
