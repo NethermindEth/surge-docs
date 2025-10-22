@@ -2,24 +2,24 @@
 
 The [Surge Documentation](https://docs.surge.wtf/) website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-### Installation
+## Installation
 
-```
-$ npm install
+```bash
+npm install
 ```
 
-### Local Development
+## Local Development
 
-```
-$ npm start
+```bash
+npm start
 ```
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-### Build
+## Build
 
-```
-$ npm run build
+```bash
+npm run build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
