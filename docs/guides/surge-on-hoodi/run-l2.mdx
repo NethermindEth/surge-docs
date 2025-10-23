@@ -72,6 +72,14 @@ docker compose --profile <profile1> --profile <profile2> up -d
 ```
 :::
 
+#### Create Docker Network
+
+Before starting any components, create the required Docker network:
+
+```bash
+docker network create surge-network
+```
+
 #### Driver
 
 :::tip
