@@ -18,6 +18,12 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `DO_INVALID_TX_ID()` | `0x11cff9ae` |
 | `DO_PERMISSION_DENIED()` | `0xb1bff0fa` |
 
+## layer2/based/TaikoAnchorDeprecated.sol
+
+| Error | Code |
+|-------|------|
+| `L2_DEPRECATED_METHOD()` | `0xe5801216` |
+
 ## layer2/based/TaikoAnchor.sol
 
 | Error | Code |
@@ -30,167 +36,46 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `L2_PUBLIC_INPUT_HASH_MISMATCH()` | `0xd719258d` |
 | `L2_TOO_LATE()` | `0xb41f3c82` |
 
-## layer2/based/TaikoAnchorDeprecated.sol
+## surge/verifiers/ISurgeVerifier.sol
 
 | Error | Code |
 |-------|------|
-| `L2_DEPRECATED_METHOD()` | `0xe5801216` |
+| `INVALID_PROOF_TYPE()` | `0x31ddcd3b` |
+| `VERIFIER_NOT_MARKED_UPGRADEABLE()` | `0x4a5f4518` |
 
-## shared/tokenvault/BridgedERC20.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-| `BTOKEN_MINT_DISALLOWED()` | `0x270bf775` |
-
-## shared/tokenvault/BridgedERC20V2.sol
+## layer1/verifiers/Risc0Verifier.sol
 
 | Error | Code |
 |-------|------|
-| `BTOKEN_DEADLINE_EXPIRED()` | `0x2d5c4e9a` |
-| `BTOKEN_INVALID_SIG()` | `0xe1de4396` |
+| `RISC_ZERO_INVALID_BLOCK_PROOF_IMAGE_ID()` | `0x749091ae` |
+| `RISC_ZERO_INVALID_AGGREGATION_IMAGE_ID()` | `0xc8cde2c0` |
+| `RISC_ZERO_INVALID_PROOF()` | `0x444c8c2c` |
 
-## shared/tokenvault/ERC20VaultOriginal.sol
-
-| Error | Code |
-|-------|------|
-| `VAULT_BTOKEN_BLACKLISTED()` | `0x75c42fc1` |
-| `VAULT_CTOKEN_MISMATCH()` | `0x5f3a3af6` |
-| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
-| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
-| `VAULT_INVALID_CTOKEN()` | `0x8257f7f5` |
-| `VAULT_INVALID_NEW_BTOKEN()` | `0xdc63f987` |
-| `VAULT_LAST_MIGRATION_TOO_CLOSE()` | `0x463a6bf6` |
-
-## shared/tokenvault/ERC20Vault.sol
+## layer1/verifiers/SgxVerifier.sol
 
 | Error | Code |
 |-------|------|
-| `VAULT_INSUFFICIENT_ETHER()` | `0x2a5de154` |
-| `VAULT_ALREADY_SOLVED()` | `0x8dd940f7` |
-| `VAULT_BTOKEN_BLACKLISTED()` | `0x75c42fc1` |
-| `VAULT_CTOKEN_MISMATCH()` | `0x5f3a3af6` |
-| `VAULT_ETHER_TRANSFER_FAILED()` | `0x2cc319bb` |
-| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
-| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
-| `VAULT_INVALID_CTOKEN()` | `0x8257f7f5` |
-| `VAULT_INVALID_NEW_BTOKEN()` | `0xdc63f987` |
-| `VAULT_LAST_MIGRATION_TOO_CLOSE()` | `0x463a6bf6` |
-| `VAULT_METAHASH_MISMATCH()` | `0x6e1f54f8` |
-| `VAULT_NOT_ON_L1()` | `0x1874710f` |
+| `SGX_ALREADY_ATTESTED()` | `0xa2395279` |
+| `SGX_INVALID_ATTESTATION()` | `0x72ff9e3c` |
+| `SGX_INVALID_INSTANCE()` | `0x1877af9a` |
+| `SGX_INVALID_PROOF()` | `0x7bb2c129` |
 
-## shared/tokenvault/BaseNFTVault.sol
+## layer1/verifiers/SP1Verifier.sol
 
 | Error | Code |
 |-------|------|
-| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
-| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
-| `VAULT_INTERFACE_NOT_SUPPORTED()` | `0x7dd22bea` |
-| `VAULT_TOKEN_ARRAY_MISMATCH()` | `0xcb745208` |
+| `SP1_INVALID_PROGRAM_VKEY()` | `0xa068e7d2` |
+| `SP1_INVALID_AGGREGATION_VKEY()` | `0x0e5a298b` |
+| `SP1_INVALID_PARAMS()` | `0xa8907a03` |
+| `SP1_INVALID_PROOF()` | `0xb9e4dcf2` |
 
-## shared/tokenvault/BaseVault.sol
-
-| Error | Code |
-|-------|------|
-| `VAULT_INSUFFICIENT_FEE()` | `0x0bc67058` |
-| `VAULT_INVALID_TO_ADDR()` | `0x5b50f3f9` |
-| `VAULT_PERMISSION_DENIED()` | `0x2583296b` |
-
-## shared/tokenvault/BridgedERC1155.sol
+## verifiers/compose/ComposeVerifier.sol
 
 | Error | Code |
 |-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-
-## shared/tokenvault/BridgedERC721.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-| `BTOKEN_INVALID_BURN()` | `0x358bf3d9` |
-
-## shared/tokenvault/LibBridgedToken.sol
-
-| Error | Code |
-|-------|------|
-| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
-| `BTOKEN_INVALID_TO_ADDR()` | `0x30a4b274` |
-
-## shared/libs/LibTrieProof.sol
-
-| Error | Code |
-|-------|------|
-| `LTP_INVALID_ACCOUNT_PROOF()` | `0x20a66ad8` |
-| `LTP_INVALID_INCLUSION_PROOF()` | `0x8d9a4db3` |
-
-## shared/libs/LibAddress.sol
-
-| Error | Code |
-|-------|------|
-| `ETH_TRANSFER_FAILED()` | `0x98ce269a` |
-
-## shared/libs/LibBytes.sol
-
-| Error | Code |
-|-------|------|
-| `INNER_ERROR(bytes innerError)` | `0xbe40ece2` |
-
-## shared/signal/SignalService.sol
-
-| Error | Code |
-|-------|------|
-| `SS_EMPTY_PROOF()` | `0x2e4b6bbc` |
-| `SS_INVALID_HOPS_WITH_LOOP()` | `0x906c584e` |
-| `SS_INVALID_LAST_HOP_CHAINID()` | `0xe2fe089c` |
-| `SS_INVALID_MID_HOP_CHAINID()` | `0xeaac446a` |
-| `SS_INVALID_STATE()` | `0x98f26f45` |
-| `SS_SIGNAL_NOT_FOUND()` | `0x738afa05` |
-| `SS_SIGNAL_NOT_RECEIVED()` | `0x442728ae` |
-| `SS_UNAUTHORIZED()` | `0x1f67751f` |
-
-## shared/bridge/Bridge.sol
-
-| Error | Code |
-|-------|------|
-| `B_INVALID_CHAINID()` | `0xe363bba8` |
-| `B_INVALID_CONTEXT()` | `0x5ceed173` |
-| `B_INVALID_FEE()` | `0xc9f51787` |
-| `B_INVALID_GAS_LIMIT()` | `0x08c2ad53` |
-| `B_INVALID_STATUS()` | `0x67624eb4` |
-| `B_INVALID_VALUE()` | `0x958557be` |
-| `B_INSUFFICIENT_GAS()` | `0x5fbdff73` |
-| `B_MESSAGE_NOT_SENT()` | `0xab035ad5` |
-| `B_OUT_OF_ETH_QUOTA()` | `0xd615bef4` |
-| `B_PERMISSION_DENIED()` | `0xe56dc386` |
-| `B_PROOF_TOO_LARGE()` | `0x1e3b03c9` |
-| `B_RETRY_FAILED()` | `0x161e3ead` |
-| `B_SIGNAL_NOT_RECEIVED()` | `0xa2826398` |
-
-## shared/bridge/QuotaManager.sol
-
-| Error | Code |
-|-------|------|
-| `QM_INVALID_PARAM()` | `0x6f7f6e58` |
-| `QM_OUT_OF_QUOTA()` | `0x51d8fe3a` |
-
-## shared/common/IResolver.sol
-
-| Error | Code |
-|-------|------|
-| `RESOLVED_TO_ZERO_ADDRESS()` | `0x2d2520c2` |
-
-## shared/common/EssentialContract.sol
-
-| Error | Code |
-|-------|------|
-| `INVALID_PAUSE_STATUS()` | `0xbae6e2a9` |
-| `FUNC_NOT_IMPLEMENTED()` | `0x18571f1e` |
-| `REENTRANT_CALL()` | `0xdfc60d85` |
-| `ACCESS_DENIED()` | `0x95383ea1` |
-| `RESOLVER_NOT_FOUND()` | `0x4b6f57f5` |
-| `ZERO_ADDRESS()` | `0x538ba4f9` |
-| `ZERO_VALUE()` | `0xec732959` |
-| `FUNCTION_DISABLED()` | `0xa87dd7cf` |
+| `CV_INVALID_SUB_VERIFIER()` | `0x26998179` |
+| `CV_INVALID_SUB_VERIFIER_ORDER()` | `0x6d14c6cd` |
+| `CV_VERIFIERS_INSUFFICIENT()` | `0x8290ca4e` |
 
 ## layer1/team/MerkleClaimable.sol
 
@@ -210,6 +95,12 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `NOT_PROVER_SET()` | `0xa2606906` |
 | `PERMISSION_DENIED()` | `0xe5816e19` |
 | `TAIKO_TOKEN_NOT_USED_AS_BOND_TOKEN()` | `0xacda910b` |
+
+## layer1/token/TaikoToken.sol
+
+| Error | Code |
+|-------|------|
+| `TT_INVALID_PARAM()` | `0x86a8b2ea` |
 
 ## layer1/provers/ProverSetBase.sol
 
@@ -232,52 +123,161 @@ This page contains a comprehensive list of error codes used in protocols. These 
 | `V3PARSER_INVALID_ECDSA_SIGNATURE()` | `0x46ac673f` |
 | `V3PARSER_INVALID_QEAUTHDATA_SIZE()` | `0x0c6543ad` |
 
-## surge/verifiers/ISurgeVerifier.sol
+## shared/tokenvault/BridgedERC1155.sol
 
 | Error | Code |
 |-------|------|
-| `INVALID_PROOF_TYPE()` | `0x31ddcd3b` |
-| `VERIFIER_NOT_MARKED_UPGRADEABLE()` | `0x4a5f4518` |
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
 
-## layer1/verifiers/SP1Verifier.sol
-
-| Error | Code |
-|-------|------|
-| `SP1_INVALID_PROGRAM_VKEY()` | `0xa068e7d2` |
-| `SP1_INVALID_AGGREGATION_VKEY()` | `0x0e5a298b` |
-| `SP1_INVALID_PARAMS()` | `0xa8907a03` |
-| `SP1_INVALID_PROOF()` | `0xb9e4dcf2` |
-
-## layer1/verifiers/SgxVerifier.sol
+## shared/tokenvault/BridgedERC721.sol
 
 | Error | Code |
 |-------|------|
-| `SGX_ALREADY_ATTESTED()` | `0xa2395279` |
-| `SGX_INVALID_ATTESTATION()` | `0x72ff9e3c` |
-| `SGX_INVALID_INSTANCE()` | `0x1877af9a` |
-| `SGX_INVALID_PROOF()` | `0x7bb2c129` |
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+| `BTOKEN_INVALID_BURN()` | `0x358bf3d9` |
 
-## layer1/verifiers/Risc0Verifier.sol
+## shared/tokenvault/BridgedERC20.sol
 
 | Error | Code |
 |-------|------|
-| `RISC_ZERO_INVALID_BLOCK_PROOF_IMAGE_ID()` | `0x749091ae` |
-| `RISC_ZERO_INVALID_AGGREGATION_IMAGE_ID()` | `0xc8cde2c0` |
-| `RISC_ZERO_INVALID_PROOF()` | `0x444c8c2c` |
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+| `BTOKEN_MINT_DISALLOWED()` | `0x270bf775` |
 
-## verifiers/compose/ComposeVerifier.sol
-
-| Error | Code |
-|-------|------|
-| `CV_INVALID_SUB_VERIFIER()` | `0x26998179` |
-| `CV_INVALID_SUB_VERIFIER_ORDER()` | `0x6d14c6cd` |
-| `CV_VERIFIERS_INSUFFICIENT()` | `0x8290ca4e` |
-
-## layer1/token/TaikoToken.sol
+## shared/tokenvault/ERC20Vault.sol
 
 | Error | Code |
 |-------|------|
-| `TT_INVALID_PARAM()` | `0x86a8b2ea` |
+| `VAULT_INSUFFICIENT_ETHER()` | `0x2a5de154` |
+| `VAULT_ALREADY_SOLVED()` | `0x8dd940f7` |
+| `VAULT_BTOKEN_BLACKLISTED()` | `0x75c42fc1` |
+| `VAULT_CTOKEN_MISMATCH()` | `0x5f3a3af6` |
+| `VAULT_ETHER_TRANSFER_FAILED()` | `0x2cc319bb` |
+| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
+| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
+| `VAULT_INVALID_CTOKEN()` | `0x8257f7f5` |
+| `VAULT_INVALID_NEW_BTOKEN()` | `0xdc63f987` |
+| `VAULT_LAST_MIGRATION_TOO_CLOSE()` | `0x463a6bf6` |
+| `VAULT_METAHASH_MISMATCH()` | `0x6e1f54f8` |
+| `VAULT_NOT_ON_L1()` | `0x1874710f` |
+
+## shared/tokenvault/ERC20VaultOriginal.sol
+
+| Error | Code |
+|-------|------|
+| `VAULT_BTOKEN_BLACKLISTED()` | `0x75c42fc1` |
+| `VAULT_CTOKEN_MISMATCH()` | `0x5f3a3af6` |
+| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
+| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
+| `VAULT_INVALID_CTOKEN()` | `0x8257f7f5` |
+| `VAULT_INVALID_NEW_BTOKEN()` | `0xdc63f987` |
+| `VAULT_LAST_MIGRATION_TOO_CLOSE()` | `0x463a6bf6` |
+
+## shared/tokenvault/LibBridgedToken.sol
+
+| Error | Code |
+|-------|------|
+| `BTOKEN_INVALID_PARAMS()` | `0xc118d2f3` |
+| `BTOKEN_INVALID_TO_ADDR()` | `0x30a4b274` |
+
+## shared/tokenvault/BaseNFTVault.sol
+
+| Error | Code |
+|-------|------|
+| `VAULT_INVALID_TOKEN()` | `0x03f8a7d3` |
+| `VAULT_INVALID_AMOUNT()` | `0x85326476` |
+| `VAULT_INTERFACE_NOT_SUPPORTED()` | `0x7dd22bea` |
+| `VAULT_TOKEN_ARRAY_MISMATCH()` | `0xcb745208` |
+
+## shared/tokenvault/BridgedERC20V2.sol
+
+| Error | Code |
+|-------|------|
+| `BTOKEN_DEADLINE_EXPIRED()` | `0x2d5c4e9a` |
+| `BTOKEN_INVALID_SIG()` | `0xe1de4396` |
+
+## shared/tokenvault/BaseVault.sol
+
+| Error | Code |
+|-------|------|
+| `VAULT_INSUFFICIENT_FEE()` | `0x0bc67058` |
+| `VAULT_INVALID_TO_ADDR()` | `0x5b50f3f9` |
+| `VAULT_PERMISSION_DENIED()` | `0x2583296b` |
+
+## shared/bridge/QuotaManager.sol
+
+| Error | Code |
+|-------|------|
+| `QM_INVALID_PARAM()` | `0x6f7f6e58` |
+| `QM_OUT_OF_QUOTA()` | `0x51d8fe3a` |
+
+## shared/bridge/Bridge.sol
+
+| Error | Code |
+|-------|------|
+| `B_INVALID_CHAINID()` | `0xe363bba8` |
+| `B_INVALID_CONTEXT()` | `0x5ceed173` |
+| `B_INVALID_FEE()` | `0xc9f51787` |
+| `B_INVALID_GAS_LIMIT()` | `0x08c2ad53` |
+| `B_INVALID_STATUS()` | `0x67624eb4` |
+| `B_INVALID_VALUE()` | `0x958557be` |
+| `B_INSUFFICIENT_GAS()` | `0x5fbdff73` |
+| `B_MESSAGE_NOT_SENT()` | `0xab035ad5` |
+| `B_OUT_OF_ETH_QUOTA()` | `0xd615bef4` |
+| `B_PERMISSION_DENIED()` | `0xe56dc386` |
+| `B_PROOF_TOO_LARGE()` | `0x1e3b03c9` |
+| `B_RETRY_FAILED()` | `0x161e3ead` |
+| `B_SIGNAL_NOT_RECEIVED()` | `0xa2826398` |
+
+## shared/common/IResolver.sol
+
+| Error | Code |
+|-------|------|
+| `RESOLVED_TO_ZERO_ADDRESS()` | `0x2d2520c2` |
+
+## shared/common/EssentialContract.sol
+
+| Error | Code |
+|-------|------|
+| `INVALID_PAUSE_STATUS()` | `0xbae6e2a9` |
+| `FUNC_NOT_IMPLEMENTED()` | `0x18571f1e` |
+| `REENTRANT_CALL()` | `0xdfc60d85` |
+| `ACCESS_DENIED()` | `0x95383ea1` |
+| `RESOLVER_NOT_FOUND()` | `0x4b6f57f5` |
+| `ZERO_ADDRESS()` | `0x538ba4f9` |
+| `ZERO_VALUE()` | `0xec732959` |
+| `FUNCTION_DISABLED()` | `0xa87dd7cf` |
+
+## shared/signal/SignalService.sol
+
+| Error | Code |
+|-------|------|
+| `SS_EMPTY_PROOF()` | `0x2e4b6bbc` |
+| `SS_INVALID_HOPS_WITH_LOOP()` | `0x906c584e` |
+| `SS_INVALID_LAST_HOP_CHAINID()` | `0xe2fe089c` |
+| `SS_INVALID_MID_HOP_CHAINID()` | `0xeaac446a` |
+| `SS_INVALID_STATE()` | `0x98f26f45` |
+| `SS_SIGNAL_NOT_FOUND()` | `0x738afa05` |
+| `SS_SIGNAL_NOT_RECEIVED()` | `0x442728ae` |
+| `SS_UNAUTHORIZED()` | `0x1f67751f` |
+
+## shared/libs/LibTrieProof.sol
+
+| Error | Code |
+|-------|------|
+| `LTP_INVALID_ACCOUNT_PROOF()` | `0x20a66ad8` |
+| `LTP_INVALID_INCLUSION_PROOF()` | `0x8d9a4db3` |
+
+## shared/libs/LibAddress.sol
+
+| Error | Code |
+|-------|------|
+| `ETH_TRANSFER_FAILED()` | `0x98ce269a` |
+
+## shared/libs/LibBytes.sol
+
+| Error | Code |
+|-------|------|
+| `INNER_ERROR(bytes innerError)` | `0xbe40ece2` |
 
 ## test/layer2/LibAnchorSigner.sol
 
