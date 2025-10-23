@@ -292,12 +292,12 @@ After deploying all components, ensure everything is running correctly by:
 - Sending test transactions on L2 and verifying they are processed and finalized on L1
 - Accessing BlockScout for L1 and L2 chain exploration and verification:
   - **L1 BlockScout:** `http://localhost:36005` (or your configured port)
-  - **L2 BlockScout:** `http://localhost:3000` (or your configured `BLOCKSCOUT_FRONTEND_PORT`)
+  - **L2 BlockScout:** `http://localhost:3001` (or your configured `BLOCKSCOUT_FRONTEND_PORT`)
 - Accessing the Bridge UI: `http://localhost:3001` (or your configured port)
 - Checking relayer APIs:
   - **L1 Relayer:** `http://localhost:4102`
   - **L2 Relayer:** `http://localhost:4103`
-
+- Accessing the L2 Spammer (Spammoor): `http://localhost:8080` - Use this service to generate test transactions on the L2 network
 :::tip Port Configuration
 The actual ports may vary based on your `.env` configuration. Check your environment variables for the exact ports:
 - `L2_HTTP_PORT` (default: 8547) for L2 RPC
