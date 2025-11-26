@@ -104,10 +104,10 @@ decentralized, high-performance rollups can achieve.
 
 When following the guides and documentation, please use the following versions of Surge components and services:
 
-- **simple-surge-node:** [v25.1.1](https://github.com/NethermindEth/simple-surge-node/releases/tag/v25.1.1)
+- **simple-surge-node:** [v25.1.2](https://github.com/NethermindEth/simple-surge-node/releases/tag/v25.1.2)
 - **nethermind:** Any [latest stable release](https://github.com/nethermindeth/nethermind/releases)
 - **surge-geth:** [v25.1.0](https://github.com/NethermindEth/surge-geth/releases/tag/v25.1.0)
-- **surge-taiko-mono:** [v25.1.1](https://github.com/NethermindEth/surge-taiko-mono/releases/tag/v25.1.1)
+- **surge-taiko-mono:** [v25.1.2](https://github.com/NethermindEth/surge-taiko-mono/releases/tag/v25.1.2)
 - **raiko:** [v25.1.0-surge](https://github.com/NethermindEth/raiko/releases/tag/v25.1.0-surge)
 - **risc0-bento:** [v25.1.0-surge](https://github.com/NethermindEth/risc0-bento/releases/tag/v25.1.0-surge)
 
