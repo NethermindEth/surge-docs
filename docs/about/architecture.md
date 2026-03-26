@@ -7,7 +7,7 @@ title: Surge Architecture
 
 ## System Overview
 
-Everything in Surge's architecture is built around **real-time proving**: block production, ZK proof generation, and L1 finalization all happen in one pipeline.
+Surge is a [based rollup](./based-rollups) with [real-time proving](./real-time-proving). The sequencing is based -- L1 validators order transactions, not a centralized sequencer. The proving is real-time -- block production, ZK proof generation, and L1 finalization all happen in one pipeline.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────┐

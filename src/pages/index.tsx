@@ -258,8 +258,13 @@ const actions = [
 
 const itemLinks = [
   {
+    title: 'Based Rollups',
+    description: 'Why Surge uses Ethereum validators for sequencing, not a centralized sequencer',
+    to: '/docs/about/based-rollups',
+  },
+  {
     title: 'Real-Time Proving',
-    description: 'Learn how Surge generates ZK proofs in seconds for instant finality',
+    description: 'How Surge generates ZK proofs in seconds for instant finality',
     to: '/docs/about/real-time-proving',
   },
   {
@@ -355,8 +360,8 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a ZK-rollup with real-time proving, built on the Taiko stack. Gigagas throughput, instant finality,
-            Stage 2 security
+            Surge is a based rollup with real-time proving, built on the Taiko stack. Decentralized sequencing, Gigagas
+            throughput, instant finality, Stage 2 security
           </p>
           <SearchWrapper>
             <SearchBar />

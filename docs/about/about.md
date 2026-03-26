@@ -8,6 +8,7 @@ This section provides an overview of **Surge**.
 
 Explore these topics:
 
+- [Based Rollups](./about/based-rollups): Why Surge uses Ethereum's validators for sequencing instead of a centralized sequencer.
 - [Real-Time Proving](./about/real-time-proving): How Surge generates ZK proofs in seconds and finalizes blocks atomically.
 - [Surge Architecture](./about/architecture): System architecture and component interactions.
 - [Cross-Chain Composability](./about/cross-chain-composability): L1SLOAD and signal slots for reading L1 state from L2.
