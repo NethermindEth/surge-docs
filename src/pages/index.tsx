@@ -258,9 +258,9 @@ const actions = [
 
 const itemLinks = [
   {
-    title: 'Based Rollups',
-    description: 'Discover why Surge uses a based rollup model',
-    to: '/docs/about/based-rollups',
+    title: 'Real-Time Proving',
+    description: 'Learn how Surge generates ZK proofs in seconds for instant finality',
+    to: '/docs/about/real-time-proving',
   },
   {
     title: 'Stage 2',
@@ -277,6 +277,11 @@ const itemLinks = [
     title: 'Gigagas',
     description: 'Understand what is Gigagas and its benefits',
     to: '/docs/about/gigagas',
+  },
+  {
+    title: 'Cross-Chain Composability',
+    description: 'L1SLOAD and signal slots for synchronous L1-L2 state access',
+    to: '/docs/about/cross-chain-composability',
   },
   {
     title: 'Deploy a DApp',
@@ -350,8 +355,8 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a based rollup template of the Taiko Alethia stack, featuring Gigagas performance, decentralized ordering by Ethereum
-            validators, and Stage 2 trustless security
+            Surge is a ZK-rollup with real-time proving, built on the Taiko stack. Gigagas throughput, instant finality,
+            Stage 2 security
           </p>
           <SearchWrapper>
             <SearchBar />

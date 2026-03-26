@@ -5,56 +5,143 @@ title: Surge Architecture
 
 # Surge Architecture
 
-![Surge Architecture](./images/Diagram.png)
+## System Overview
 
-## Purpose of Each Component
+Everything in Surge's architecture is built around **real-time proving**: block production, ZK proof generation, and L1 finalization all happen in one pipeline.
 
-Surge’s architecture is composed of several key components, each serving a specific function:
+```
+┌────────────────────────────────────────────────────────────────────────────────┐
+│                              L1 (Ethereum / Gnosis)                           │
+│                                                                                │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────────────┐  │
+│  │  L1 Execution    │    │  L1 Consensus    │    │    RealTimeInbox        │  │
+│  │  Client           │    │  Client           │    │    (Surge L1 Contract)  │  │
+│  └────────┬─────────┘    └────────┬─────────┘    └────────────┬─────────────┘  │
+│           │                       │                            │                │
+└───────────┼───────────────────────┼────────────────────────────┼────────────────┘
+            │                       │                            ▲
+            │ state data            │ beacon data                │ propose(data,
+            │                       │                            │  checkpoint,
+            ▼                       ▼                            │  proof)
+┌────────────────────────────────────────────────────────────────┼────────────────┐
+│                              Surge L2 Stack                    │                │
+│                                                                │                │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌────────────┴─────────────┐  │
+│  │  L2 Execution    │───>│    Catalyst       │───>│      Raiko               │  │
+│  │  Client (NMC /   │    │  (Orchestrator)   │    │    (ZK Prover / Zisk)    │  │
+│  │  Alethia-Reth)   │    └──────────────────┘    └──────────────────────────┘  │
+│  └────────▲─────────┘                                                          │
+│           │                                                                    │
+│  ┌────────┴─────────┐                                                          │
+│  │    Driver         │    Syncs L2 from L1 events                              │
+│  │  (taiko-client)   │    (--fork realtime)                                    │
+│  └──────────────────┘                                                          │
+│                                                                                │
+└────────────────────────────────────────────────────────────────────────────────┘
+```
 
-- **[Nethermind Execution Client (NMC):](https://github.com/NethermindEth/nethermind)** A high-performance Ethereum client that delivers [Gigagas performance](./gigagas.md). 
+## Components
 
-- **Taiko Client:** Manages the consensus layer of the rollup. [Taiko Documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client).
+### L2 Execution Client
 
-### Components of the Taiko Stack
+The L2 execution client processes blocks with the `RealTime` hardfork rules. Two clients are supported:
 
-The Taiko Client consists of several sub-components:
+- **[Nethermind Execution Client (NMC)](https://github.com/NethermindEth/nethermind):** The primary client, with [Gigagas](./gigagas.md) throughput and L1SLOAD support.
+- **[Alethia-Reth](https://github.com/NethermindEth/alethia-reth):** Rust-based alternative, also supports L1SLOAD and the `RealTime` hardfork.
 
-- **Taiko Proposer:** Proposes new blocks to the rollup.
-- **Taiko Prover:** Generates state transition proofs for the rollup.
-- **Taiko Driver:** Follows and monitors the rollup’s state transitions.
+Both clients implement the `anchorV4WithSignalSlots` anchor transaction format, which carries L1 state commitments and signal slot data in every L2 block.
 
-## Proposing Flow
+### Catalyst (Orchestrator)
 
-![Proposing Flow](./images/proposing-flow.png)
+Catalyst ties the proving pipeline together:
+1. Receives new L2 blocks from the execution client
+2. Constructs a `RealTimeProofRequest` with block data, signal slots, and anchor information
+3. Sends the request to Raiko for proof generation
+4. Submits the atomic `propose()` transaction to the L1 `RealTimeInbox` contract
+5. Provides real-time status to connected UIs (e.g., "Generating ZK Proof")
 
-The proposing flow diagram illustrates how new blocks are proposed in Surge. The process begins with a proposer submitting a block, which includes transactions and state updates. The block is then validated by the execution client to ensure it adheres to the protocol rules. This ensures that only valid blocks are added to the rollup chain.
+### Raiko (ZK Prover)
 
-## Proving Flow
+[Raiko](https://github.com/NethermindEth/raiko) generates ZK proofs using the **Zisk** GPU backend:
 
-![Proving Flow](./images/proving-flow.png)
+- **Endpoint:** `POST /v3/proof/batch/realtime`
+- **Proof time:** ~10-17 seconds depending on GPU hardware
+- **One proof per block** -- no aggregation pipeline needed
+- Constructs the proposal locally from data provided by Catalyst (no on-chain event fetch)
+- Outputs a `RealTimeProofResponse` containing the proof, proposal hash, commitment hash, and checkpoint
 
-The proving flow diagram shows how state transition proofs are generated and verified. Surge employs a multi-prover system where at least two out of three independent proving systems (SGX, SP1, and Risc0) must agree on the validity of a state transition. This ensures trustless and secure scaling through zero-knowledge proofs.
+### RealTimeInbox (L1 Contract)
 
-## Chain Flow
+The L1 contract that receives proposals and verifies proofs:
 
-![Chain Flow](./images/chain-flow.png)
+```
+propose(data, checkpoint, proof)
+  → verify ZK proof
+  → update lastFinalizedBlockHash
+  → relay signal slots
+  → emit ProposedAndProved event
+```
 
-The chain flow diagram provides an overview of how the rollup chain interacts with the Ethereum mainnet. Transactions are executed on the rollup, and the resulting state roots are periodically submitted to the Ethereum mainnet for finality. This ensures that the rollup inherits Ethereum's security guarantees while maintaining high throughput.
+On-chain state is minimal: a single `bytes32 lastFinalizedBlockHash` slot.
+
+See [Real-Time Proving](./real-time-proving) for the full protocol specification.
+
+### Driver (taiko-client)
+
+The [Driver](https://github.com/NethermindEth/surge-taiko-mono) keeps L2 in sync by watching L1 events:
+
+- Runs with `--fork realtime --realtimeInbox <address>`
+- Watches for `ProposedAndProved` events on the `RealTimeInbox`
+- Modularized fork support -- can operate with only the RealTime fork, without legacy Pacaya/Shasta contracts
+- Supports P2P sync for faster chain synchronization
+
+## Real-Time Proving Flow
+
+Here's what happens from block production to L1 finality:
+
+```
+  L2 Block Produced
+        │
+        ▼
+  Catalyst constructs proof request
+  (block data + signal slots + anchor info)
+        │
+        ▼
+  Raiko generates ZK proof via Zisk
+  (~10-17 seconds on GPU)
+        │
+        ▼
+  Catalyst calls RealTimeInbox.propose()
+  (data + checkpoint + proof in one tx)
+        │
+        ▼
+  L1 verifies proof, updates state, emits event
+        │
+        ▼
+  Block is FINALIZED on L1
+        │
+        ▼
+  Driver picks up ProposedAndProved event
+  and advances L2 state
+```
+
+Key difference from previous architecture: there is **no separate proving step**. The proof is generated before the proposal and submitted together atomically.
 
 ## How Surge Differs from the Taiko Stack
 
-Surge has customized aspects of the Taiko architecture to enhance performance and remove any reliance on new tokens:
+Surge modifies the Taiko stack in these ways:
 
-1. **Token-Free Design:** Surge removes token dependencies, allowing the use of Ether as a bond for block proposals.
-2. **Execution Client Upgrade:** Replaced TaikoGeth with the Nethermind Execution Client (NMC) to achieve better performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
-3. **Time-Locked Owner:** Modified the multisig implementation to feature a 45-day timelock, aligning with Stage 2 requirements by L2Beat.
-4. **Verification Streak Checks:** Owner operations via the multisig are blocked if there has been a liveness disruption of 7 days or more within the past 45 days.
-5. **Disabled Pausing:** The owner cannot pause the protocol or peripheral contracts.
-6. **2/3 Proof Verifier:** There are three proof systems (SGX, SP1, and Risc0). At least two of these must agree on a state transition for it to be accepted.
-7. **No Contestation Window:** As Surge employs a single ZK approach (no optimistic fallback), it does not require a contestation window. This design choice makes Surge a pure ZK-Rollup rather than an Optimistic Rollup.
+1. **Token-Free Design:** Surge removes token dependencies. ETH is used for gas.
+2. **Execution Client Upgrade:** Replaced TaikoGeth with the Nethermind Execution Client (NMC) and added Alethia-Reth support.
+3. **Real-Time Proving:** Replaced the two-phase propose-then-prove model with atomic real-time proving. No bonds, no proving windows, no contestation.
+4. **Time-Locked Owner:** Modified the multisig implementation to feature a 45-day timelock, aligning with Stage 2 requirements by L2Beat.
+5. **Verification Streak Checks:** Owner operations via the multisig are blocked if there has been a liveness disruption of 7 days or more within the past 45 days.
+6. **Disabled Pausing:** The owner cannot pause the protocol or peripheral contracts.
+7. **Zisk ZK Prover:** Uses a single GPU-accelerated Zisk prover for real-time proof generation, replacing the previous 2-of-3 multi-prover model (SGX, SP1, RISC0).
+8. **Cross-Chain Composability:** Signal slots and L1SLOAD enable L2 contracts to read L1 state synchronously.
 
 ## Further Exploration
 
-To deepen your understanding and explore Surge’s architecture in a practical environment, check the detailed guide on deploying and running your own local Surge devnet:
+Want to try it yourself? Check the guide on running your own local Surge devnet:
 
 [**Deploy and run your own Surge devnet →**](/docs/guides/running-surge)

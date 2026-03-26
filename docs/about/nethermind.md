@@ -23,3 +23,10 @@ Transactions confirm faster due to Nethermind Client’s streamlined execution a
 
 ### Optimized Resource Usage
 Nethermind Client’s low-overhead design allows Surge to process more transactions without incurring higher execution costs. This efficiency is crucial for maintaining a decentralized and cost-effective rollup.
+
+### L1SLOAD Support
+Nethermind Client supports L1SLOAD, a precompile that lets L2 contracts read L1 storage slots directly. With real-time proving, this means L2 can access up-to-date L1 state within seconds. See [Cross-Chain Composability](./cross-chain-composability) for details.
+
+:::note
+Surge also supports [Alethia-Reth](https://github.com/NethermindEth/alethia-reth) as an alternative L2 execution client, which also implements L1SLOAD and the RealTime hardfork.
+:::

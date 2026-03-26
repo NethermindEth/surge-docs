@@ -5,7 +5,7 @@ title: Gigagas
 
 # Gigagas in Surge
 
-Surge Rollup is built on the Nethermind client, chosen for its proven performance at gigagas scale throughput. Compatible across based, optimistic, and custom EVM rollups, it enables fast, reliable execution without compromise. [Learn more about Nethermind Execution Client](https://github.com/NethermindEth/nethermind).
+Surge Rollup is built on the Nethermind client, chosen for its proven performance at gigagas scale throughput. Compatible across various EVM rollup architectures, it enables fast, reliable execution without compromise. [Learn more about Nethermind Execution Client](https://github.com/NethermindEth/nethermind).
 
 ## What is Gigagas?
 

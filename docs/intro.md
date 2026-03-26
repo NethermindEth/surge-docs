@@ -5,100 +5,70 @@ title: Introduction to Surge
 
 # Introduction to Surge
 
-Surge is a high-performance, [based rollup](https://ethresear.ch/t/based-rollups-superpowers-from-l1-sequencing/15016)
-template built on a modified [Taiko stack](https://taiko.xyz/) that embodies Ethereum's principles of decentralization,
-security, and censorship resistance. Developed by [Nethermind](https://nethermind.io) as a research and experimentation
-platform, Surge demonstrates what's possible when rollups maximize both performance and trustlessness without
-compromising on security.
+Surge is a ZK-rollup with real-time proving, built on a modified [Taiko stack](https://taiko.xyz/).
+It's developed by [Nethermind](https://nethermind.io) as a research and experimentation platform.
 
-Surge stands out by adopting
-a [Stage 2 security framework](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe#:~:text=Stage%202%20%E2%80%94%20No,from%20governance%20attacks.)
-from the very beginning, leveraging Ethereum validators rather than a centralized sequencer for transaction ordering,
-and aiming for [Gigagas](./about/gigagas.md) throughput through
-the [Nethermind Execution Client](https://github.com/NethermindEth/nethermind) (NMC). Surge uses ETH for gas and bonds,
-avoiding the need for an L2 governance token. Together, these design decisions ensure robust decentralization and
-censorship resistance while maintaining alignment with Ethereum's core principles.
+The core idea: ZK proofs are generated **within seconds** of block production and submitted together with the block
+proposal in a single transaction -- so blocks are finalized on L1 the moment they're proposed. On top of that, Surge
+has [Stage 2 security](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe#:~:text=Stage%202%20%E2%80%94%20No,from%20governance%20attacks.)
+from day one, [Gigagas](./about/gigagas.md)-level throughput via
+the [Nethermind Execution Client](https://github.com/NethermindEth/nethermind) (NMC), and cross-chain composability
+through L1SLOAD.
 
 ## What Makes Surge Unique?
 
-- **Based Architecture:** Surge relies on Ethereum's validators for transaction ordering. This design inherits
-  Ethereum's security guarantees and censorship resistance directly, making Surge as decentralized as Ethereum itself.
-- **Stage 2 Security Framework:** From inception, Surge implements L2Beat's most rigorous security stage (Stage 2),
-  featuring a 45-day exit window, no emergency powers, and strictly limited governance capabilities.
-- **Tokenless:** Uses Ether (ETH) for gas and bonds, avoiding the need for an L2 governance token and the misaligned
-  incentives that often accompany them.
-- **Gigagas Performance:** Leveraging Nethermind Client's already demonstrated [Gigagas](./about/gigagas.md) ability (as
-  showcased in [Nethermind Client v1.30.0](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0)), Surge
-  achieves extraordinary throughput capabilities that scale far
-  beyond traditional execution environments. For more details, see the [Gigagas documentation](./about/gigagas.md).
-- **Multi-Prover Proof System:** Employs zero-knowledge proofs for trustless scaling with a 2/3 multi-prover security
-  model requiring agreement from at least two of three independent proving systems, one of which must be a ZK proof
-  system.
-- **Open Source & Replicable:** The [infrastructure and code](https://github.com/NethermindEth/surge) are fully open
-  source, allowing the community to maintain or fork Surge at any time.
+- **Real-Time Proving:** ZK proofs are generated in ~10-17 seconds and included with the block proposal in one
+  transaction. No proving windows, no bonds -- blocks finalize on L1 as soon as they're proposed.
+  See [Real-Time Proving](./about/real-time-proving.md).
+- **Stage 2 from Day 1:** Surge ships with L2Beat's
+  [Stage 2](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe)
+  security -- 45-day exit window, no emergency powers, no governance token.
+- **Tokenless:** Just ETH for gas. No L2 token, no token-related governance overhead.
+- **Gigagas Throughput:** The [Nethermind Client](https://github.com/NethermindEth/nethermind) already
+  [demonstrated Gigagas performance](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0) on mainnet.
+  Surge gets the same engine. See [Gigagas](./about/gigagas.md).
+- **Cross-Chain Composability:** L2 contracts can read L1 storage directly via L1SLOAD. L1 signals get relayed
+  to L2 through signal slots in the anchor transaction. See [Cross-Chain Composability](./about/cross-chain-composability.md).
+- **Open Source:** All [code](https://github.com/NethermindEth/surge) is open source. Fork it, run it, modify it.
 
 ## Research-Focused Approach
 
-Surge is *not designed to compete with existing rollups* for users or market share. Instead, it serves as a:
+Surge is *not designed to compete with existing rollups* for users or market share. It's a:
 
-1. **Technical Showcase:** Demonstrating [Nethermind](https://www.nethermind.io/)'s capabilities in client optimization
-   and rollup design.
-2. **Experimentation Platform:** Exploring the boundaries of rollup performance, transaction throughput, and
-   implementation flexibility while maintaining maximum security and decentralization.
-3. **Reference Implementation:** Providing the community with an open-source, fully-featured rollup template that
-   prioritizes
-   Ethereum's core values, censorship resistance, and cross-rollup composability.
+1. **Technical showcase** for [Nethermind](https://www.nethermind.io/)'s execution client and rollup engineering.
+2. **Experimentation platform** for pushing rollup performance, throughput, and new protocol ideas.
+3. **Reference implementation** -- a fully open-source rollup template that other teams can learn from or fork.
 
-This approach reflects [Nethermind](https://www.nethermind.io/)'s commitment to advancing
-the [rollup-centric roadmap](https://vitalik.eth.limo/general/2024/10/17/futures2.html) through practical research
-rather than market competition, focusing on seamless L1 and cross-rollup composability to create a more interconnected
-Ethereum ecosystem.
+This fits into [Nethermind](https://www.nethermind.io/)'s broader work on
+the [rollup-centric roadmap](https://vitalik.eth.limo/general/2024/10/17/futures2.html) -- practical research,
+not market competition.
 
 ### Who is Surge For?
 
-Surge is designed with a clear and focused audience in mind — one that reflects its role as a research and development
-platform rather than a mass-market product. Unlike traditional rollups that chase user adoption, Surge is purpose-built
-for experimentation, technical exploration, and pushing the boundaries of what’s possible on Ethereum.
+Surge is built for technical users, not end consumers.
 
-- **Builders:** Block builders and MEV searchers exploring cross-layer opportunities enabled by Surge’s based
-  architecture. By aligning economic incentives with Ethereum’s validators, Surge unlocks new mechanisms for value
-  extraction and redistribution across the ecosystem.
-- **Researchers:** Technical teams working on rollup optimizations, novel protocol designs, and high-performance
-  applications. Surge provides a clean-slate environment for implementing and testing new ideas without the overhead of
-  backwards compatibility or user disruption.
-
-By focusing on technical constituencies — not end-users — Surge enables rapid iteration and deep innovation. It serves
-as a proving ground for ideas that can ultimately benefit the entire Ethereum ecosystem, without being constrained by
-commercial product demands or mainstream usability expectations.
+- **Builders** who want to experiment with cross-chain apps using L1SLOAD and real-time proving.
+- **Researchers** working on rollup performance, protocol design, or new proof systems. Surge is a clean slate
+  for testing ideas without backwards-compatibility baggage.
 
 ## Roadmap and Vision
 
 Surge represents one component of Nethermind's broader rollup roadmap, which includes:
 
-- **Surge Rollup Template:** The core based rollup platform with [Gigagas](./about/gigagas.md) capabilities.
-- **Surge Power-Ups:** Open-source plugins that can enhance any based rollup with preconfirmations, optimized proving,
-  advanced block building, and seamless layer composability.
-
-Together, these initiatives aim to advance the state of rollup technology while maintaining alignment with Ethereum's
-values of decentralization, security, and permissionlessness.
+- **Surge Rollup Template:** The rollup itself -- real-time proving + [Gigagas](./about/gigagas.md) throughput.
+- **Surge Power-Ups:** Open-source plugins for preconfirmations, optimized proving, block building, and L1-L2
+  composability. Designed to work with any rollup, not just Surge.
 
 ## Getting Started
 
-Surge is continually evolving. By taking part in its testnet, you can experience firsthand how a truly decentralized
-rollup — rooted in Ethereum’s security and designed for long-term sustainability — can shape the future of Layer 2
-solutions.
-
-- **Learn More:** Visit the [About section](./about) for details on Surge’s architecture and design choices.
-- **Explore the Code:** Check out [Surge’s GitHub repository](https://github.com/NethermindEth/surge) to dive into the
-  open-source codebase.
-- **Guides:** Explore the [Guides section](./guides) to operate a Surge rollup or deploy your own dApp.
-- **Current Testnet:**
-  - Bridge UI: [https://bridge.hoodi.surge.wtf](https://bridge.hoodi.surge.wtf/)
-  - Explorer: [https://explorer.hoodi.surge.wtf](https://explorer.hoodi.surge.wtf/)
-  - RPC URL: [https://l2-rpc.hoodi.surge.wtf](https://l2-rpc.hoodi.surge.wtf/)
-
-Researchers, developers, and ecosystem participants are invited to explore Surge as an example of what truly
-decentralized, high-performance rollups can achieve.
+- [About section](./about) -- architecture, design choices, how things work under the hood.
+- [GitHub](https://github.com/NethermindEth/surge) -- all the code.
+- [Guides](./guides) -- run your own devnet or deploy a dApp.
+- **Live deployment:**
+  - Bridge: [bridge.realtime.surge.wtf](https://bridge.realtime.surge.wtf/)
+  - Explorer: [explorer.realtime.surge.wtf](https://explorer.realtime.surge.wtf/)
+  - RPC: [rpc.realtime.surge.wtf](https://rpc.realtime.surge.wtf/)
+  - SyncCompose DEX: [synccomposedex.realtime.surge.wtf](https://synccomposedex.realtime.surge.wtf/)
 
 ## Component Versions
 
@@ -106,9 +76,8 @@ When following the guides and documentation, please use the following versions o
 
 - **simple-surge-node:** [v25.1.2](https://github.com/NethermindEth/simple-surge-node/releases/tag/v25.1.2)
 - **nethermind:** Any [latest stable release](https://github.com/nethermindeth/nethermind/releases)
-- **surge-geth:** [v25.1.0](https://github.com/NethermindEth/surge-geth/releases/tag/v25.1.0)
+- **alethia-reth:** See the [alethia-reth repository](https://github.com/NethermindEth/alethia-reth) for the latest real-time proving branch
 - **surge-taiko-mono:** [v25.1.2](https://github.com/NethermindEth/surge-taiko-mono/releases/tag/v25.1.2)
-- **raiko:** [v25.1.0-surge](https://github.com/NethermindEth/raiko/releases/tag/v25.1.0-surge)
-- **risc0-bento:** [v25.1.0-surge](https://github.com/NethermindEth/risc0-bento/releases/tag/v25.1.0-surge)
+- **raiko:** See the [raiko repository](https://github.com/NethermindEth/raiko) (`surge-alethia-real-time-proving` branch)
 
-These versions are tested and verified to work together for the current testnet deployment.
+These versions are tested and verified to work together for the current deployment.

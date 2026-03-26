@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Introduction
 
-This guide walks you through setting up and running your own Surge rollup development network.
+This guide walks you through setting up and running your own Surge rollup development network with real-time proving.
 
 ## Prerequisites
 
@@ -13,14 +13,14 @@ This guide walks you through setting up and running your own Surge rollup develo
 - Git
 - At least 16GB of RAM
 - At least 50GB of free disk space
+- A GPU with CUDA support (required for the Zisk ZK prover)
 
 ## Deployment Steps
 
-1. [Deploy L1](./deploy-l1.mdx).
-2. [Deploy L2](./deploy-l2.mdx).
-3. [Set up a Prover](./provers/index.mdx).
-4. [Register Provers](./provers/register-provers.mdx).
+1. [Deploy L1](./deploy-l1.mdx) -- set up your base layer network.
+2. [Deploy L2](./deploy-l2.mdx) -- deploy L2 and Surge protocol contracts.
+3. [Set up the Zisk Prover](./provers/zisk-prover.mdx) -- configure the GPU-accelerated ZK prover for real-time proving.
 
 ## Troubleshooting
 
-If you face any issues at any of the steps, feel free to refer to the [Troubleshooting section](docs/troubleshooting/index.mdx) for additional support.
+If you face any issues at any of the steps, feel free to refer to the [Troubleshooting section](/docs/troubleshooting) for additional support.
