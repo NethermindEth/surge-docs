@@ -2,7 +2,7 @@
 
 ## Writing Style
 
-- Write like a human, not AI. No buzzwords ("leveraging", "seamless", "robust", "enables", "facilitates", "paradigm", "showcases", "extraordinary", "cutting-edge"). If it sounds like ChatGPT wrote it, rewrite it.
+- Write like a human, not AI. No buzzwords ("leveraging", "seamless", "robust", "enables", "facilitates", "paradigm", "showcases", "extraordinary", "cutting-edge"). If it sounds like ChatGPT/Claude/Claude Code/Gemini/Cursor/etc. wrote it, rewrite it.
 - Keep it concise. Say the thing directly. "Surge gets the same engine" > "Surge achieves extraordinary throughput capabilities that scale far beyond traditional execution environments."
 - Use contractions naturally ("it's", "don't", "they're").
 - Avoid filler sentences that sound impressive but say nothing ("pushes the boundaries of what rollups can achieve").
@@ -30,10 +30,3 @@
 - The sidebar is auto-generated from filesystem structure (`sidebars.ts`)
 - Use `sidebar_position` in frontmatter to control ordering
 - Prefer `.md` for simple pages, `.mdx` when you need React components (Tabs, etc.)
-
-## Git
-
-- Branch prefix: `jmadibekov/`
-- Commit messages: capitalized verb in present tense, short and concise
-- Don't commit or push without explicit approval
-- Don't amend existing commits -- create new ones
