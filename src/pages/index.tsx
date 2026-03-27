@@ -243,10 +243,10 @@ const actions = [
     text: 'Learn about the Surge Rollup',
   },
   {
-    title: 'Deploy Surge Devnet',
+    title: 'Deploy Surge',
     icon: Info,
     to: '/docs/guides/running-surge/',
-    text: 'Set up a local Surge development network',
+    text: 'Deploy your own Surge rollup with real-time proving',
   },
   {
     title: 'Surge Architecture',
@@ -265,7 +265,7 @@ const itemLinks = [
   {
     title: 'Nethermind Execution Client',
     description:
-      'Learn how Surge leverages Nethermind Execution Client as its primary Ethereum execution client',
+      'How Surge uses the Nethermind Client for high-performance L2 execution',
     to: '/docs/about/nethermind',
   },
   {
@@ -279,8 +279,13 @@ const itemLinks = [
     to: '/docs/guides/deploy-on-surge',
   },
   {
+    title: 'Components & Repos',
+    description: 'All components, repositories, and branches in the Surge stack',
+    to: '/docs/about/components',
+  },
+  {
     title: 'Troubleshooting',
-    description: 'Get solutions to common Surge issues and find help',
+    description: 'Common issues and error codes for deployment and operation',
     to: 'docs/troubleshooting/',
   },
 ];
@@ -297,8 +302,13 @@ const developerLinks = [
     icon: GitHub,
   },
   {
-    title: 'surge-devnet-package',
-    href: 'https://github.com/NethermindEth/surge-devnet-package',
+    title: 'raiko',
+    href: 'https://github.com/NethermindEth/raiko',
+    icon: GitHub,
+  },
+  {
+    title: 'alethia-reth',
+    href: 'https://github.com/NethermindEth/alethia-reth',
     icon: GitHub,
   },
   {
@@ -345,8 +355,8 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a based rollup with real-time proving, built on the Taiko stack. Decentralized
-            sequencing, Gigagas throughput, instant finality, Stage 2 security
+            Surge is a based rollup with real-time proving, built on the Taiko stack. Synchronous
+            composability, instant finality, Stage 2 security
           </p>
           <SearchWrapper>
             <SearchBar />

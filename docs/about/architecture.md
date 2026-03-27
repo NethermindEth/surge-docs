@@ -49,6 +49,49 @@ title: Surge Architecture
 
 ---
 
+## System Overview
+
+Before diving into the pipeline details, here's how the layers connect:
+
+```
+┌─────────────────── L1 (Ethereum / Gnosis) ──────────────────┐
+│                                                               │
+│  Multicall tx (atomic):                                       │
+│    Call 1: UserOpsSubmitter.executeBatch()                     │
+│    Call 2: RealTimeInbox.propose(data, checkpoint, proof)     │
+│    Call 3: Bridge.processMessage() (L1 Calls)                 │
+│                                                               │
+│  Contracts: RealTimeInbox, SurgeVerifier, SignalService,      │
+│             Bridge, UserOpsSubmitter                           │
+│  Repo: surge-taiko-mono/packages/protocol/                    │
+└───────────────────────────┬───────────────────────────────────┘
+                            │ ProposedAndProved event
+                            ▼
+┌─────────────────── L2 (Surge) ──────────────────────────────┐
+│                                                               │
+│  Execution: Nethermind (NMC) or Alethia-Reth                  │
+│  Consensus: Driver (taiko-client --fork realtime)             │
+│  System tx: anchorV4WithSignalSlots(checkpoint, signalSlots)  │
+│                                                               │
+│  Repos: nethermind, alethia-reth, surge-taiko-mono            │
+└───────────────────────────────────────────────────────────────┘
+                            ▲
+                            │ preconf blocks + proof requests
+┌─────────────────── Off-Chain ───────────────────────────────┐
+│                                                               │
+│  Catalyst (Builder): receives UserOps via surge_sendUserOp    │
+│    RPC, simulates L1+L2, requests proof, builds multicall     │
+│  Raiko (Prover): generates ZK proofs via Zisk GPU backend     │
+│    API: POST /v3/proof/batch/realtime                         │
+│                                                               │
+│  Repos: Catalyst, raiko                                       │
+└───────────────────────────────────────────────────────────────┘
+```
+
+For the full list of components and repositories, see [Components & Repositories](./components).
+
+---
+
 ## Off-Chain Pipeline
 
 The off-chain pipeline is the sequence of steps that happen before anything lands on L1.

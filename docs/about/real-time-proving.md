@@ -78,12 +78,13 @@ The `RealTimeInbox` contract replaces the old multi-contract setup with a single
 
 Proof generation time depends on GPU hardware:
 
-| GPU      | Proof Time  | Notes           |
-| -------- | ----------- | --------------- |
-| 1x L40   | ~40s        | Single GPU      |
-| 2x L40   | ~25s        |                 |
-| 4x L40   | ~20s        |                 |
-| RTX 5090 | **~10-11s** | Current fastest |
+| GPU            | Proof Time  | Notes              |
+| -------------- | ----------- | ------------------ |
+| 1x L40         | ~40s        | Single GPU         |
+| 2x L40         | ~25s        |                    |
+| 4x L40         | ~20s        |                    |
+| L40s cluster   | ~13-14s     | Production cluster |
+| RTX 5090       | **~10-11s** | Current fastest    |
 
 These are end-to-end times including both STARK and SNARK phases. There's no aggregation step since each proof covers exactly one block.
 
@@ -91,4 +92,4 @@ These are end-to-end times including both STARK and SNARK phases. There's no agg
 
 - [Surge Architecture](./architecture) -- how all components fit together
 - [Cross-Chain Composability](./synchronous-composability) -- signal slots and synchronous composability enabled by real-time proving
-- [Zisk Prover Setup](../guides/running-surge/provers/zisk-prover) -- run the prover yourself
+- [Zisk Prover Setup](../guides/running-surge/provers) -- run the prover yourself

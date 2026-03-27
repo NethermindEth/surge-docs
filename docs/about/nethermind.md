@@ -5,20 +5,22 @@ title: Surge & Nethermind Client
 
 # Surge & Nethermind Client
 
-Surge leverages [Nethermind Client](https://www.nethermind.io/nethermind-client) as its primary Ethereum execution client. Nethermind Client is a high-performance client designed for speed, efficiency, and reliability – all essential qualities for any rollup aiming to process transactions at scale.
+Surge uses [Nethermind Client](https://www.nethermind.io/nethermind-client) as its primary L2 execution client. Nethermind is a high-performance .NET Ethereum client optimized for speed and low resource overhead.
 
-## Benefits for Surge
+## Why Nethermind?
 
-By integrating Nethermind Client, Surge achieves:
+### Fast Block Execution
 
-### Faster Block Execution
+Nethermind's execution engine processes transactions quickly, which directly translates to lower latency for L2 blocks. This matters for real-time proving, where the prover needs to re-execute blocks inside a ZK circuit -- faster execution means faster proofs.
 
-Transactions confirm faster due to Nethermind Client’s streamlined execution approach. This leads to improved user experiences and lower latency for dApps built on Surge.
+### Low Resource Overhead
 
-### Optimized Resource Usage
+The client's memory and CPU efficiency means Surge can process more transactions per block without needing oversized infrastructure.
 
-Nethermind Client’s low-overhead design allows Surge to process more transactions without incurring higher execution costs. This efficiency is crucial for maintaining a decentralized and cost-effective rollup.
+### L1SLOAD Support
+
+Nethermind implements the L1SLOAD precompile (RIP-7728), which allows L2 contracts to read L1 storage slots directly. This is a key building block for cross-chain composability. See [Cross-Chain Composability](./synchronous-composability) for details.
 
 :::note
-Surge also supports [Alethia-Reth](https://github.com/NethermindEth/alethia-reth) as an alternative L2 execution client, which implements the RealTime hardfork.
+Surge also supports [Alethia-Reth](https://github.com/NethermindEth/alethia-reth) as an alternative L2 execution client, which implements the RealTime hardfork (`TaikoHardfork::RealTime`).
 :::

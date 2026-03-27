@@ -12,3 +12,4 @@ Explore these topics:
 - [Real-Time Proving](./about/real-time-proving): How Surge generates ZK proofs in seconds and finalizes blocks atomically.
 - [Surge Synchronous Composability](./about/synchronous-composability): How Surge achieves synchronous composability with L1.
 - [Surge & Nethermind Client](./about/nethermind): Surge's use of the Nethermind Client (NMC) for execution.
+- [Components & Repositories](./about/components): All components, their repos, branches, and how they fit together.

@@ -36,3 +36,60 @@ Zisk may occasionally fail on certain transaction types, particularly bridge-rel
 1. Ensure the driver is started with `--fork realtime --realtimeInbox <address>`.
 2. Check that the `RealTimeInbox` contract address matches the one from your protocol deployment (found in `deployment/deploy_l1.json`).
 3. Verify the L1 WebSocket endpoint is accessible and the driver can reach it.
+
+#### `deploy-surge-full.sh` protocol deployment fails
+
+1. Verify `.env` has valid L1 RPC and WebSocket endpoints that are reachable.
+2. Check that the deployer account has enough ETH for gas. The script deploys ~10 contracts.
+3. The script saves progress -- you can safely re-run it after fixing the issue.
+
+#### Bare-metal Zisk install runs out of disk space
+
+The Zisk backend needs 150GB+ for proving keys. Check available space with `df -h`. Use `ZISK_DIR=/path/to/large/disk TARGET=zisk make install` to install on a different partition.
+
+#### `lib-float` build failure on RTX 5090
+
+Parallel cargo compilation can race-condition the `float.o` archive. Fix:
+```bash
+CARGO_BUILD_JOBS=1 TARGET=zisk make install
+```
+
+#### Guest compilation fails (SYSROOT not found)
+
+If `TARGET=zisk make guest` fails because it can't find RISC-V libc headers, try the manual build:
+```bash
+cd provers/zisk/agent/guest
+SYSROOT="~/.sp1/riscv/riscv64-unknown-elf/include"
+CC_riscv64ima_zisk_zkvm_elf="riscv64-unknown-elf-gcc -march=rv64ima -mabi=lp64 -mstrict-align -falign-functions=2" \
+    CFLAGS_riscv64ima_zisk_zkvm_elf="-isystem $SYSROOT" \
+    RUSTFLAGS='--cfg getrandom_backend="custom"' \
+    cargo-zisk build --release
+cp target/riscv64ima-zisk-zkvm-elf/release/zisk-batch elf
+```
+
+#### Cold start proof takes ~70 seconds
+
+This is expected. The first proof initializes PROOFMAN and ASM microservices inside the ZisK backend. Subsequent warm proofs run at ~10-17 seconds depending on GPU.
+
+#### VKey mismatch after rebuilding Raiko
+
+Different guest code produces a different verification key. After any guest rebuild:
+1. Get the new VKey: `curl localhost:8080/guest_data`
+2. Register the new VKey in the SurgeVerifier contract on L1
+
+#### `MaxAnchorBlockTooOld` error
+
+The proposal references an L1 block older than 256 blocks. This happens when Catalyst takes too long to submit (L1's `blockhash()` opcode only works for the last 256 blocks). Check Catalyst logs for proof generation delays or network issues.
+
+#### `SignalSlotNotSent` error
+
+A signal slot in the proposal doesn't exist on L1 SignalService. This means the UserOp execution didn't emit the expected `SignalSent` event. Check:
+1. The UserOp calldata is correct
+2. The L1 Bridge contract is properly deployed
+3. L1 RPC is returning current state (not stale)
+
+#### `SS_SIGNAL_NOT_RECEIVED` during L2 block execution
+
+The anchor's signal slots don't match what was committed in the proposal. Verify:
+1. `chain_spec_list.json` has the correct L2 contract addresses
+2. The Raiko prover is using the same chain spec as the Driver

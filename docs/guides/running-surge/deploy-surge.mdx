@@ -1,0 +1,112 @@
+---
+sidebar_position: 1
+title: "Deploy Surge"
+---
+
+# Deploy Surge
+
+Deploy your own Surge rollup with real-time proving on an existing L1 network.
+
+## Prerequisites
+
+- An L1 network with HTTP, WebSocket, and beacon chain endpoints (we use Gnosis mainnet with QuickNode)
+- Docker and Docker Compose
+- Git
+- An L1 account with ETH for gas (deployer private key)
+- A separate machine with CUDA-capable GPU for the ZisK prover (see [Prover Setup](./provers))
+
+## 1. Clone and Configure
+
+```bash
+git clone https://github.com/NethermindEth/simple-surge-node.git
+cd simple-surge-node
+git checkout shasta-poc
+cp .env.devnet .env
+```
+
+Edit `.env` and set your L1 connection:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `L1_ENDPOINT_HTTP` | L1 RPC endpoint | `https://your-provider.com/rpc` |
+| `L1_ENDPOINT_WS` | L1 WebSocket endpoint | `wss://your-provider.com/ws` |
+| `L1_BEACON_HTTP` | L1 beacon chain endpoint | `https://your-provider.com/beacon` |
+
+Everything else in `.env.devnet` has sensible defaults for a devnet deployment, including pre-funded deployer/operator keys. For production deployments, override `PRIVATE_KEY`, `OPERATOR_PRIVATE_KEY`, and `SUBMITTER_PRIVATE_KEY` with your own funded accounts.
+
+## 2. Run the Deployment
+
+```bash
+./deploy-surge-full.sh
+```
+
+The script runs interactively through 7 phases:
+
+### Phase 1: Environment
+Choose devnet, staging, or testnet. For a fresh deployment, pick devnet.
+
+### Phase 2: L1 Infrastructure
+Choose "Use existing chain" if you already have an L1. The script will use the endpoints from your `.env`.
+
+### Phase 3: L1 Devnet (optional)
+If you chose to deploy a new devnet, the script spins up a local L1 using Kurtosis. Skip this if using an existing L1.
+
+### Phase 4: L2 Stack
+Deploys the L2 execution client (Nethermind), the Driver, and Catalyst. Choose:
+- Option 1: Driver only
+- Option 2: Driver + Catalyst (default, needed for real-time proving)
+
+### Phase 5: Protocol Contracts
+Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multicall, and UserOpsSubmitter to L1. Also generates L2 genesis and chainspec.
+
+### Phase 6: Relayers (optional)
+Deploys L1/L2 relayers, Bridge UI, MySQL, and RabbitMQ for cross-chain message handling.
+
+### Phase 7: Verification
+Runs health checks and prints a deployment summary with all endpoints.
+
+:::tip
+The script saves progress. You can safely cancel with `Ctrl+C` and resume later.
+:::
+
+## 3. Verify
+
+After deployment:
+
+```bash
+# Check L2 containers are running
+docker compose ps
+
+# Test L2 RPC
+curl -X POST -H "Content-Type: application/json" \
+     --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' \
+     http://localhost:8547
+```
+
+If the Driver is running with `--fork realtime`, you should see blocks being produced once Catalyst starts proposing.
+
+## Our Deployment
+
+For reference, here's what we use for the Gnosis mainnet deployment at `*.realtime.surge.wtf`:
+
+| Component | Hardware | Notes |
+|-----------|----------|-------|
+| L1 | Gnosis mainnet | QuickNode RPC provider |
+| L2 Stack | Standard VM | NMC, Driver, Catalyst |
+| Prover | NVIDIA RTX 5090 GPU | Bare-metal Raiko + Zisk (~10-11s proofs) |
+| Secondary prover | L40s GPU cluster | ~13-14s proofs |
+
+## 4. Next Steps
+
+- [Set up the ZisK Prover](./provers) for real-time proving (required for block finalization)
+- [Deploy a dApp](../deploy-on-surge) on your Surge network
+
+## Cleanup
+
+To tear down everything:
+
+```bash
+./remove-surge-full.sh --force
+```
+
+This removes all containers, data, and configurations. Add `--remove-env true` to also delete the `.env` file.

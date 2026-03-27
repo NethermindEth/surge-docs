@@ -102,7 +102,7 @@ Surge represents one component of Nethermind's broader rollup roadmap, which inc
 
 - [About section](./about) -- architecture, design choices, how things work under the hood.
 - [GitHub](https://github.com/NethermindEth/surge) -- all the code.
-- [Guides](./guides) -- run your own devnet or deploy a dApp.
+- [Guides](./guides) -- deploy your own Surge network or deploy a dApp.
 - **Live deployment:**
   - Bridge: [bridge.realtime.surge.wtf](https://bridge.realtime.surge.wtf/)
   - Explorer: [explorer.realtime.surge.wtf](https://explorer.realtime.surge.wtf/)
@@ -111,12 +111,16 @@ Surge represents one component of Nethermind's broader rollup roadmap, which inc
 
 ## Component Versions
 
-When following the guides and documentation, please use the following versions of Surge components and services:
+Surge is under active development. Components use feature branches rather than tagged releases:
 
-- **simple-surge-node:** [v25.1.2](https://github.com/NethermindEth/simple-surge-node/releases/tag/v25.1.2)
-- **nethermind:** Any [latest stable release](https://github.com/nethermindeth/nethermind/releases)
-- **alethia-reth:** See the [alethia-reth repository](https://github.com/NethermindEth/alethia-reth) for the latest real-time proving branch
-- **surge-taiko-mono:** [v25.1.2](https://github.com/NethermindEth/surge-taiko-mono/releases/tag/v25.1.2)
-- **raiko:** See the [raiko repository](https://github.com/NethermindEth/raiko) (`surge-alethia-real-time-proving` branch)
+| Component | Repo | Branch |
+|-----------|------|--------|
+| simple-surge-node | [simple-surge-node](https://github.com/NethermindEth/simple-surge-node) | `shasta-poc` |
+| surge-taiko-mono | [surge-taiko-mono](https://github.com/NethermindEth/surge-taiko-mono) | `surge-alethia-real-time-driver` |
+| raiko | [raiko](https://github.com/NethermindEth/raiko) | `surge-alethia-real-time-proving` |
+| alethia-reth | [alethia-reth](https://github.com/NethermindEth/alethia-reth) | `real-time-proving-migration` |
+| nethermind | [nethermind](https://github.com/NethermindEth/nethermind) | `feat/surge-real-time-poc` |
+| Catalyst | [Catalyst](https://github.com/NethermindEth/Catalyst) | `surge-real-time-proving` |
 
-These versions are tested and verified to work together for the current deployment.
+These branches represent the latest working state and are tested together for the current deployment.
+For the full list of components and what they do, see [Components & Repositories](./about/components.md).
