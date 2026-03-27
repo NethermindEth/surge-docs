@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+title: Surge Architecture
+---
+
 # Surge Architecture Overview
 
 > How the off-chain and on-chain entities interact to deliver real-time proving and synchronous composability.
