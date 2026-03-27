@@ -194,9 +194,9 @@ The builder now has:
 
 The builder sends the L2 block to **Raiko**, which generates a ZK validity proof. The proof attests that:
 
-- Starting from `lastFinalizedBlockHash` (the previous L2 chain head)
+- Given the proposal (which includes `parentProposalHash` linking to the previous chain head)
 - Executing the proposed L2 block (with the given signal slots in the anchor)
-- Results in the claimed checkpoint (block hash + state root)
+- Results in the claimed checkpoint (block number + block hash + state root)
 
 This proof is generated in real-time, fast enough to be included in the same L1 block.
 
@@ -212,12 +212,12 @@ Multicall Transaction:
 ├── Call 2: RealTimeInbox.propose(data, checkpoint, proof)
 │   ├── Verifies signal slots exist on L1 (from Call 1)
 │   ├── Verifies ZK proof from Raiko
-│   ├── Saves checkpoint to SignalService
-│   └── Updates lastFinalizedBlockHash
+│   ├── Saves L2 checkpoint to SignalService (L2 state root now on L1)
+│   └── Updates lastProposalHash
 │
-└── Call 3: Bridge.processMessage(completionMessage, proof=[])
-    ├── Checks signal received (proof=empty → checks _receivedSignals mapping)
-    ├── Signal was set by propose() via setSignalsReceived()
+└── Call 3: Bridge.processMessage(completionMessage, storageProof)
+    ├── Verifies L2 signal via merkle proof against the saved L2 state root
+    ├── Proof confirms the signal slot exists in L2 SignalService storage
     ├── Invokes L1Vault.onMessageInvocation()
     └── L1 Vault transfers USDC to Alice
 ```
@@ -317,15 +317,14 @@ function propose(
     bytes calldata _proof
 ) external nonReentrant {
     // 1. Build proposal from input data
-    (bytes32 proposalHash, Proposal memory proposal, bytes32[] memory signalSlots)
-        = _buildProposal(_data);
+    //    Decodes ProposeInput, validates anchor block, verifies signal slots
+    //    via isSignalSent(), hashes everything into proposalHash
+    (bytes32 proposalHash, Proposal memory proposal) = _buildProposal(_data);
 
-    // 2. Verify signal slots exist on L1 SignalService
-    //    (these are the L2 Calls, messages sent from L1 to L2)
-    _verifySignalSlots(signalSlots);
-
-    // 3. Verify ZK proof and finalize
-    _verifyAndFinalize(proposalHash, prevFinalizedBlockHash, _checkpoint, _proof);
+    // 2. Verify ZK proof and finalize
+    //    Builds Commitment(proposalHash, checkpoint), verifies proof,
+    //    saves checkpoint to SignalService, updates lastProposalHash
+    _verifyAndFinalize(proposalHash, _checkpoint, _proof);
 }
 ```
 
@@ -339,9 +338,8 @@ The `Commitment` that gets proven:
 
 ```solidity
 struct Commitment {
-    bytes32 proposalHash;           // What was proposed
-    bytes32 lastFinalizedBlockHash; // Starting state
-    Checkpoint checkpoint;          // Resulting state (blockHash + stateRoot)
+    bytes32 proposalHash;    // What was proposed (includes parentProposalHash for chain linkage)
+    Checkpoint checkpoint;   // Resulting state (blockNumber + blockHash + stateRoot)
 }
 ```
 
@@ -451,10 +449,10 @@ RealTimeInbox.propose(
 1. `_verifySignalSlots()` checks that each signal slot in the proposal was actually sent on L1 (from Call 1)
 2. `_buildProposal()` constructs the proposal hash including the signal slots hash
 3. `_verifyAndFinalize()`:
-   - Builds a `Commitment(proposalHash, lastFinalizedBlockHash, checkpoint)`
-   - Verifies the ZK proof against this commitment via `SurgeVerifier`
-   - Calls `SignalService.saveCheckpoint()` to persist the L2 state
-   - Updates `lastFinalizedBlockHash` to the new chain head
+   - Builds a `Commitment(proposalHash, checkpoint)` and hashes it
+   - Verifies the ZK proof against this commitment hash via `SurgeVerifier`
+   - Calls `SignalService.saveCheckpoint()` to persist the L2 state root on L1
+   - Updates `lastProposalHash` to the new chain head
 
 **The L2 block that was proven contains:**
 
@@ -471,20 +469,22 @@ RealTimeInbox.propose(
 ### Call 3: L1 Call Execution
 
 ```
-Bridge.processMessage(completionMessage, proof=[])
+Bridge.processMessage(completionMessage, storageProof)
 ```
 
 **What happens inside:**
 
-1. Bridge calls `SignalService.proveSignalReceived()` with empty proof
-2. Empty proof → checks `_receivedSignals[slot]`
-3. This slot was set by `RealTimeInbox` which called `SignalService.setSignalsReceived()` during `propose()` in Call 2
+1. Bridge calls `SignalService.proveSignalReceived()` with a storage proof
+2. SignalService performs merkle verification against the L2 checkpoint saved in Call 2
+3. The proof confirms the L2 signal slot exists in L2 SignalService storage — meaning the completion message was actually sent on L2
 4. Signal is verified! Bridge invokes the target:
    - `L1Vault.onMessageInvocation(data)`
    - Decodes: `(SWAP_ETH_TO_TOKEN, recipient, tokenAmount)`
    - `USDC.transfer(recipient, tokenAmount)`
 
 **Output:** Alice receives her USDC on L1.
+
+> **Note:** Unlike L1→L2 signals (which use fast signals via the Anchor), L2→L1 signals use merkle storage proofs. This works because Call 2 saves the L2 state root to L1, and Catalyst pre-computes the storage proof since it already knows the full L2 state from simulation.
 
 ---
 
@@ -510,25 +510,33 @@ The entire system revolves around how signals flow between L1 and L2. Here's the
 ```
 1. L2 Contract calls Bridge.sendMessage() (inside proven L2 block)
 2. L2 Bridge calls L2 SignalService.sendSignal(msgHash)
-3. L2 state root contains this signal
-4. RealTimeInbox.propose() saves checkpoint with this state root
-5. Builder knows the L2 signal exists (it simulated the block)
-6. Builder includes Bridge.processMessage() as Call 3 in the multicall
-7. L1 Bridge verifies signal via the freshly-saved checkpoint
-8. L1 target contract is invoked
+3. L2 state root contains this signal slot
+4. RealTimeInbox.propose() saves L2 checkpoint (including state root) to L1
+5. Builder pre-computes a merkle storage proof against this L2 state root
+6. Builder includes Bridge.processMessage(msg, storageProof) as Call 3 in the multicall
+7. L1 SignalService.proveSignalReceived() verifies the merkle proof against the saved checkpoint
+8. Signal confirmed, L1 target contract is invoked
 ```
 
-### Why "Fast Signals" Are Safe
+### Why This Is Safe
 
-Fast signals bypass merkle proofs, but they are still secured by the ZK validity proof:
+Both signal directions are secured by the ZK validity proof, just through different mechanisms:
 
-1. The builder **cannot fabricate signals**. `_verifySignalSlots()` in the inbox checks that each signal slot was actually written on L1 before including it in the proposal.
+**L1→L2 (fast signals):** Skip merkle proofs but remain trustless because:
 
-2. The builder **cannot fake L2 execution**. The ZK proof verifies that the L2 block, when executed with the given signal slots, produces the claimed state root. If the builder includes a signal slot that wasn't actually set in the anchor, the proof will fail.
+1. The builder **cannot fabricate L1 signals**. `_verifySignalSlots()` in the inbox checks that each signal slot was actually written on L1 before including it in the proposal.
 
-3. The **checkpoint is only saved after proof verification**. L1 Calls (Call 3) can only succeed if the proposal was proven valid.
+2. The builder **cannot fake L2 execution**. The ZK proof verifies that the L2 block, when executed with the given signal slots, produces the claimed state root. If the builder injects a signal that wasn't actually set in the anchor, the proof fails.
 
-4. The entire multicall is **atomic**. If any call fails, the entire transaction reverts. No partial state corruption.
+**L2→L1 (storage proofs):** Use traditional merkle proofs, but against a freshly-saved checkpoint:
+
+3. The **L2 state root is only saved to L1 after the ZK proof passes**. Call 3 can only succeed if Call 2's proof was verified.
+
+4. The **storage proof is verified against the proven state root**. There's no trust assumption — the merkle proof cryptographically demonstrates the L2 signal exists.
+
+**Both directions:**
+
+5. The entire multicall is **atomic**. If any call fails, the entire transaction reverts. No partial state corruption.
 
 ---
 

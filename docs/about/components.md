@@ -58,7 +58,7 @@ Alternative L2 execution client (Nethermind's fork of reth with Taiko support). 
 
 ### nethermind
 
-Primary L2 execution client. High-performance .NET client with L1SLOAD (RIP-7728) support.
+Primary L2 execution client. High-performance .NET client.
 
 - **Branch**: `feat/surge-real-time-poc`
 
@@ -100,7 +100,7 @@ GPU-accelerated zkVM used by Raiko as the proving backend. Re-executes L2 blocks
 |----|-------------|
 | [raiko#52](https://github.com/NethermindEth/raiko/pull/52) | Real-time proving support in Raiko |
 | [alethia-reth#12](https://github.com/NethermindEth/alethia-reth/pull/12) | RealTime hardfork in Alethia-Reth |
-| [surge-taiko-mono#269](https://github.com/NethermindEth/surge-taiko-mono/pull/269) | Protocol changes for real-time proving |
+| [surge-taiko-mono#269](https://github.com/NethermindEth/surge-taiko-mono/pull/269) | Driver migration to real-time proving |
 
 ## Branch Strategy
 

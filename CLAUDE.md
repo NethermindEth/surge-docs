@@ -16,10 +16,8 @@
 
 ## Technical Accuracy
 
-- Surge is a **based rollup with real-time proving**. These are two orthogonal properties:
-  - **Based** = who sequences transactions (L1 validators, permissionless proposing, no centralized sequencer)
-  - **Real-time proving** = when proofs happen (~10-17s, atomic propose+prove in one L1 tx)
-- Never describe Surge as having a centralized sequencer. `RealTimeInbox.propose()` is permissionless.
+- Surge is a **ZK rollup with real-time proving** and **permissionless proposing** (`RealTimeInbox.propose()`). Don't describe it as having a centralized sequencer.
+- **Real-time proving** = ZK proofs generated in ~10-17s, atomic propose+prove in one L1 tx. No proving windows, no bonds.
 - The old Pacaya model (two-phase propose-then-prove, bonds, multi-prover, proving windows) is deprecated. Don't reference it as current.
 - When comparing old vs new, use comparison tables rather than prose.
 

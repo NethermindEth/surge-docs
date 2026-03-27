@@ -28,7 +28,7 @@ title: Surge Architecture
 | **Catalyst (Builder)** | Receives UserOps, simulates L2 execution, requests proofs, and submits the final multicall to L1. The central orchestrator.                                                                                            |
 | **Raiko (Prover)**     | Receives block proving requests from Catalyst. Delegates proof generation to the zkVM and returns validity proofs.                                                                                                     |
 | **Zisk (zkVM)**        | The zero-knowledge virtual machine that Raiko uses under the hood to generate ZK validity proofs for L2 blocks.                                                                                                        |
-| **Driver (L2 Node)**   | The L2 execution client. Receives preconfirmed blocks from Catalyst, executes them, and resyncs its canonical chain when proposals are submitted to L1. Reorgs out blocks that cannot be proven or have stale anchors. |
+| **Driver (L2 Node)**   | The L2 consensus/sync layer (`taiko-client`). Receives preconfirmed blocks from Catalyst, forwards them to the execution client (NMC or Alethia-Reth) via the Engine API, and resyncs its canonical chain when proposals are submitted to L1. Reorgs out blocks that cannot be proven or have stale anchors. |
 
 ### On-Chain (L1)
 
@@ -139,11 +139,10 @@ Catalyst ---(prove request)---> Raiko ---(zkVM execution)---> Zisk
                                   <---(ZK validity proof)---
 ```
 
-The **Commitment** that gets proven binds three things together:
+The **Commitment** that gets proven binds two things together:
 
-- `proposalHash`: the hash of the proposed L2 block (including signal slots)
-- `lastFinalizedBlockHash`: the starting L2 state (chain head before this block)
-- `checkpoint`: the resulting L2 state (block hash + state root after execution)
+- `proposalHash`: the hash of the proposed L2 block (includes `parentProposalHash` for chain linkage, signal slots, anchor reference, etc.)
+- `checkpoint`: the resulting L2 state (block number + block hash + state root after execution)
 
 Raiko delegates the actual proof computation to **Zisk**, the zkVM. Zisk re-executes the L2 block inside the ZK circuit and produces a cryptographic proof that the claimed state transition is valid.
 
@@ -181,9 +180,9 @@ The core L1 contract. Its `propose()` function performs three operations atomica
 
 1. **Build proposal**: Decode the `ProposeInput`, validate the anchor block reference, verify that all signal slots exist on L1 (`isSignalSent`), and hash everything into a `proposalHash`.
 
-2. **Verify proof**: Construct a `Commitment` from the proposal hash, the previous finalized block hash, and the new checkpoint. Pass this to `SurgeVerifier.verifyProof()`.
+2. **Verify proof**: Construct a `Commitment` from the proposal hash and the new checkpoint, hash it, and pass the commitment hash to `SurgeVerifier.verifyProof()`.
 
-3. **Finalize state**: Save the checkpoint to SignalService (making L2 state root available on L1), update `lastFinalizedBlockHash`, and emit `ProposedAndProved`.
+3. **Finalize state**: Save the checkpoint to SignalService (making L2 state root available on L1), update `lastProposalHash`, and emit `ProposedAndProved`.
 
 The checkpoint saved during `propose()` makes the L2 state root available on L1. Catalyst then builds ETH storage proofs (merkle proofs) against this freshly-saved state root to prove L2-originated signals exist, enabling Call 3 (L1 Call execution) within the same transaction.
 
@@ -323,7 +322,7 @@ Fast signals skip merkle proofs but remain secured by the ZK validity proof:
 
 2. **L2 execution cannot be faked.** The ZK proof verifies that executing the L2 block (with the given anchor signal slots) produces the claimed state root.
 
-3. **State is only committed after proof verification.** The checkpoint is saved and `lastFinalizedBlockHash` is updated only after the proof passes.
+3. **State is only committed after proof verification.** The checkpoint is saved and `lastProposalHash` is updated only after the proof passes.
 
 4. **The multicall is atomic.** If any call fails, the entire transaction reverts.
 
@@ -345,7 +344,7 @@ The Driver maintains a speculative chain built from Catalyst's preconfirmations.
 
 ```
 Driver detects divergence (L1 submission != preconfirmed chain)
-  --> Revert to lastFinalizedBlockHash
+  --> Revert to last finalized state
   --> Re-derive chain from the ProposedAndProved event
   --> Apply the submitted L2 block
   --> Resume accepting new preconfs from Catalyst

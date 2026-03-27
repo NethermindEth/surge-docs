@@ -51,8 +51,8 @@ Real-time proving gets rid of all of this. Proof generation is now fast enough (
 | Proving window  | Up to 24 hours                | None (immediate)                       |
 | Bonds           | Required                      | Removed                                |
 | On-chain config | 17 fields                     | 3 fields                               |
-| On-chain state  | Multiple slots (ring buffer)  | Single slot (`lastFinalizedBlockHash`) |
-| Prover model    | 2-of-3 multi-prover           | Single Zisk GPU prover                 |
+| On-chain state  | Multiple slots (ring buffer)  | Single slot (`lastProposalHash`)       |
+| Prover model    | 2-of-3 multi-prover           | ZK validity proof (Zisk primary, multi-proof capable) |
 | Batch proving   | Supported                     | Removed (one proof per block)          |
 | Finality        | Delayed until proof submitted | Instant on proposal                    |
 
@@ -68,11 +68,11 @@ The `RealTimeInbox` contract replaces the old multi-contract setup with a single
 
 **State** -- single storage slot:
 
-- `bytes32 lastFinalizedBlockHash` -- hash of the last finalized L2 block
+- `bytes32 lastProposalHash` -- hash of the last accepted proposal (chain head)
 
 **Events** -- single event:
 
-- `ProposedAndProved(proposalHash, lastFinalizedBlockHash, checkpoint, signalSlots)`
+- `ProposedAndProved(proposalHash, parentProposalHash, maxAnchorBlockNumber, basefeeSharingPctg, sources, signalSlotsHash, checkpoint)`
 
 ## Proof Performance
 
@@ -82,6 +82,7 @@ Proof generation time depends on GPU hardware:
 | -------------- | ----------- | ------------------ |
 | 1x L40         | ~40s        | Single GPU         |
 | 2x L40         | ~25s        |                    |
+| 3x L40         | ~22s        |                    |
 | 4x L40         | ~20s        |                    |
 | L40s cluster   | ~13-14s     | Production cluster |
 | RTX 5090       | **~10-11s** | Current fastest    |

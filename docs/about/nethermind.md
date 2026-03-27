@@ -17,10 +17,6 @@ Nethermind's execution engine processes transactions quickly, which directly tra
 
 The client's memory and CPU efficiency means Surge can process more transactions per block without needing oversized infrastructure.
 
-### L1SLOAD Support
-
-Nethermind implements the L1SLOAD precompile (RIP-7728), which allows L2 contracts to read L1 storage slots directly. This is a key building block for cross-chain composability. See [Cross-Chain Composability](./synchronous-composability) for details.
-
 :::note
 Surge also supports [Alethia-Reth](https://github.com/NethermindEth/alethia-reth) as an alternative L2 execution client, which implements the RealTime hardfork (`TaikoHardfork::RealTime`).
 :::
