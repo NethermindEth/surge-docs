@@ -18,5 +18,5 @@ Nethermind's execution engine processes transactions quickly, which directly tra
 The client's memory and CPU efficiency means Surge can process more transactions per block without needing oversized infrastructure.
 
 :::note
-Surge also supports [Alethia-Reth](https://github.com/NethermindEth/alethia-reth) as an alternative L2 execution client, which implements the RealTime hardfork (`TaikoHardfork::RealTime`).
+Surge also supports [Alethia-Reth](https://github.com/NethermindEth/alethia-reth) as an alternative L2 execution client, which also implements real-time proving.
 :::
