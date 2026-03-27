@@ -286,7 +286,7 @@ const itemLinks = [
   {
     title: 'Cross-Chain Composability',
     description: 'L1SLOAD and signal slots for synchronous L1-L2 state access',
-    to: '/docs/about/cross-chain-composability',
+    to: '/docs/about/synchronous-composability',
   },
   {
     title: 'Deploy a DApp',
@@ -360,8 +360,8 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a based rollup with real-time proving, built on the Taiko stack. Decentralized sequencing, Gigagas
-            throughput, instant finality, Stage 2 security
+            Surge is a based rollup with real-time proving, built on the Taiko stack. Decentralized
+            sequencing, Gigagas throughput, instant finality, Stage 2 security
           </p>
           <SearchWrapper>
             <SearchBar />

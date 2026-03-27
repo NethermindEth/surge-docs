@@ -8,10 +8,7 @@ This section provides an overview of **Surge**.
 
 Explore these topics:
 
-- [Based Rollups](./about/based-rollups): Why Surge uses Ethereum's validators for sequencing instead of a centralized sequencer.
-- [Real-Time Proving](./about/real-time-proving): How Surge generates ZK proofs in seconds and finalizes blocks atomically.
 - [Surge Architecture](./about/architecture): System architecture and component interactions.
-- [Cross-Chain Composability](./about/cross-chain-composability): L1SLOAD and signal slots for reading L1 state from L2.
-- [Fully Decentralized from Day 1](./about/stage-2): Surge's Stage 2 governance model.
+- [Real-Time Proving](./about/real-time-proving): How Surge generates ZK proofs in seconds and finalizes blocks atomically.
+- [Surge Synchronous Composability](./about/synchronous-composability): How Surge achieves synchronous composability with L1.
 - [Surge & Nethermind Client](./about/nethermind): Surge's use of the Nethermind Client (NMC) for execution.
-- [Gigagas](./about/gigagas): Surge's Gigagas performance and its implications.

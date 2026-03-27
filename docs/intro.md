@@ -33,12 +33,12 @@ through L1SLOAD.
   [demonstrated Gigagas performance](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0) on mainnet.
   Surge gets the same engine. See [Gigagas](./about/gigagas.md).
 - **Cross-Chain Composability:** L2 contracts can read L1 storage directly via L1SLOAD. L1 signals get relayed
-  to L2 through signal slots in the anchor transaction. See [Cross-Chain Composability](./about/cross-chain-composability.md).
+  to L2 through signal slots in the anchor transaction. See [Cross-Chain Composability](./about/synchronous-composability.md).
 - **Open Source:** All [code](https://github.com/NethermindEth/surge) is open source. Fork it, run it, modify it.
 
 ## Research-Focused Approach
 
-Surge is *not designed to compete with existing rollups* for users or market share. It's a:
+Surge is _not designed to compete with existing rollups_ for users or market share. It's a:
 
 1. **Technical showcase** for [Nethermind](https://www.nethermind.io/)'s execution client and rollup engineering.
 2. **Experimentation platform** for pushing rollup performance, throughput, and new protocol ideas.

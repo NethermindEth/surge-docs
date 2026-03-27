@@ -36,11 +36,12 @@ Once you've received your ETH on L2:
 
 ### L1SLOAD Support
 
-Surge supports L1SLOAD, a precompile that lets your L2 contracts **read L1 storage slots directly**. Your L2 contracts can access L1 state without trusting a bridge or oracle. See [Cross-Chain Composability](/docs/about/cross-chain-composability) for details.
+Surge supports L1SLOAD, a precompile that lets your L2 contracts **read L1 storage slots directly**. Your L2 contracts can access L1 state without trusting a bridge or oracle. See [Cross-Chain Composability](/docs/about/synchronous-composability) for details.
 
 ## Feature Set
 
 Surge uses the **RealTime** execution fork, which is EVM-compatible with additional capabilities:
+
 - Standard EVM opcodes and precompiles
 - L1SLOAD precompile for cross-chain state reads
 - Signal slots for L1-to-L2 message relay
