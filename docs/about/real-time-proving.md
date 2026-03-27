@@ -90,5 +90,5 @@ These are end-to-end times including both STARK and SNARK phases. There's no agg
 ## Further Reading
 
 - [Surge Architecture](./architecture) -- how all components fit together
-- [Cross-Chain Composability](./synchronous-composability) -- signal slots and L1SLOAD enabled by real-time proving
+- [Cross-Chain Composability](./synchronous-composability) -- signal slots and synchronous composability enabled by real-time proving
 - [Zisk Prover Setup](../guides/running-surge/provers/zisk-prover) -- run the prover yourself

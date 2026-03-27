@@ -258,19 +258,9 @@ const actions = [
 
 const itemLinks = [
   {
-    title: 'Based Rollups',
-    description: 'Why Surge uses Ethereum validators for sequencing, not a centralized sequencer',
-    to: '/docs/about/based-rollups',
-  },
-  {
     title: 'Real-Time Proving',
     description: 'How Surge generates ZK proofs in seconds for instant finality',
     to: '/docs/about/real-time-proving',
-  },
-  {
-    title: 'Stage 2',
-    description: 'Explore Surge’s Stage 2 security framework',
-    to: '/docs/about/stage-2',
   },
   {
     title: 'Nethermind Execution Client',
@@ -279,13 +269,8 @@ const itemLinks = [
     to: '/docs/about/nethermind',
   },
   {
-    title: 'Gigagas',
-    description: 'Understand what is Gigagas and its benefits',
-    to: '/docs/about/gigagas',
-  },
-  {
     title: 'Cross-Chain Composability',
-    description: 'L1SLOAD and signal slots for synchronous L1-L2 state access',
+    description: 'Signal slots and fast signals for atomic L1-L2 execution',
     to: '/docs/about/synchronous-composability',
   },
   {

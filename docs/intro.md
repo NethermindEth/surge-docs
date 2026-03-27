@@ -5,36 +5,69 @@ title: Introduction to Surge
 
 # Introduction to Surge
 
-Surge is a [based rollup](./about/based-rollups.md) with real-time proving, built on a modified
+Surge is a ZK rollup with real-time proving, built on a modified
 [Taiko stack](https://taiko.xyz/). It's developed by [Nethermind](https://nethermind.io) as a research and
 experimentation platform.
 
-Two things define Surge. First, it's **based** -- Ethereum's validators handle transaction ordering, not a centralized
-sequencer. Second, it has **real-time proving** -- ZK proofs are generated **within seconds** of block production and
-submitted together with the block proposal in a single transaction, so blocks finalize on L1 the moment they're
-proposed. On top of that, Surge has
-[Stage 2 security](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe#:~:text=Stage%202%20%E2%80%94%20No,from%20governance%20attacks.)
-from day one, [Gigagas](./about/gigagas.md)-level throughput via
-the [Nethermind Execution Client](https://github.com/NethermindEth/nethermind) (NMC), and cross-chain composability
-through L1SLOAD.
+What defines Surge: **real-time proving** -- ZK proofs are generated within seconds of block production and
+submitted atomically with the block proposal in a single L1 transaction. Blocks finalize on L1 the moment
+they're proposed. No proving windows, no bonds, no waiting. On top of that, Surge achieves
+**synchronous composability** -- L1 and L2 actions execute atomically within a single L1 block -- and ships
+with [Stage 2 security](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe#:~:text=Stage%202%20%E2%80%94%20No,from%20governance%20attacks.)
+from day one.
 
 ## What Makes Surge Unique?
 
-- **Based Rollup:** No centralized sequencer. Ethereum's validators handle L2 transaction ordering through the same
-  permissionless block-building pipeline as L1. See [Based Rollups](./about/based-rollups.md).
 - **Real-Time Proving:** ZK proofs are generated in ~10-17 seconds and included with the block proposal in one
   transaction. No proving windows, no bonds -- blocks finalize on L1 as soon as they're proposed.
   See [Real-Time Proving](./about/real-time-proving.md).
+- **Synchronous Composability:** L1 and L2 actions happen atomically within a single L1 block. A user can
+  initiate a swap on L1, have it execute on an L2 DEX, and receive the result back on L1 -- all in one
+  transaction. Powered by signal slots, fast signals, and the builder's multicall pattern.
+  See [Cross-Chain Composability](./about/synchronous-composability.md).
+- **Permissionless Proposing:** Anyone can submit L2 blocks via `RealTimeInbox.propose()`. No centralized
+  sequencer, no whitelisted proposers. See [Architecture](./about/architecture.md).
 - **Stage 2 from Day 1:** Surge ships with L2Beat's
   [Stage 2](https://medium.com/l2beat/introducing-stages-a-framework-to-evaluate-rollups-maturity-d290bb22befe)
   security -- 45-day exit window, no emergency powers, no governance token.
 - **Tokenless:** Just ETH for gas. No L2 token, no token-related governance overhead.
-- **Gigagas Throughput:** The [Nethermind Client](https://github.com/NethermindEth/nethermind) already
-  [demonstrated Gigagas performance](https://github.com/NethermindEth/nethermind/releases/tag/1.30.0) on mainnet.
-  Surge gets the same engine. See [Gigagas](./about/gigagas.md).
-- **Cross-Chain Composability:** L2 contracts can read L1 storage directly via L1SLOAD. L1 signals get relayed
-  to L2 through signal slots in the anchor transaction. See [Cross-Chain Composability](./about/synchronous-composability.md).
+- **Nethermind Execution Client:** Surge runs on the high-performance
+  [Nethermind Client](https://github.com/NethermindEth/nethermind) for fast block execution and low overhead.
+  See [Nethermind Client](./about/nethermind.md).
 - **Open Source:** All [code](https://github.com/NethermindEth/surge) is open source. Fork it, run it, modify it.
+
+## How It Works
+
+Surge's architecture centers on a few key components:
+
+```
+User ──(signed UserOps)──► Catalyst (Builder)
+                               │
+                     simulate L1+L2 execution
+                               │
+                     request proof from Raiko/Zisk (~10-17s)
+                               │
+                     bundle everything into one L1 tx:
+                     ┌─────────┴──────────┐
+                     │     Multicall       │
+                     │  1. Execute UserOps │
+                     │  2. Propose + Prove │
+                     │  3. Settle L1 Calls │
+                     └─────────────────────┘
+                               │
+                     L2 block finalized on L1
+```
+
+- **Catalyst (Builder)** orchestrates the entire flow: receives user intents (UserOps), simulates L1 and L2
+  execution, requests ZK proofs, and submits everything as a single atomic multicall to L1.
+- **Raiko + Zisk** generate ZK validity proofs in real time. Zisk (the zkVM) re-executes L2 blocks inside a ZK
+  circuit and produces proofs in ~10-17 seconds.
+- **RealTimeInbox** is the L1 contract that atomically verifies the proof, saves the L2 state checkpoint, and
+  finalizes the block -- all in `propose()`.
+- **Signal slots** and the **Anchor** contract relay cross-chain messages without merkle proofs, making
+  synchronous composability possible.
+
+For the full picture, see [Architecture](./about/architecture.md).
 
 ## Research-Focused Approach
 
@@ -52,7 +85,7 @@ not market competition.
 
 Surge is built for technical users, not end consumers.
 
-- **Builders** who want to experiment with cross-chain apps using L1SLOAD and real-time proving.
+- **Builders** who want to experiment with cross-chain apps using real-time proving and synchronous composability.
 - **Researchers** working on rollup performance, protocol design, or new proof systems. Surge is a clean slate
   for testing ideas without backwards-compatibility baggage.
 
@@ -60,7 +93,8 @@ Surge is built for technical users, not end consumers.
 
 Surge represents one component of Nethermind's broader rollup roadmap, which includes:
 
-- **Surge Rollup Template:** The rollup itself -- based sequencing + real-time proving + [Gigagas](./about/gigagas.md) throughput.
+- **Surge Rollup Template:** The rollup itself -- real-time proving + synchronous composability + high
+  throughput via the Nethermind Client.
 - **Surge Power-Ups:** Open-source plugins for preconfirmations, optimized proving, block building, and L1-L2
   composability. Designed to work with any rollup, not just Surge.
 
