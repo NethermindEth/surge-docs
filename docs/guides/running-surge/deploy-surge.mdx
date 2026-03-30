@@ -38,6 +38,10 @@ Everything else in `.env.devnet` has sensible defaults for a devnet deployment, 
 If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8080` port, like `http://ip:8080` )
 :::
 
+:::tip
+If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8081` port, like `http://ip:8081` )
+:::
+
 ## 2. Run the Deployment
 
 ```bash
@@ -55,18 +59,18 @@ Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multi
 ### Phase 3: Prepare Prover
 Register prover vkey, make sure the `RAIKO_HOST_ZKVM` is provided and [Set up the ZisK Prover](./provers) is done with generated prover configuration files from last phase.
 
-### Phase 3: L2 Stack
+### Phase 4: L2 Stack
 Deploys the L2 execution client (Nethermind), the Driver, and Catalyst. Choose:
 - Option 1: Driver only
 - Option 2: Driver + Catalyst (default, needed for real-time proving)
 
-### Phase 4: Cross Chains DEX Protocol Contracts
+### Phase 5: Cross Chains DEX Protocol Contracts
 Deploys L1_VAULT, L2_VAULT, L2_DEX, L2_TOKEN, and links vaults.
 
-### Phase 5: DEX UI
+### Phase 6: DEX UI
 Deploys DEX UI with provided environment variables. (Since DEX UI is build with dynamic configurations, so this process can sometimes take ~10 minutes)
 
-### Phase 6: Verification
+### Phase 7: Verification
 Runs health checks and prints a deployment summary with all endpoints.
 
 :::tip
