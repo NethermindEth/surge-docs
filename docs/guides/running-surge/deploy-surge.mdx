@@ -34,6 +34,10 @@ Edit `.env` and set your L1 connection:
 
 Everything else in `.env.devnet` has sensible defaults for a devnet deployment, including pre-funded deployer/operator keys. For production deployments, override `PRIVATE_KEY`, `OPERATOR_PRIVATE_KEY`, and `SUBMITTER_PRIVATE_KEY` with your own funded accounts.
 
+:::tip
+If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8081` port, like `http://ip:8081` )
+:::
+
 ## 2. Run the Deployment
 
 ```bash
@@ -51,18 +55,15 @@ Choose "Use existing chain" if you already have an L1. The script will use the e
 ### Phase 3: L1 Devnet (optional)
 If you chose to deploy a new devnet, the script spins up a local L1 using Kurtosis. Skip this if using an existing L1.
 
-### Phase 4: L2 Stack
+### Phase 4: Protocol Contracts
+Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multicall, and UserOpsSubmitter to L1. Also generates L2 genesis and chainspec.
+
+### Phase 5: L2 Stack
 Deploys the L2 execution client (Nethermind), the Driver, and Catalyst. Choose:
 - Option 1: Driver only
 - Option 2: Driver + Catalyst (default, needed for real-time proving)
 
-### Phase 5: Protocol Contracts
-Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multicall, and UserOpsSubmitter to L1. Also generates L2 genesis and chainspec.
-
-### Phase 6: Relayers (optional)
-Deploys L1/L2 relayers, Bridge UI, MySQL, and RabbitMQ for cross-chain message handling.
-
-### Phase 7: Verification
+### Phase 6: Verification
 Runs health checks and prints a deployment summary with all endpoints.
 
 :::tip
