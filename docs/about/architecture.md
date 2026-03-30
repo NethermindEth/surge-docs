@@ -24,8 +24,8 @@ title: Surge Architecture
 
 | Entity                 | Role                                                                                                                                                                                                                   |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **User**               | Signs UserOps (intent bundles) and sends them to the builder. Never submits L1 transactions directly.                                                                                                                  |
-| **Catalyst (Builder)** | Receives UserOps, simulates L2 execution, requests proofs, and submits the final multicall to L1. The central orchestrator.                                                                                            |
+| **User**               | Signs SafeOps (intent bundles) via their Safe Wallet and sends them to the builder. Never submits L1 transactions directly.                                                                                            |
+| **Catalyst (Builder)** | Receives SafeOps, simulates L2 execution, requests proofs, and submits the final multicall to L1. The central orchestrator.                                                                                            |
 | **Raiko (Prover)**     | Receives block proving requests from Catalyst. Delegates proof generation to the zkVM and returns validity proofs.                                                                                                     |
 | **Zisk (zkVM)**        | The zero-knowledge virtual machine that Raiko uses under the hood to generate ZK validity proofs for L2 blocks.                                                                                                        |
 | **Driver (L2 Node)**   | The L2 execution client. Receives preconfirmed blocks from Catalyst, executes them, and resyncs its canonical chain when proposals are submitted to L1. Reorgs out blocks that cannot be proven or have stale anchors. |
@@ -55,19 +55,19 @@ The off-chain pipeline is the sequence of steps that happen before anything land
 
 ### Step 1: User Submits Intent
 
-The user signs a batch of `UserOp` structs using EIP-712 typed data and sends them to Catalyst via the `surge_sendUserOp` JSON-RPC method.
+The user signs a `SafeOp` via their Safe Wallet and sends it to Catalyst via the `surge_sendUserOp` JSON-RPC method.
 
 ```
-User ---(signed UserOps)---> Catalyst
+User ---(signed SafeOp)---> Catalyst
 ```
 
 The user never interacts with L1 directly. Catalyst pays gas and controls transaction ordering.
 
 ### Step 2: Catalyst Simulates Execution
 
-Catalyst performs an execution simulation to determine the full effects of including this UserOp:
+Catalyst performs an execution simulation to determine the full effects of including this SafeOp:
 
-1. **Execute the UserOp against L1 state** to determine which signal slots are emitted (these are the L2 Calls).
+1. **Execute the SafeOp against L1 state** to determine which signal slots are emitted (these are the L2 Calls).
 2. **Build an L2 block** that includes:
    - An anchor transaction with the emitted signal slots as fast signals
    - Bridge message processing transactions (now possible because signals are marked as received)
@@ -110,7 +110,7 @@ With the proof in hand, Catalyst constructs a single L1 transaction (multicall) 
 
 ```
 L1 Transaction (Multicall):
-  Call 1: UserOp execution       (emits L1 signal slots, the L2 Calls)
+  Call 1: SafeOp execution       (emits L1 signal slots, the L2 Calls)
   Call 2: RealTimeInbox.propose  (verifies slots, verifies proof, saves L2 checkpoint)
   Call 3: L1 Call execution      (proves L2 signals via storage proofs against the saved checkpoint)
 ```
@@ -192,8 +192,8 @@ The anchor is what connects L1 state to L2. By injecting signal slots, it makes 
 ## Block Lifecycle
 
 ```
-1. UserOp received
-   User signs ops --> Catalyst receives via surge_sendUserOp
+1. SafeOp received
+   User signs SafeOp via Safe Wallet --> Catalyst receives via surge_sendUserOp
 
 2. Simulation
    Catalyst executes UserOp on L1 (simulation)
@@ -212,7 +212,7 @@ The anchor is what connects L1 state to L2. By injecting signal slots, it makes 
 
 5. Submission
    Catalyst builds multicall:
-     - Call 1: Execute UserOps on L1 (emit L2 Call signals)
+     - Call 1: Execute SafeOp on L1 (emit L2 Call signals)
      - Call 2: RealTimeInbox.propose() (verify proof, save L2 checkpoint to L1)
      - Call 3: Execute L1 Calls (prove L2 signals via storage proofs against saved checkpoint)
    Multicall submitted atomically to L1

@@ -42,10 +42,10 @@ A user swapping ETH for USDC on L1, where the actual swap happens on an L2 DEX, 
 | **L1 Call**     | A call to an L1 contract initiated from L2 (e.g., L2 swap completion triggering L1 token release)                                                |
 | **Signal Slot** | A storage slot in the SignalService that records a cross-chain message. Computed as `keccak256("SIGNAL", chainId, app, signal)`                  |
 | **Fast Signal** | An L1 signal slot that the builder injects into the L2 anchor transaction, bypassing the need for a merkle proof                                 |
-| **UserOp**      | A signed operation bundle (target + value + calldata) executed by a smart contract wallet (UserOpsSubmitter)                                     |
-| **Catalyst**    | The builder that orchestrates the entire synchronous flow. Receives UserOps, simulates L2 execution, generates proofs, and submits the multicall |
+| **SafeOp**      | A signed operation bundle (target + value + calldata) executed by the user's Safe Wallet                                                         |
+| **Catalyst**    | The builder that orchestrates the entire synchronous flow. Receives SafeOps, simulates L2 execution, generates proofs, and submits the multicall |
 | **Raiko**       | The real-time ZK prover that generates validity proofs for L2 blocks                                                                             |
-| **Multicall**   | The single L1 transaction that atomically bundles: UserOp execution + L2 proposal/proof + L1 call execution                                      |
+| **Multicall**   | The single L1 transaction that atomically bundles: SafeOp execution + L2 proposal/proof + L1 call execution                                      |
 
 ### The Core Innovation
 
@@ -58,7 +58,7 @@ L1 tx (block N) → wait → L2 block proposed (block N+X) → wait → L2 prove
 In Surge:
 
 ```
-Single L1 tx (block N): UserOp + propose(L2 block + proof) + L1 Calls → done
+Single L1 tx (block N): SafeOp + propose(L2 block + proof) + L1 Calls → done
 ```
 
 ---
@@ -69,7 +69,7 @@ Single L1 tx (block N): UserOp + propose(L2 block + proof) + L1 Calls → done
                          ┌─────────────────────────────────────────────────────────┐
                          │                    L1 (Ethereum)                        │
                          │                                                         │
-  User ──sign──► UserOpsSubmitter ──► L1 Vault ──► Bridge ──► SignalService        │
+  User ──sign──► Safe Wallet ──► L1 Vault ──► Bridge ──► SignalService             │
                          │                                         │               │
                          │              RealTimeInbox.propose() ◄──┘               │
                          │                │         │                              │
@@ -107,12 +107,12 @@ Single L1 tx (block N): UserOp + propose(L2 block + proof) + L1 Calls → done
                          ┌─────────────────────────────────────────────────────────┐
                          │                  Builder (Catalyst)                     │
                          │                                                         │
-                         │  1. Receive UserOps via surge_sendUserOp RPC            │
-                         │  2. Execute UserOps on L1 → capture emitted signals     │
+                         │  1. Receive SafeOps via surge_sendUserOp RPC            │
+                         │  2. Execute SafeOps on L1 → capture emitted signals     │
                          │  3. Simulate L2 block with fast signals in anchor       │
                          │  4. Capture L2→L1 signals (L1 Calls)                    │
                          │  5. Prove L2 block via Raiko                            │
-                         │  6. Bundle: UserOp + propose(proof) + L1 Calls          │
+                         │  6. Bundle: SafeOp + propose(proof) + L1 Calls          │
                          │  7. Submit as single multicall to L1                    │
                          └─────────────────────────────────────────────────────────┘
 ```
@@ -126,7 +126,7 @@ Let's trace an **ETH → USDC** swap through the entire system.
 ### Actors
 
 - **Alice**: User who wants to swap 1 ETH for USDC
-- **UserOpsSubmitter**: Alice's smart contract wallet on L1
+- **Safe Wallet**: Alice's smart contract wallet on L1
 - **L1 Vault**: Holds canonical USDC reserves on L1
 - **L2 Vault**: Handles swap execution on L2
 - **SimpleDEX**: AMM on L2 with ETH/USDC liquidity
@@ -134,14 +134,14 @@ Let's trace an **ETH → USDC** swap through the entire system.
 
 ### The Flow
 
-#### Phase 1: Alice Signs a UserOp
+#### Phase 1: Alice Signs a SafeOp
 
 Alice connects her wallet to the cross-chain DEX UI. She wants to swap 1 ETH for USDC.
 
-The UI builds a **UserOp**, a signed intent that will be executed by her `UserOpsSubmitter` contract:
+The UI builds a **SafeOp**, a signed intent that will be executed by her Safe Wallet:
 
 ```typescript
-// Single UserOp for ETH → USDC swap
+// Single SafeOp for ETH → USDC swap
 {
   target: L1_VAULT_ADDRESS,
   value: 1 ether,
@@ -149,15 +149,15 @@ The UI builds a **UserOp**, a signed intent that will be executed by her `UserOp
 }
 ```
 
-Alice signs this UserOp using EIP-712 typed data. The signature proves she authorized this operation. The signed UserOp is sent to the **Catalyst builder** via `surge_sendUserOp` JSON-RPC.
+Alice signs this SafeOp using EIP-712 typed data. The signature proves she authorized this operation. The signed SafeOp is sent to the **Catalyst builder** via `surge_sendUserOp` JSON-RPC.
 
 > **Important**: Alice never submits an L1 transaction herself. The builder pays for gas and submits everything.
 
-#### Phase 2: Catalyst Executes the UserOp on L1
+#### Phase 2: Catalyst Executes the SafeOp on L1
 
-The builder receives Alice's signed UserOp and begins orchestrating:
+The builder receives Alice's signed SafeOp and begins orchestrating:
 
-**Step 1 - Execute UserOp on L1**: The builder calls `UserOpsSubmitter.executeBatch()` which:
+**Step 1 - Execute SafeOp on L1**: The builder calls `Safe.execTransaction()` which:
 
 1. Verifies Alice's EIP-712 signature
 2. Calls `L1Vault.swapETHForToken{value: 1 ETH}(minUSDCOut, recipient)`
@@ -168,7 +168,7 @@ At this point, a **signal slot** on L1 now contains the message hash. This slot 
 
 #### Phase 3: Catalyst Builds the L2 Block
 
-The builder knows which signal was emitted (it just executed the UserOp). It now:
+The builder knows which signal was emitted (it just executed the SafeOp). It now:
 
 1. **Reads the signal slot** from L1 state
 2. **Constructs an L2 block** where the anchor transaction includes this signal slot as a "fast signal"
@@ -206,7 +206,7 @@ The builder now has everything needed. It constructs a **single L1 transaction**
 
 ```
 Multicall Transaction:
-├── Call 1: UserOpsSubmitter.executeBatch(ops, signature)
+├── Call 1: Safe.execTransaction(safeOp, signature)
 │   └── Executes Alice's swap → emits L1 signal (L2 Call)
 │
 ├── Call 2: RealTimeInbox.propose(data, checkpoint, proof)
@@ -226,39 +226,26 @@ Multicall Transaction:
 
 #### Result
 
-Alice receives USDC on L1 in the same block where her UserOp was executed. The L2 DEX swap, L2 proof generation, and L1 settlement all happened within that single block. From Alice's perspective, it's indistinguishable from a native L1 swap, except the liquidity and pricing came from L2.
+Alice receives USDC on L1 in the same block where her SafeOp was executed. The L2 DEX swap, L2 proof generation, and L1 settlement all happened within that single block. From Alice's perspective, it's indistinguishable from a native L1 swap, except the liquidity and pricing came from L2.
 
 ---
 
 ## Deep Dive: How Each Component Works
 
-### UserOps System
+### Safe Wallet & SafeOps
 
-The UserOps system provides **gasless, builder-executed transactions** for users.
+Users interact with Surge through **Safe Wallets** — [Safe\{Wallet\}](https://safe.global/) smart contract accounts that support gasless, builder-executed transactions.
 
-**UserOpsSubmitter** (`contracts/shared/userops/UserOpsSubmitter.sol`):
+**How it works:**
 
-- A per-user smart contract wallet deployed via `UserOpsSubmitterFactory`
-- Holds the user's `owner` address (their EOA)
-- Executes batches of operations after verifying an EIP-712 signature from the owner
-- Can hold ETH and tokens, acting as the user's on-chain identity
+- Each user has a Safe Wallet on L1 (their on-chain identity)
+- Users sign SafeOps using EIP-712 typed data, authorizing the builder to execute transactions on their behalf
+- The Safe Wallet verifies the signature and executes the operation via `execTransaction()`
+- Can hold ETH and tokens like any Safe
 
-```solidity
-struct UserOp {
-    address target;   // Contract to call
-    uint256 value;    // ETH to send
-    bytes data;       // Calldata
-}
+**Why Safe Wallets instead of regular transactions?**
 
-function executeBatch(UserOp[] calldata _ops, bytes calldata _signature) external {
-    // Verify EIP-712 signature matches owner
-    // Execute each op sequentially: target.call{value}(data)
-}
-```
-
-**Why UserOps instead of regular transactions?**
-
-The builder needs to control the ordering and atomicity of all calls within the multicall. If the user submitted their own L1 transaction, it would land in a separate block or position, breaking the synchronous guarantee. UserOps let the builder include the user's intent exactly where it needs to be.
+The builder needs to control the ordering and atomicity of all calls within the multicall. If the user submitted their own L1 transaction, it would land in a separate block or position, breaking the synchronous guarantee. SafeOps let the builder include the user's intent exactly where it needs to be in the multicall.
 
 ### Signal Service & Signal Slots
 
@@ -420,12 +407,13 @@ When `_proof` is empty, the bridge checks `_receivedSignals[slot]` directly. Thi
 
 The builder's multicall is the culmination of the synchronous composability system. Here's the exact sequence for an ETH→USDC swap:
 
-### Call 1: UserOp Execution (the "L2 Call")
+### Call 1: SafeOp Execution (the "L2 Call")
 
 ```
-UserOpsSubmitter.executeBatch([
-  { target: L1Vault, value: 1 ETH, data: swapETHForToken(minOut, recipient) }
-], signature)
+Safe.execTransaction(
+  to: L1Vault, value: 1 ETH, data: swapETHForToken(minOut, recipient),
+  signature
+)
 ```
 
 **What happens inside:**
@@ -536,8 +524,7 @@ Fast signals bypass merkle proofs, but they are still secured by the ZK validity
 
 | Contract                  | Chain   | Purpose                                                  |
 | ------------------------- | ------- | -------------------------------------------------------- |
-| `UserOpsSubmitter`        | L1      | Per-user smart wallet, executes signed op batches        |
-| `UserOpsSubmitterFactory` | L1      | Deploys UserOpsSubmitter instances for users             |
+| `Safe Wallet`             | L1      | Per-user smart contract wallet, executes signed SafeOps  |
 | `CrossChainSwapVaultL1`   | L1      | Holds USDC reserves, initiates/settles cross-chain swaps |
 | `Bridge`                  | L1 & L2 | Cross-chain message passing via signal service           |
 | `SignalService`           | L1 & L2 | Signal storage, verification, and fast signal injection  |
@@ -564,8 +551,5 @@ contracts/
 │       └── SimpleDEX.sol
 └── shared/
     ├── bridge/Bridge.sol
-    ├── signal/SignalService.sol
-    └── userops/
-        ├── UserOpsSubmitter.sol
-        └── UserOpsSubmitterFactory.sol
+    └── signal/SignalService.sol
 ```
