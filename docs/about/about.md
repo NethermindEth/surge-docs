@@ -8,10 +8,8 @@ This section provides an overview of **Surge**.
 
 Explore these topics:
 
-- [Based Rollups](./about/based-rollups): Overview of Surge's based rollup model.
-- [Fully Decentralized from Day 1](./about/stage-2): Details on Surge's Stage 2 governance model.
-- [Surge & Nethermind Client](./about/nethermind): Information on Surge's use of the Nethermind Client (NMC) for
-  execution.
-- [Surge Architecture](./about/architecture): Explanation of Surge's system architecture and its components.
-- [Gigagas](./about/gigagas): Overview of Surge's Gigagas performance and its implications.
-
+- [Surge Architecture](./about/architecture): System architecture and component interactions.
+- [Real-Time Proving](./about/real-time-proving): How Surge generates ZK proofs in seconds and finalizes blocks atomically.
+- [Surge Synchronous Composability](./about/synchronous-composability): How Surge achieves synchronous composability with L1.
+- [Surge & Nethermind Client](./about/nethermind): Surge's use of the Nethermind Client (NMC) for execution.
+- [Components & Repositories](./about/components): All components, their repos, branches, and how they fit together.

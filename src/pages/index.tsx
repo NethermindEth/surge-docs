@@ -243,10 +243,10 @@ const actions = [
     text: 'Learn about the Surge Rollup',
   },
   {
-    title: 'Deploy Surge Devnet',
+    title: 'Deploy Surge',
     icon: Info,
     to: '/docs/guides/running-surge/',
-    text: 'Set up a local Surge development network',
+    text: 'Deploy your own Surge rollup with real-time proving',
   },
   {
     title: 'Surge Architecture',
@@ -258,25 +258,20 @@ const actions = [
 
 const itemLinks = [
   {
-    title: 'Based Rollups',
-    description: 'Discover why Surge uses a based rollup model',
-    to: '/docs/about/based-rollups',
-  },
-  {
-    title: 'Stage 2',
-    description: 'Explore Surge’s Stage 2 security framework',
-    to: '/docs/about/stage-2',
+    title: 'Real-Time Proving',
+    description: 'How Surge generates ZK proofs in seconds for instant finality',
+    to: '/docs/about/real-time-proving',
   },
   {
     title: 'Nethermind Execution Client',
     description:
-      'Learn how Surge leverages Nethermind Execution Client as its primary Ethereum execution client',
+      'How Surge uses the Nethermind Client for high-performance L2 execution',
     to: '/docs/about/nethermind',
   },
   {
-    title: 'Gigagas',
-    description: 'Understand what is Gigagas and its benefits',
-    to: '/docs/about/gigagas',
+    title: 'Cross-Chain Composability',
+    description: 'Signal slots and fast signals for atomic L1-L2 execution',
+    to: '/docs/about/synchronous-composability',
   },
   {
     title: 'Deploy a DApp',
@@ -284,8 +279,13 @@ const itemLinks = [
     to: '/docs/guides/deploy-on-surge',
   },
   {
+    title: 'Components & Repos',
+    description: 'All components, repositories, and branches in the Surge stack',
+    to: '/docs/about/components',
+  },
+  {
     title: 'Troubleshooting',
-    description: 'Get solutions to common Surge issues and find help',
+    description: 'Common issues and error codes for deployment and operation',
     to: 'docs/troubleshooting/',
   },
 ];
@@ -302,8 +302,13 @@ const developerLinks = [
     icon: GitHub,
   },
   {
-    title: 'surge-devnet-package',
-    href: 'https://github.com/NethermindEth/surge-devnet-package',
+    title: 'raiko',
+    href: 'https://github.com/NethermindEth/raiko',
+    icon: GitHub,
+  },
+  {
+    title: 'alethia-reth',
+    href: 'https://github.com/NethermindEth/alethia-reth',
     icon: GitHub,
   },
   {
@@ -350,8 +355,8 @@ const HomePage = () => {
           />
           <Title>{siteConfig.title}</Title>
           <p>
-            Surge is a based rollup template of the Taiko Alethia stack, featuring Gigagas performance, decentralized ordering by Ethereum
-            validators, and Stage 2 trustless security
+            Surge is a based rollup with real-time proving, built on the Taiko stack. Synchronous
+            composability, instant finality, Stage 2 security
           </p>
           <SearchWrapper>
             <SearchBar />

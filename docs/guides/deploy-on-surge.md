@@ -5,42 +5,43 @@ title: Deploy Your DApp on Surge
 
 # Deploy Your DApp on Surge
 
-This guide will walk you through the steps to successfully deploy your decentralized application (DApp) on the Surge
-Hoodi Testnet.
+This guide walks you through deploying your decentralized application (DApp) on Surge.
 
 ## Prerequisites
 
 Before deploying your DApp, ensure you have the following:
 
-- **Hoodi ETH on L1**: Get test ETH using the [Hoodi Faucet](https://hoodi-faucet.pk910.de/).
+- **ETH on L1**: Get ETH on the L1 network that Surge is deployed on (e.g., Gnosis mainnet for the current live deployment).
 - **Surge L2 RPC**: Connect your wallet to Surge L2 using the RPC
-  endpoint: [https://l2-rpc.hoodi.surge.wtf](https://l2-rpc.hoodi.surge.wtf/). 
+  endpoint: [https://rpc.realtime.surge.wtf](https://rpc.realtime.surge.wtf/).
 - **Surge L2 Block Explorer**: Monitor transactions
-  on: [https://explorer.hoodi.surge.wtf](https://explorer.hoodi.surge.wtf/)
+  on: [https://explorer.realtime.surge.wtf](https://explorer.realtime.surge.wtf/)
 
 ## Bridge ETH to Surge
 
 To bridge ETH from L1 to L2:
 
-1. Visit the [Bridge UI](https://bridge.hoodi.surge.wtf).
+1. Visit the [Bridge UI](https://bridge.realtime.surge.wtf).
 2. Initiate a transfer of ETH from L1 to L2.
-3. Monitor your transaction using our [Blockscout Explorer](https://explorer.hoodi.surge.wtf/).
+3. Monitor your transaction using the [Explorer](https://explorer.realtime.surge.wtf/).
 
->  **Note:** Our relayer will automatically claim your bridged ETH within one minute of confirmation, under default settings.
+> **Note:** The relayer will automatically claim your bridged ETH within one minute of confirmation, under default settings.
 
 ## Deploy Your DApp
 
-Once you’ve received your ETH on L2:
+Once you've received your ETH on L2:
 
 1. Deploy your DApp as you would on any other EVM-compatible network.
-2. No changes to your DApp’s code are required.
+2. No changes to your DApp's code are required.
 
-Enjoy testing and building on Surge!
+## Feature Set
 
-## Feature set
+Surge uses the **RealTime** execution fork, which is EVM-compatible with additional capabilities:
 
-Surge Hoodi testnet is currently on the Shanghai Execution Client Fork.
+- Standard EVM opcodes and precompiles
+- Signal slots for L1-to-L2 message relay
+- Synchronous composability via the builder's multicall pattern
 
 ## Troubleshooting
 
-If you encounter any issues, check out our [Troubleshooting Guide](docs/troubleshooting/index.mdx).
+If you encounter any issues, check out our [Troubleshooting Guide](/docs/troubleshooting).

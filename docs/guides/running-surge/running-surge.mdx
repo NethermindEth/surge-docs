@@ -1,26 +1,27 @@
 ---
-title: Run your own Surge Devnet
-sidebar_position: 2
+title: Run Your Own Surge Network
+sidebar_position: 0
 ---
 
-# Introduction
+# Run Your Own Surge Network
 
-This guide walks you through setting up and running your own Surge rollup development network.
+Deploy your own Surge rollup with real-time proving on an existing L1 chain.
+
+## What You'll Set Up
+
+1. **L2 Stack**: Execution client (Nethermind), Driver, Catalyst
+2. **Protocol Contracts**: RealTimeInbox, SurgeVerifier, Bridge, and supporting contracts on L1
+3. **ZisK Prover**: GPU-accelerated ZK prover for real-time block proving
+
+## Guides
+
+1. **[Deploy Surge](./running-surge/deploy-surge)** -- Deploy the protocol contracts and L2 stack on your L1 using `deploy-surge-full.sh`
+2. **[ZisK Prover Setup](./running-surge/provers)** -- Configure the GPU prover for real-time proving
 
 ## Prerequisites
 
+- An L1 network with RPC, WebSocket, and beacon endpoints
 - Docker and Docker Compose
 - Git
-- At least 16GB of RAM
-- At least 50GB of free disk space
-
-## Deployment Steps
-
-1. [Deploy L1](./deploy-l1.mdx).
-2. [Deploy L2](./deploy-l2.mdx).
-3. [Set up a Prover](./provers/index.mdx).
-4. [Register Provers](./provers/register-provers.mdx).
-
-## Troubleshooting
-
-If you face any issues at any of the steps, feel free to refer to the [Troubleshooting section](docs/troubleshooting/index.mdx) for additional support.
+- A CUDA-capable NVIDIA GPU for the prover (RTX 5090, L40, or similar)
+- An L1 account funded with ETH for contract deployment gas

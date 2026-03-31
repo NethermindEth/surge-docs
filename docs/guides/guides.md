@@ -8,7 +8,5 @@ This section provides practical instructions for working with **Surge**.
 
 Explore these guides:
 
-- [Run Surge on Hoodi](./guides/surge-on-hoodi): Steps to run a Surge node on the Hoodi testnet.
-- [Run Your Own Surge Devnet](./guides/running-surge): Instructions to deploy your own Surge development network.
-- [Deploy Your dApp on Surge](./guides/deploy-on-surge): Guide for deploying decentralized applications (dApps) on Surge.
-
+- [Run Your Own Surge Network](./guides/running-surge): Deploy your own Surge rollup with real-time proving on an existing L1.
+- [Deploy Your dApp on Surge](./guides/deploy-on-surge): Deploy applications on the live Surge network.

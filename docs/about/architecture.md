@@ -1,60 +1,353 @@
 ---
-sidebar_position: 4
+sidebar_position: 1
 title: Surge Architecture
 ---
 
-# Surge Architecture
+# Surge Architecture Overview
 
-![Surge Architecture](./images/Diagram.png)
+> How the off-chain and on-chain entities interact to deliver real-time proving and synchronous composability.
 
-## Purpose of Each Component
+## Table of Contents
 
-Surge’s architecture is composed of several key components, each serving a specific function:
+1. [Entities](#entities)
+2. [Off-Chain Pipeline](#off-chain-pipeline)
+3. [On-Chain Contracts](#on-chain-contracts)
+4. [Block Lifecycle](#block-lifecycle)
+5. [Signal Relay Mechanism](#signal-relay-mechanism)
+6. [Reorgs and Recovery](#reorgs-and-recovery)
 
-- **[Nethermind Execution Client (NMC):](https://github.com/NethermindEth/nethermind)** A high-performance Ethereum client that delivers [Gigagas performance](./gigagas.md). 
+---
 
-- **Taiko Client:** Manages the consensus layer of the rollup. [Taiko Documentation](https://docs.taiko.xyz/taiko-alethia-protocol/protocol-architecture/taiko-alethia-nodes#consensus-layer-taiko-client).
+## Entities
 
-### Components of the Taiko Stack
+### Off-Chain
 
-The Taiko Client consists of several sub-components:
+| Entity                 | Role                                                                                                                                                                                                                   |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **User**               | Signs UserOps (intent bundles) and sends them to the builder. Never submits L1 transactions directly.                                                                                                                  |
+| **Catalyst (Builder)** | Receives UserOps, simulates L2 execution, requests proofs, and submits the final multicall to L1. The central orchestrator.                                                                                            |
+| **Raiko (Prover)**     | Receives block proving requests from Catalyst. Delegates proof generation to the zkVM and returns validity proofs.                                                                                                     |
+| **Zisk (zkVM)**        | The zero-knowledge virtual machine that Raiko uses under the hood to generate ZK validity proofs for L2 blocks.                                                                                                        |
+| **Driver (L2 Node)**   | The L2 consensus/sync layer (`taiko-client`). Receives preconfirmed blocks from Catalyst, forwards them to the execution client (NMC or Alethia-Reth) via the Engine API, and resyncs its canonical chain when proposals are submitted to L1. Reorgs out blocks that cannot be proven or have stale anchors. |
 
-- **Taiko Proposer:** Proposes new blocks to the rollup.
-- **Taiko Prover:** Generates state transition proofs for the rollup.
-- **Taiko Driver:** Follows and monitors the rollup’s state transitions.
+### On-Chain (L1)
 
-## Proposing Flow
+| Contract               | Role                                                                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **RealTimeInbox**      | The L1 entry point for proposals. Accepts `propose(data, checkpoint, proof)` calls that atomically submit an L2 block, verify its proof, and finalize state. |
+| **SurgeVerifier**      | Routes proof verification to the correct internal verifier (Zisk, SP1, RISC0). Supports multi-proof thresholds.                                              |
+| **SignalService (L1)** | Stores cross-chain signals as deterministic storage slots. Manages checkpoints. The authorized syncer is the RealTimeInbox.                                  |
+| **Bridge (L1)**        | Sends and processes cross-chain messages. Sends messages by writing signal slots; processes messages by verifying signal receipt.                            |
 
-![Proposing Flow](./images/proposing-flow.png)
+### On-Chain (L2)
 
-The proposing flow diagram illustrates how new blocks are proposed in Surge. The process begins with a proposer submitting a block, which includes transactions and state updates. The block is then validated by the execution client to ensure it adheres to the protocol rules. This ensures that only valid blocks are added to the rollup chain.
+| Contract               | Role                                                                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Anchor**             | The L2 system contract executed as the first transaction in every block. Syncs L1 checkpoints and injects fast signal slots. The authorized syncer for L2 SignalService. |
+| **SignalService (L2)** | Stores L2 signals and receives fast signals from the Anchor. Enables proof-free verification for builder-injected signals.                                               |
+| **Bridge (L2)**        | Processes inbound L1 messages (proof-free via fast signals injected by Anchor) and sends outbound L2 messages that become L1 Calls (proven via merkle proofs on L1).     |
 
-## Proving Flow
+---
 
-![Proving Flow](./images/proving-flow.png)
+## System Overview
 
-The proving flow diagram shows how state transition proofs are generated and verified. Surge employs a multi-prover system where at least two out of three independent proving systems (SGX, SP1, and Risc0) must agree on the validity of a state transition. This ensures trustless and secure scaling through zero-knowledge proofs.
+Before diving into the pipeline details, here's how the layers connect:
 
-## Chain Flow
+```
+┌─────────────────── L1 (Ethereum / Gnosis) ──────────────────┐
+│                                                               │
+│  Multicall tx (atomic):                                       │
+│    Call 1: UserOpsSubmitter.executeBatch()                     │
+│    Call 2: RealTimeInbox.propose(data, checkpoint, proof)     │
+│    Call 3: Bridge.processMessage() (L1 Calls)                 │
+│                                                               │
+│  Contracts: RealTimeInbox, SurgeVerifier, SignalService,      │
+│             Bridge, UserOpsSubmitter                           │
+│  Repo: surge-taiko-mono/packages/protocol/                    │
+└───────────────────────────┬───────────────────────────────────┘
+                            │ ProposedAndProved event
+                            ▼
+┌─────────────────── L2 (Surge) ──────────────────────────────┐
+│                                                               │
+│  Execution: Nethermind (NMC) or Alethia-Reth                  │
+│  Consensus: Driver (taiko-client --fork realtime)             │
+│  System tx: anchorV4WithSignalSlots(checkpoint, signalSlots)  │
+│                                                               │
+│  Repos: nethermind, alethia-reth, surge-taiko-mono            │
+└───────────────────────────────────────────────────────────────┘
+                            ▲
+                            │ preconf blocks + proof requests
+┌─────────────────── Off-Chain ───────────────────────────────┐
+│                                                               │
+│  Catalyst (Builder): receives UserOps via surge_sendUserOp    │
+│    RPC, simulates L1+L2, requests proof, builds multicall     │
+│  Raiko (Prover): generates ZK proofs via Zisk GPU backend     │
+│    API: POST /v3/proof/batch/realtime                         │
+│                                                               │
+│  Repos: Catalyst, raiko                                       │
+└───────────────────────────────────────────────────────────────┘
+```
 
-![Chain Flow](./images/chain-flow.png)
+For the full list of components and repositories, see [Components & Repositories](./components).
 
-The chain flow diagram provides an overview of how the rollup chain interacts with the Ethereum mainnet. Transactions are executed on the rollup, and the resulting state roots are periodically submitted to the Ethereum mainnet for finality. This ensures that the rollup inherits Ethereum's security guarantees while maintaining high throughput.
+---
 
-## How Surge Differs from the Taiko Stack
+## Off-Chain Pipeline
 
-Surge has customized aspects of the Taiko architecture to enhance performance and remove any reliance on new tokens:
+The off-chain pipeline is the sequence of steps that happen before anything lands on L1.
 
-1. **Token-Free Design:** Surge removes token dependencies, allowing the use of Ether as a bond for block proposals.
-2. **Execution Client Upgrade:** Replaced TaikoGeth with the Nethermind Execution Client (NMC) to achieve better performance. [NMC Documentation](https://github.com/NethermindEth/nethermind).
-3. **Time-Locked Owner:** Modified the multisig implementation to feature a 45-day timelock, aligning with Stage 2 requirements by L2Beat.
-4. **Verification Streak Checks:** Owner operations via the multisig are blocked if there has been a liveness disruption of 7 days or more within the past 45 days.
-5. **Disabled Pausing:** The owner cannot pause the protocol or peripheral contracts.
-6. **2/3 Proof Verifier:** There are three proof systems (SGX, SP1, and Risc0). At least two of these must agree on a state transition for it to be accepted.
-7. **No Contestation Window:** As Surge employs a single ZK approach (no optimistic fallback), it does not require a contestation window. This design choice makes Surge a pure ZK-Rollup rather than an Optimistic Rollup.
+### Step 1: User Submits Intent
 
-## Further Exploration
+The user signs a batch of `UserOp` structs using EIP-712 typed data and sends them to Catalyst via the `surge_sendUserOp` JSON-RPC method.
 
-To deepen your understanding and explore Surge’s architecture in a practical environment, check the detailed guide on deploying and running your own local Surge devnet:
+```
+User ---(signed UserOps)---> Catalyst
+```
 
-[**Deploy and run your own Surge devnet →**](/docs/guides/running-surge)
+The user never interacts with L1 directly. Catalyst pays gas and controls transaction ordering.
+
+### Step 2: Catalyst Simulates Execution
+
+Catalyst performs an execution simulation to determine the full effects of including this UserOp:
+
+1. **Execute the UserOp against L1 state** to determine which signal slots are emitted (these are the L2 Calls).
+2. **Build an L2 block** that includes:
+   - An anchor transaction with the emitted signal slots as fast signals
+   - Bridge message processing transactions (now possible because signals are marked as received)
+   - Any resulting L2 application logic
+3. **Capture L2 output signals** emitted during execution (these are the L1 Calls).
+
+After simulation, Catalyst knows the full L2 state root and all cross-chain effects.
+
+### Step 3: Catalyst Preconfs to Driver
+
+Catalyst sends the constructed L2 block to the Driver as a **preconfirmation**. The Driver tentatively executes the block and extends its local chain. This gives users and applications soft confirmation before the block is proven and submitted to L1.
+
+```
+Catalyst ---(preconf block)---> Driver ---(tentative execution)---> local chain tip
+```
+
+The Driver treats preconfirmed blocks as speculative. They become canonical only after L1 submission.
+
+### Step 4: Raiko Proves the Block
+
+Catalyst sends a proving request to Raiko containing the L2 block data and the expected commitment.
+
+```
+Catalyst ---(prove request)---> Raiko ---(zkVM execution)---> Zisk
+                                  |
+                                  <---(ZK validity proof)---
+```
+
+The **Commitment** that gets proven binds two things together:
+
+- `proposalHash`: the hash of the proposed L2 block (includes `parentProposalHash` for chain linkage, signal slots, anchor reference, etc.)
+- `checkpoint`: the resulting L2 state (block number + block hash + state root after execution)
+
+Raiko delegates the actual proof computation to **Zisk**, the zkVM. Zisk re-executes the L2 block inside the ZK circuit and produces a cryptographic proof that the claimed state transition is valid.
+
+### Step 5: Catalyst Submits the Multicall
+
+With the proof in hand, Catalyst constructs a single L1 transaction (multicall) containing three sequential calls:
+
+```
+L1 Transaction (Multicall):
+  Call 1: UserOp execution       (emits L1 signal slots, the L2 Calls)
+  Call 2: RealTimeInbox.propose  (verifies slots, verifies proof, saves L2 checkpoint)
+  Call 3: L1 Call execution      (proves L2 signals via storage proofs against the saved checkpoint)
+```
+
+This transaction is submitted to L1. All three calls succeed or fail atomically.
+
+### Step 6: Driver Resyncs
+
+When the proposal lands on L1, the Driver observes the `ProposedAndProved` event and resyncs:
+
+- If the submitted block matches the preconfirmed block, the Driver simply marks it as finalized.
+- If the preconfirmed chain diverged (e.g., a different proposal was submitted), the Driver **reorgs** back to the last finalized state and replays from the submitted proposal.
+
+```
+Driver: observes L1 event --> if match: finalize | if diverged: reorg + replay
+```
+
+---
+
+## On-Chain Contracts
+
+### RealTimeInbox
+
+The core L1 contract. Its `propose()` function performs three operations atomically:
+
+1. **Build proposal**: Decode the `ProposeInput`, validate the anchor block reference, verify that all signal slots exist on L1 (`isSignalSent`), and hash everything into a `proposalHash`.
+
+2. **Verify proof**: Construct a `Commitment` from the proposal hash and the new checkpoint, hash it, and pass the commitment hash to `SurgeVerifier.verifyProof()`.
+
+3. **Finalize state**: Save the checkpoint to SignalService (making L2 state root available on L1), update `lastProposalHash`, and emit `ProposedAndProved`.
+
+The checkpoint saved during `propose()` makes the L2 state root available on L1. Catalyst then builds ETH storage proofs (merkle proofs) against this freshly-saved state root to prove L2-originated signals exist, enabling Call 3 (L1 Call execution) within the same transaction.
+
+### SurgeVerifier
+
+A routing layer that supports multiple proof systems simultaneously:
+
+- **Zisk** (bit flag `ZISK_RETH = 0b00000100`): the primary zkVM
+- **SP1** (bit flag `SP1_RETH = 0b00000010`): alternative proof system
+- **RISC0** (bit flag `RISC0_RETH = 0b00000001`): alternative proof system
+
+Each proof submission contains `SubProof[]` entries, each specifying a proof type flag and proof data. The verifier routes each sub-proof to the correct internal verifier contract.
+
+A configurable `numProofsThreshold` can require multiple independent proof systems to agree before finalization (multi-proof security).
+
+### SignalService
+
+Deployed on both L1 and L2 with identical logic but different authorized syncers.
+
+**Core operations:**
+
+- `sendSignal(signal)`: Writes `signal` to a deterministic storage slot `keccak256("SIGNAL", chainId, sender, signal)`. Used by the Bridge when sending messages.
+
+- `setSignalsReceived(slots[])`: Marks signal slots as received in the `_receivedSignals` mapping. Only callable by the authorized syncer (Anchor on L2). This is the "fast signal" path used for L1-to-L2 message relay.
+
+- `proveSignalReceived(chainId, app, signal, proof)`: Verifies a signal was sent on a remote chain. If `proof` is empty, checks `_receivedSignals` directly (fast path). Otherwise, performs full merkle verification against a saved checkpoint.
+
+- `saveCheckpoint(checkpoint)`: Persists an L2 checkpoint (block number, block hash, state root). Only callable by the authorized syncer.
+
+### Bridge
+
+Deployed on both L1 and L2. Handles message lifecycle:
+
+- `sendMessage()`: Hashes the message, emits `MessageSent`, and calls `SignalService.sendSignal(msgHash)`.
+- `processMessage()`: Verifies the message signal was received on the local chain (via `proveSignalReceived`), then invokes the target contract via `onMessageInvocation()`.
+
+The Bridge is the user-facing abstraction. Application contracts interact with the Bridge, which uses SignalService under the hood.
+
+### Anchor
+
+The L2 system contract. Executed by the `GOLDEN_TOUCH_ADDRESS` as the first transaction in every L2 block.
+
+- `anchorV4WithSignalSlots(checkpoint, signalSlots)`: Saves an L1 checkpoint to the L2 SignalService and injects fast signal slots. This is the function used in real-time proving mode.
+
+The anchor is what connects L1 state to L2. By injecting signal slots, it makes L1 bridge messages instantly processable on L2 without waiting for merkle proofs.
+
+---
+
+## Block Lifecycle
+
+```
+1. UserOp received
+   User signs ops --> Catalyst receives via surge_sendUserOp
+
+2. Simulation
+   Catalyst executes UserOp on L1 (simulation)
+   Catalyst builds L2 block with fast signals in anchor
+   Catalyst simulates L2 execution, captures output signals
+
+3. Preconfirmation
+   Catalyst sends block to Driver as preconf
+   Driver tentatively executes and extends local chain
+
+4. Proving
+   Catalyst sends block to Raiko
+   Raiko delegates to Zisk (zkVM)
+   Zisk generates ZK validity proof
+   Proof returned to Catalyst
+
+5. Submission
+   Catalyst builds multicall:
+     - Call 1: Execute UserOps on L1 (emit L2 Call signals)
+     - Call 2: RealTimeInbox.propose() (verify proof, save L2 checkpoint to L1)
+     - Call 3: Execute L1 Calls (prove L2 signals via storage proofs against saved checkpoint)
+   Multicall submitted atomically to L1
+
+6. Finalization
+   Driver observes ProposedAndProved event on L1
+   If preconf matches: mark as finalized
+   If preconf diverges: reorg to last finalized, replay from submitted proposal
+```
+
+---
+
+## Signal Relay Mechanism
+
+Signals are the primitive that enables cross-chain communication. Every bridge message becomes a signal slot.
+
+### L1 to L2 (L2 Calls)
+
+```
+L1 Bridge.sendMessage()
+  --> L1 SignalService.sendSignal(msgHash)
+  --> signal slot written to L1 storage
+
+Catalyst reads the signal slot from L1 state
+
+RealTimeInbox.propose() verifies slot exists (isSignalSent)
+  --> signal slot included in ProposeInput.signalSlots
+  --> slot hash becomes part of the proposal (proven by ZK proof)
+
+L2 Anchor.anchorV4WithSignalSlots()
+  --> L2 SignalService.setSignalsReceived([slot])
+  --> signal marked as "received" on L2
+
+L2 Bridge.processMessage(msg, proof=[])
+  --> proof is empty, checks _receivedSignals mapping
+  --> signal found, message processed
+  --> target contract invoked via onMessageInvocation()
+```
+
+### L2 to L1 (L1 Calls)
+
+```
+L2 Bridge.sendMessage()
+  --> L2 SignalService.sendSignal(msgHash)
+  --> signal exists in L2 state root
+
+RealTimeInbox.propose() saves checkpoint containing L2 state root
+  --> L2 state root now available on L1 via SignalService.saveCheckpoint()
+
+Catalyst builds ETH storage proofs against the saved L2 state root
+  --> proves the L2 signal slot exists in L2 SignalService storage
+
+L1 Bridge.processMessage(msg, proof=storageProof)
+  --> SignalService.proveSignalReceived() with merkle proof
+  --> proof verified against the checkpoint's L2 state root
+  --> signal confirmed, message processed
+  --> target contract invoked via onMessageInvocation()
+```
+
+### Why Fast Signals Are Secure
+
+Fast signals skip merkle proofs but remain secured by the ZK validity proof:
+
+1. **L1 signals cannot be fabricated.** `_verifySignalSlots()` checks that each slot was actually written on L1 before accepting the proposal.
+
+2. **L2 execution cannot be faked.** The ZK proof verifies that executing the L2 block (with the given anchor signal slots) produces the claimed state root.
+
+3. **State is only committed after proof verification.** The checkpoint is saved and `lastProposalHash` is updated only after the proof passes.
+
+4. **The multicall is atomic.** If any call fails, the entire transaction reverts.
+
+---
+
+## Reorgs and Recovery
+
+The Driver maintains a speculative chain built from Catalyst's preconfirmations. This chain can diverge from what actually gets submitted to L1.
+
+### When Reorgs Happen
+
+- **Unprovable blocks**: If Raiko/Zisk cannot generate a valid proof for a preconfirmed block (e.g., due to a bug or invalid state transition), the block cannot be submitted. The Driver reorgs it out.
+
+- **Stale anchors**: Each proposal references an L1 anchor block via `maxAnchorBlockNumber`. The inbox verifies `blockhash(maxAnchorBlockNumber) != 0`, which fails for blocks older than 256 L1 blocks. If the builder takes too long to submit, the anchor becomes stale and the proposal is rejected. The Driver reorgs.
+
+- **Competing submissions**: If a different proposal for the same slot is submitted by another builder, the Driver reorgs its preconfirmed chain back to the last finalized state and replays from the winning proposal.
+
+### Recovery Flow
+
+```
+Driver detects divergence (L1 submission != preconfirmed chain)
+  --> Revert to last finalized state
+  --> Re-derive chain from the ProposedAndProved event
+  --> Apply the submitted L2 block
+  --> Resume accepting new preconfs from Catalyst
+```
+
+The key invariant: the Driver's canonical chain always matches what was proven and submitted to L1. Preconfirmed blocks are speculative optimism, not commitment.
