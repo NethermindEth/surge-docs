@@ -3,13 +3,13 @@ sidebar_position: 1
 title: "Deploy Surge"
 ---
 
-# Deploy Surge
+# Deploy Surge on Ethereum Sepolia
 
-Deploy your own Surge rollup with real-time proving on an existing L1 network.
+Deploy your own Surge rollup with real-time proving on Ethereum Sepolia network.
 
 ## Prerequisites
 
-- An L1 network with HTTP, WebSocket, and beacon chain endpoints (we use Gnosis mainnet with QuickNode)
+- An L1 network with HTTP, WebSocket, and beacon chain endpoints (we use Ethereum Sepolia with QuickNode)
 - Docker and Docker Compose
 - Git
 - An L1 account with ETH for gas (deployer private key)
@@ -20,7 +20,7 @@ Deploy your own Surge rollup with real-time proving on an existing L1 network.
 ```bash
 git clone https://github.com/NethermindEth/simple-surge-node.git
 cd simple-surge-node
-git checkout shasta-poc
+git checkout realtime
 cp .env.devnet .env
 ```
 
@@ -32,7 +32,11 @@ Edit `.env` and set your L1 connection:
 | `L1_ENDPOINT_WS` | L1 WebSocket endpoint | `wss://your-provider.com/ws` |
 | `L1_BEACON_HTTP` | L1 beacon chain endpoint | `https://your-provider.com/beacon` |
 
-Everything else in `.env.devnet` has sensible defaults for a devnet deployment, including pre-funded deployer/operator keys. For production deployments, override `PRIVATE_KEY`, `OPERATOR_PRIVATE_KEY`, and `SUBMITTER_PRIVATE_KEY` with your own funded accounts.
+Everything else in `.env.devnet` has sensible defaults for a devnet deployment, including pre-funded deployer, operator and submittor keys. For production deployments, override `PRIVATE_KEY`, `OPERATOR_PRIVATE_KEY`, and `SUBMITTER_PRIVATE_KEY` with your own funded accounts.
+
+:::tip
+If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8080` port, like `http://ip:8080` )
+:::
 
 :::tip
 If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8081` port, like `http://ip:8081` )
@@ -47,23 +51,26 @@ If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM
 The script runs interactively through 7 phases:
 
 ### Phase 1: Environment
-Choose devnet, staging, or testnet. For a fresh deployment, pick devnet.
+Choose local or remote, if you are using a remote VM, please pick remote. (Remote VM highly suggested)
 
-### Phase 2: L1 Infrastructure
-Choose "Use existing chain" if you already have an L1. The script will use the endpoints from your `.env`.
+### Phase 2: L1 General Protocol Contracts
+Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multicall, and UserOpsSubmitter to L1. Also generates L2 genesis, chainspec and prover configuration files.
 
-### Phase 3: L1 Devnet (optional)
-If you chose to deploy a new devnet, the script spins up a local L1 using Kurtosis. Skip this if using an existing L1.
+### Phase 3: Prepare Prover
+Register prover vkey, make sure the `RAIKO_HOST_ZKVM` is provided and [Set up the ZisK Prover](./provers) is done with generated prover configuration files from last phase.
 
-### Phase 4: Protocol Contracts
-Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multicall, and UserOpsSubmitter to L1. Also generates L2 genesis and chainspec.
-
-### Phase 5: L2 Stack
+### Phase 4: L2 Stack
 Deploys the L2 execution client (Nethermind), the Driver, and Catalyst. Choose:
 - Option 1: Driver only
 - Option 2: Driver + Catalyst (default, needed for real-time proving)
 
-### Phase 6: Verification
+### Phase 5: Cross Chains DEX Protocol Contracts
+Deploys L1_VAULT, L2_VAULT, L2_DEX, L2_TOKEN, and links vaults.
+
+### Phase 6: DEX UI
+Deploys DEX UI with provided environment variables. (Since DEX UI is build with dynamic configurations, so this process can sometimes take ~10 minutes)
+
+### Phase 7: Verification
 Runs health checks and prints a deployment summary with all endpoints.
 
 :::tip
