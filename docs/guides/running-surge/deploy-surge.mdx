@@ -3,118 +3,389 @@ sidebar_position: 1
 title: "Deploy Surge"
 ---
 
-# Deploy Surge on Ethereum Sepolia
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-Deploy your own Surge rollup with real-time proving on Ethereum Sepolia network.
+# Deploy Surge
+
+This guide walks you through spinning up a full Surge devnet on your local machine (or a VM): an L1 Ethereum devnet, all L1 protocol contracts, and the L2 execution stack.
+
+**Total time:** ~15 minutes for mock prover. Real prover setup takes longer — mainly waiting for ZisK keys to install.
+
+---
+
+## Before you start
+
+### Pick your prover mode
+
+The biggest decision upfront is which prover to use. You can change this later, but it's easier to decide now.
+
+<Tabs>
+  <TabItem value="mock" label="Mock prover (recommended for local dev)" default>
+
+The mock prover skips real ZK proof generation. A dummy contract accepts any signed proof, so blocks propose and finalize immediately without GPU hardware.
+
+**Use this if:**
+- You're just exploring or developing locally
+- You don't have an NVIDIA GPU with 32 GB+ VRAM
+- You want the fastest possible setup
+
+No extra setup required — the script handles everything.
+
+  </TabItem>
+  <TabItem value="real" label="Real prover (ZisK)">
+
+The real prover generates actual ZK proofs using the ZisK GPU backend. Proof time is ~10–17 seconds per block.
+
+**Use this if:**
+- You're running a production or staging deployment
+- You have a dedicated GPU machine (NVIDIA RTX 5090 or L40 class, 32 GB+ VRAM)
+
+You'll need to [set up Raiko](./provers) on the GPU machine **before** running the deploy script, then point the script at it with `RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port>`.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## System requirements
+
+### Full local devnet (L1 + L2)
+
+| | Minimum | Recommended |
+|---|---------|-------------|
+| CPU | 8 cores | 16 cores |
+| RAM | 16 GB | 32 GB |
+| Disk | 80 GB SSD | 200 GB SSD |
+| OS | Ubuntu 22.04+ / macOS 13+ | Ubuntu 24.04 |
+
+### L2 stack only (connecting to existing L1)
+
+| | Minimum | Recommended |
+|---|---------|-------------|
+| CPU | 4 cores | 8 cores |
+| RAM | 8 GB | 16 GB |
+| Disk | 50 GB SSD | 100 GB SSD |
+| OS | Ubuntu 22.04+ / macOS 13+ | Ubuntu 24.04 |
+
+### Prover (separate machine, real prover only)
+
+See [Prover Setup](./provers) — you need an NVIDIA GPU with 32 GB+ VRAM.
+
+---
 
 ## Prerequisites
 
-- An L1 network with HTTP, WebSocket, and beacon chain endpoints (we use Ethereum Sepolia with QuickNode)
-- Docker and Docker Compose
-- Git
-- An L1 account with ETH for gas (deployer private key)
-- A separate machine with CUDA-capable GPU for the ZisK prover (see [Prover Setup](./provers))
+Install these tools before running the deploy script.
 
-## 1. Clone and Configure
+### Docker Desktop
+
+Download and install from [docker.com](https://www.docker.com/products/docker-desktop/). Make sure Docker is **running** before you continue.
+
+On Linux, install Docker Engine + Compose plugin instead:
+
+```bash
+# Quick install on Ubuntu
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER   # log out and back in after this
+```
+
+### Foundry (includes `cast`)
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+### Kurtosis CLI
+
+```bash
+# macOS
+brew install kurtosis-tech/tap/kurtosis-cli
+
+# Linux / other — see https://docs.kurtosis.com/install
+```
+
+### Standard tools
+
+`jq`, `curl`, and `bc` are needed. They're usually already installed, but if not:
+
+```bash
+# Ubuntu/Debian
+sudo apt install -y jq curl bc
+
+# macOS
+brew install jq
+```
+
+---
+
+## Step 1 — Clone the repo
 
 ```bash
 git clone https://github.com/NethermindEth/simple-surge-node.git
 cd simple-surge-node
-git checkout realtime
+git submodule update --init --recursive
 cp .env.devnet .env
 ```
 
-Edit `.env` and set your L1 connection:
+The `.env.devnet` file has pre-funded test keys — you don't need to set up any wallets.
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `L1_ENDPOINT_HTTP` | L1 RPC endpoint | `https://your-provider.com/rpc` |
-| `L1_ENDPOINT_WS` | L1 WebSocket endpoint | `wss://your-provider.com/ws` |
-| `L1_BEACON_HTTP` | L1 beacon chain endpoint | `https://your-provider.com/beacon` |
+---
 
-Everything else in `.env.devnet` has sensible defaults for a devnet deployment, including pre-funded deployer, operator and submittor keys. For production deployments, override `PRIVATE_KEY`, `OPERATOR_PRIVATE_KEY`, and `SUBMITTER_PRIVATE_KEY` with your own funded accounts.
+## Step 2 — Deploy
 
-:::tip
-If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8080` port, like `http://ip:8080` )
-:::
+<Tabs>
+  <TabItem value="mock" label="Mock prover" default>
 
-:::tip
-If running the entire stack with prover, make sure to configure `RAIKO_HOST_ZKVM` to the prover endpoint. (By default, it's the IP of the VM prover is running on, followed by `8081` port, like `http://ip:8081` )
-:::
+Run the script with all flags set so it doesn't stop to ask questions:
 
-## 2. Run the Deployment
+```bash
+MOCK_PROOF_MODE=true ./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment local \
+  --stack-option 2 \
+  --force
+```
+
+This starts a fresh L1 devnet, deploys all L1 contracts with a mock proof verifier, generates the L2 genesis, and brings up the full L2 stack (Nethermind + Driver + Catalyst).
+
+  </TabItem>
+  <TabItem value="real" label="Real prover">
+
+Make sure Raiko is running and reachable at your prover machine's IP before running this (by default, prover port is set to be 8080). Check it's ready:
+
+```bash
+curl http://<prover-ip>:<prover-port>/guest_data
+```
+
+You should get back a JSON response with a `zisk.batch_vkey` field. If you get a connection error, Raiko isn't up yet — see [Prover Setup](./provers).
+
+Once Raiko is ready:
+
+```bash
+RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment local \
+  --stack-option 2 \
+  --force
+```
+
+  </TabItem>
+  <TabItem value="interactive" label="Interactive (step by step)">
+
+If you prefer to answer each prompt manually:
 
 ```bash
 ./deploy-surge-full.sh
 ```
 
-The script runs interactively through 7 phases:
+| Step | Prompt | What to pick |
+|------|--------|--------------|
+| 1 | Environment | `devnet` |
+| 2 | Deployment type | `local` (same machine) or `remote` (VM) |
+| 3 | Deploy new L1 devnet? | `true` for a fresh devnet |
+| 4 | Execution mode | `silence` (progress bars) or `debug` (full logs) |
+| 5 | Mock or real prover | `0` mock / `1` real |
+| 6 | L2 stack option | `2` — Driver + Catalyst |
+| 7 | Test token on L1? | `0` yes / `1` no |
+| 8 | Test token on L2? | `0` yes / `1` no |
 
-### Phase 1: Environment
-Choose local or remote, if you are using a remote VM, please pick remote. (Remote VM highly suggested)
+  </TabItem>
+</Tabs>
 
-### Phase 2: L1 General Protocol Contracts
-Deploys RealTimeInbox, SurgeVerifier, Bridge, SignalService, token vaults, Multicall, and UserOpsSubmitter to L1. Also generates L2 genesis, chainspec and prover configuration files.
-
-### Phase 3: Prepare Prover
-Register prover vkey, make sure the `RAIKO_HOST_ZKVM` is provided and [Set up the ZisK Prover](./provers) is done with generated prover configuration files from last phase.
-
-### Phase 4: L2 Stack
-Deploys the L2 execution client (Nethermind), the Driver, and Catalyst. Choose:
-- Option 1: Driver only
-- Option 2: Driver + Catalyst (default, needed for real-time proving)
-
-### Phase 5: Cross Chains DEX Protocol Contracts
-Deploys L1_VAULT, L2_VAULT, L2_DEX, L2_TOKEN, and links vaults.
-
-### Phase 6: DEX UI
-Deploys DEX UI with provided environment variables. (Since DEX UI is build with dynamic configurations, so this process can sometimes take ~10 minutes)
-
-### Phase 7: Verification
-Runs health checks and prints a deployment summary with all endpoints.
-
-:::tip
-The script saves progress. You can safely cancel with `Ctrl+C` and resume later.
+:::tip Progress is saved
+The script saves a lock file after each phase. If something fails or you press `Ctrl+C`, just re-run the same command — completed phases are skipped.
 :::
 
-## 3. Verify
+### What gets deployed
 
-After deployment:
+```
+L1 devnet (Kurtosis / ethereum-package)
+  └── Execution client + beacon chain
 
-```bash
-# Check L2 containers are running
-docker compose ps
+L1 protocol contracts
+  ├── RealTimeInbox
+  ├── SurgeVerifier
+  ├── Bridge + SignalService
+  ├── ERC20/721/1155 vaults
+  ├── Multicall + UserOpsSubmitter
+  └── ProofVerifierDummy    ← mock prover only
 
-# Test L2 RPC
-curl -X POST -H "Content-Type: application/json" \
-     --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' \
-     http://localhost:8547
+L2 genesis + chainspec
+
+L2 stack (Docker Compose)
+  ├── l2-nethermind-execution-client
+  ├── l2-taiko-consensus-client (Driver)
+  ├── web3signer-l1, web3signer-l2
+  └── l2-catalyst-node (Catalyst)
 ```
 
-If the Driver is running with `--fork realtime`, you should see blocks being produced once Catalyst starts proposing.
+---
 
-## Our Deployment
+## Step 3 — Verify it's working
 
-For reference, here's what we use for the Gnosis mainnet deployment at `*.realtime.surge.wtf`:
+After the script finishes, it prints a summary table with all endpoints. You can also check manually:
 
-| Component | Hardware | Notes |
-|-----------|----------|-------|
-| L1 | Gnosis mainnet | QuickNode RPC provider |
-| L2 Stack | Standard VM | NMC, Driver, Catalyst |
-| Prover | NVIDIA RTX 5090 GPU | Bare-metal Raiko + Zisk (~10-11s proofs) |
-| Secondary prover | L40s GPU cluster | ~13-14s proofs |
+```bash
+# Are all L2 containers running?
+docker compose ps
 
-## 4. Next Steps
+# Does the L2 RPC respond?
+curl -s -X POST -H "Content-Type: application/json" \
+  --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+  http://localhost:8547
+```
 
-- [Set up the ZisK Prover](./provers) for real-time proving (required for block finalization)
-- [Deploy a dApp](../deploy-on-surge) on your Surge network
+Default service endpoints:
+
+| Service | URL |
+|---------|-----|
+| L1 RPC | `http://localhost:32003` |
+| L1 WebSocket | `ws://localhost:32004` |
+| L1 Beacon | `http://localhost:33001` |
+| L2 RPC | `http://localhost:8547` |
+| L2 WebSocket | `ws://localhost:8548` |
+| L2 Blockscout | `http://localhost:3001` |
+
+:::note
+On a remote VM, replace `localhost` with the machine's public IP.
+:::
+
+Once Catalyst starts proposing blocks, you'll see new L2 blocks appear. With the mock prover they finalize immediately. With the real prover, finalization follows proof generation (~10–17 seconds).
+
+---
+
+## Troubleshooting
+
+### L1 health check fails right after devnet start
+
+Kurtosis is still assigning ports. Wait 15–30 seconds and re-run.
+
+### `cast` not found
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash && foundryup
+```
+
+### Kurtosis enclave already exists
+
+The script will offer to remove it. Force-remove manually:
+
+```bash
+kurtosis enclave rm surge-devnet --force
+```
+
+### Blocks propose but never finalize (mock prover)
+
+`ProofVerifierDummy` requires proofs signed by `MOCK_PROOF_SIGNER`. Confirm `MOCK_PROOF_MODE=true` was set during L1 deployment and that the key in `.env` matches.
+
+### Real prover: `ZISK guest data is missing`
+
+Raiko must be running before you deploy. Check:
+
+```bash
+curl http://<prover-ip>:<prover-port>/guest_data
+```
+
+---
+
+## Collect diagnostic logs
+
+If something goes wrong and you want to file a bug report or share logs:
+
+```bash
+# Full snapshot: L1 enclave + all L2 containers
+./collect-devnet-logs.sh
+
+# Just the last 30 minutes
+./collect-devnet-logs.sh --since 30m
+
+# L1 only (kurtosis enclave dump)
+./collect-devnet-logs.sh --l1-only
+
+# L2 only (docker logs per container)
+./collect-devnet-logs.sh --l2-only
+```
+
+Logs are saved to `./logs/snapshot-YYYYMMDD-HHMMSS/`.
+
+---
+
+## Restart or redeploy
+
+### Restart L2 containers only (no redeploy)
+
+Stop and restart just the L2 stack, keeping the L1 devnet and all deployment artifacts intact:
+
+```bash
+# Stop L2 containers
+./remove-surge-full.sh \
+  --remove-l1-devnet false \
+  --remove-l2-stack true \
+  --remove-data false \
+  --remove-configs false \
+  --force
+
+# Start L2 stack again against the existing deployment
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet false \
+  --deployment local \
+  --stack-option 2 \
+  --force
+```
+
+### Redeploy L2 from scratch (keep L1 devnet)
+
+Wipe everything except the Kurtosis enclave and redeploy L1 contracts + L2 from scratch:
+
+```bash
+# Wipe L2 containers, data, and all deployment files
+./remove-surge-full.sh \
+  --remove-l1-devnet false \
+  --remove-l2-stack true \
+  --remove-data true \
+  --remove-configs true \
+  --force
+
+# Redeploy against the existing L1 enclave
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet false \
+  --deployment local \
+  --stack-option 2 \
+  --force
+```
+
+---
 
 ## Cleanup
 
-To tear down everything:
-
 ```bash
+# Remove everything except .env
 ./remove-surge-full.sh --force
+
+# Remove everything including .env
+./remove-surge-full.sh --force --remove-env true
 ```
 
-This removes all containers, data, and configurations. Add `--remove-env true` to also delete the `.env` file.
+---
+
+## Next steps
+
+- [Set up the ZisK prover](./provers) if you want real ZK proofs
+- [Deploy a dApp](../deploy-on-surge) on your Surge network
+
+---
+
+## Our deployment (for reference)
+
+| Component | Hardware | Notes |
+|-----------|----------|-------|
+| L1 | Gnosis mainnet | QuickNode RPC |
+| L2 stack | Standard VM | Nethermind, Driver, Catalyst |
+| Prover | NVIDIA RTX 5090 (×8) | ~10–11s proofs |
+| Secondary prover | L40s cluster | ~13–14s proofs |
