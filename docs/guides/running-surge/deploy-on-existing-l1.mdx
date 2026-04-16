@@ -1,0 +1,267 @@
+---
+sidebar_position: 2
+title: "Deploy on an Existing L1"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deploy on an Existing L1
+
+This guide covers deploying Surge on a public L1 network — Sepolia, Holesky (Hoodi), Gnosis Chain, or Ethereum mainnet — instead of a local Kurtosis devnet.
+
+The steps are almost identical to the [local devnet guide](./deploy-surge), with two key differences:
+1. You skip the "deploy new L1 devnet" step — you already have one.
+2. You need funded wallets on that L1 for gas.
+
+---
+
+## Supported L1 networks
+
+| Network | Chain ID | Type | Notes |
+|---------|----------|------|-------|
+| Ethereum Sepolia | 11155111 | Testnet | Most common for testing — free ETH from faucets |
+| Ethereum Hoodi | 560048 | Testnet | Larger validator set, good for realistic testing |
+| Gnosis Chain | 100 | Mainnet | What Surge itself uses in production |
+| Ethereum Mainnet | 1 | Mainnet | Real money — make sure you know what you're doing |
+
+---
+
+## Prerequisites
+
+Everything from the [local devnet guide](./deploy-surge#before-you-start), plus:
+
+### Funded wallets
+
+You need three wallets with ETH (or xDAI on Gnosis) for gas. Each plays a specific role:
+
+| Variable | Role | How much do you need? |
+|----------|------|-----------------------|
+| `PRIVATE_KEY` | Deploys all L1 contracts | ~0.1–0.5 ETH (most gas) |
+| `OPERATOR_PRIVATE_KEY` | Runs Driver + Catalyst | ~0.05 ETH (ongoing L1 txs) |
+| `SUBMITTER_PRIVATE_KEY` | Submits batches to L1 | ~0.05 ETH (ongoing L1 txs) |
+
+You can use the same wallet for all three on a testnet. On mainnet, keep them separate.
+
+**Testnet faucets:**
+- Sepolia: [sepoliafaucet.com](https://sepoliafaucet.com), [alchemy.com/faucets/ethereum-sepolia](https://www.alchemy.com/faucets/ethereum-sepolia)
+- Holesky: [holesky-faucet.pk910.de](https://holesky-faucet.pk910.de)
+
+### L1 RPC endpoints
+
+You need three endpoints from your L1 provider:
+
+| Endpoint | What it's for |
+|----------|---------------|
+| HTTP RPC | Contract deployment + reads |
+| WebSocket RPC | Event subscriptions |
+| Beacon API | L1 slot/epoch data |
+
+---
+
+## Step 1 — Clone and configure
+
+```bash
+git clone https://github.com/NethermindEth/simple-surge-node.git
+cd simple-surge-node
+git submodule update --init --recursive
+cp .env.devnet .env
+```
+
+Now edit `.env` with your L1 details:
+
+<Tabs>
+  <TabItem value="sepolia" label="Sepolia" default>
+
+```bash
+# L1 network
+L1_CHAIN_ID=11155111
+L1_ENDPOINT_HTTP=https://some-rpc-providers/<YOUR_KEY>
+L1_ENDPOINT_WS=wss://some-rpc-providers/<YOUR_KEY>
+L1_BEACON_HTTP=https://some-rpc-providers/<YOUR_KEY>
+
+# Your funded wallets (replace with real private keys)
+PRIVATE_KEY=
+OPERATOR_PRIVATE_KEY=
+SUBMITTER_PRIVATE_KEY=
+PUBLIC_KEY=
+OPERATOR_PUBLIC_KEY=
+SUBMITTER_PUBLIC_KEY=
+
+# L2 chain ID — pick any unused chain ID as long as it doesn't crash with your L1 chain ID
+L2_CHAIN_ID=763374
+```
+
+  </TabItem>
+  <TabItem value="gnosis" label="Gnosis Chain">
+
+```bash
+# L1 network
+L1_CHAIN_ID=100
+L1_ENDPOINT_HTTP=https://some-rpc-providers/<YOUR_KEY>
+L1_ENDPOINT_WS=wss://some-rpc-providers/<YOUR_KEY>
+L1_BEACON_HTTP=https://some-rpc-providers/<YOUR_KEY>
+
+# Your funded wallets (replace with real private keys)
+PRIVATE_KEY=
+OPERATOR_PRIVATE_KEY=
+SUBMITTER_PRIVATE_KEY=
+PUBLIC_KEY=
+OPERATOR_PUBLIC_KEY=
+SUBMITTER_PUBLIC_KEY=
+
+# L2 chain ID
+L2_CHAIN_ID=763374
+```
+
+  </TabItem>
+  <TabItem value="hoodi" label="Hoodi">
+
+```bash
+# L1 network
+L1_CHAIN_ID=17000
+L1_ENDPOINT_HTTP=https://some-rpc-providers/<YOUR_KEY>
+L1_ENDPOINT_WS=wss://some-rpc-providers/<YOUR_KEY>
+L1_BEACON_HTTP=https://some-rpc-providers/<YOUR_KEY>
+
+# Your funded wallets
+PRIVATE_KEY=
+OPERATOR_PRIVATE_KEY=
+SUBMITTER_PRIVATE_KEY=
+PUBLIC_KEY=
+OPERATOR_PUBLIC_KEY=
+SUBMITTER_PUBLIC_KEY=
+
+# L2 chain ID
+L2_CHAIN_ID=763374
+```
+
+  </TabItem>
+  <TabItem value="mainnet" label="Ethereum Mainnet">
+
+```bash
+# L1 network
+L1_CHAIN_ID=1
+L1_ENDPOINT_HTTP=https://some-rpc-providers/<YOUR_KEY>
+L1_ENDPOINT_WS=wss://some-rpc-providers/<YOUR_KEY>
+L1_BEACON_HTTP=https://some-rpc-providers/<YOUR_KEY>
+
+# Your funded wallets
+PRIVATE_KEY=
+OPERATOR_PRIVATE_KEY=
+SUBMITTER_PRIVATE_KEY=
+PUBLIC_KEY=
+OPERATOR_PUBLIC_KEY=
+SUBMITTER_PUBLIC_KEY=
+
+# L2 chain ID — must not collide with an existing chain
+# Check https://chainlist.org before picking
+L2_CHAIN_ID=763374
+```
+
+:::warning Mainnet costs real money
+Contract deployment runs ~15–20 L1 transactions. Make sure your deployer wallet has enough ETH to cover gas at current prices before starting.
+:::
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Step 2 — Deploy
+
+Deploying on a public L1 always uses the real ZK prover — mock proofs are for local testing only and aren't appropriate for a network anyone else will interact with.
+
+Make sure Raiko is running and reachable before continuing (by default, prover port is set to be 8080). Check:
+
+```bash
+curl http://<prover-ip>:<prover-port>/guest_data
+```
+
+You should get a JSON response with a `zisk.batch_vkey` field. If you get a connection error, see [Prover Setup](./provers) first.
+
+Once Raiko is ready:
+
+```bash
+RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet false \
+  --deployment local \
+  --stack-option 2 \
+  --force
+```
+
+The script deploys all L1 protocol contracts to your chosen chain, generates the L2 genesis, and starts the L2 stack. Test token deployment is automatically skipped on existing chains — you'll use real tokens (USDC, DAI, etc.) already available on the network.
+
+---
+
+## Step 3 — Verify
+
+Check your L2 RPC is responding:
+
+```bash
+curl -s -X POST -H "Content-Type: application/json" \
+  --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+  http://localhost:8547
+```
+
+You can also confirm the contracts deployed by checking your deployer address's transaction history on the L1 block explorer (Etherscan for Sepolia/Mainnet, Gnosisscan for Gnosis).
+
+---
+
+## Remote VM
+
+If you're running the L2 stack on a remote machine (common for public L1 deployments), use `--deployment remote`. The script will use the machine's public IP for endpoint URLs instead of `localhost`:
+
+```bash
+RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet false \
+  --deployment remote \
+  --stack-option 2 \
+  --force
+```
+
+Make sure these ports are open in your firewall:
+
+| Port | Service |
+|------|---------|
+| 8547 | L2 RPC (HTTP) |
+| 8548 | L2 RPC (WebSocket) |
+| 30313 | L2 P2P discovery |
+
+---
+
+## Troubleshooting
+
+### "insufficient funds" during deployment
+
+Your deployer wallet doesn't have enough ETH. The script runs ~15–20 transactions — top up and re-run. Completed steps are skipped automatically.
+
+### L1 RPC rate limits
+
+Public RPC endpoints (like the free Alchemy tier) can hit rate limits during deployment. If you see 429 errors in debug mode, switch to a paid plan or a different provider.
+
+### Beacon API errors on Gnosis
+
+Gnosis doesn't have a beacon chain in the same sense as Ethereum. Set `L1_BEACON_HTTP` to any reachable URL — it's not used for Gnosis deployments but the field must be set.
+
+### Wrong chain ID in genesis
+
+If you change `L2_CHAIN_ID` axfter genesis was generated, delete `deployment/surge_genesis.json` and re-run. A stale genesis with the wrong chain ID will cause the L2 node to reject all blocks.
+
+---
+
+## Cleanup
+
+```bash
+# Remove L2 stack and deployment artifacts (L1 contracts stay deployed)
+./remove-surge-full.sh \
+  --remove-l1-devnet false \
+  --remove-l2-stack true \
+  --remove-data true \
+  --remove-configs true \
+  --force
+```
+
+Note: Contracts deployed to a public L1 can't be "removed" — they stay on-chain. This command only cleans up your local Docker containers and deployment files.
