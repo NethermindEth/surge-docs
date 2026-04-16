@@ -141,11 +141,13 @@ The `.env.devnet` file has pre-funded test keys — you don't need to set up any
 Run the script with all flags set so it doesn't stop to ask questions:
 
 ```bash
-MOCK_PROOF_MODE=true ./deploy-surge-full.sh \
+./deploy-surge-full.sh \
   --environment devnet \
   --deploy-devnet true \
   --deployment local \
   --stack-option 2 \
+  --mock-prover \
+  --mode silence \
   --force
 ```
 
@@ -170,6 +172,7 @@ RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
   --deploy-devnet true \
   --deployment local \
   --stack-option 2 \
+  --mode silence \
   --force
 ```
 
@@ -190,14 +193,18 @@ If you prefer to answer each prompt manually:
 | 4 | Execution mode | `silence` (progress bars) or `debug` (full logs) |
 | 5 | Mock or real prover | `0` mock / `1` real |
 | 6 | L2 stack option | `2` — Driver + Catalyst |
-| 7 | Test token on L1? | `0` yes / `1` no |
-| 8 | Test token on L2? | `0` yes / `1` no |
+| 7 | Test token on L1? | `0` yes / `1` no (devnet only) |
+| 8 | Test token on L2? | `0` yes / `1` no (devnet only) |
 
   </TabItem>
 </Tabs>
 
 :::tip Progress is saved
 The script saves a lock file after each phase. If something fails or you press `Ctrl+C`, just re-run the same command — completed phases are skipped.
+:::
+
+:::info What `--force` does
+`--force` skips all interactive prompts and uses sensible defaults: deploys test tokens (on devnet), uses silence mode, and skips confirmations. Combined with `--mock-prover` and `--mode`, you get a fully non-interactive one-shot deployment.
 :::
 
 ### What gets deployed
@@ -280,7 +287,7 @@ kurtosis enclave rm surge-devnet --force
 
 ### Blocks propose but never finalize (mock prover)
 
-`ProofVerifierDummy` requires proofs signed by `MOCK_PROOF_SIGNER`. Confirm `MOCK_PROOF_MODE=true` was set during L1 deployment and that the key in `.env` matches.
+`ProofVerifierDummy` requires proofs signed by `MOCK_PROOF_SIGNER`. Confirm `--mock-prover` was passed (or `MOCK_PROOF_MODE=true` was set) during L1 deployment and that the key in `.env` matches.
 
 ### Real prover: `ZISK guest data is missing`
 
