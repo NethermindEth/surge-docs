@@ -172,18 +172,28 @@ Contract deployment runs ~15–20 L1 transactions. Make sure your deployer walle
 
 Deploying on a public L1 always uses the real ZK prover — mock proofs are for local testing only and aren't appropriate for a network anyone else will interact with.
 
-Make sure Raiko is running and reachable before continuing (by default, prover port is set to be 8080). Check:
+Make sure Raiko is running and reachable before continuing (by default, prover port is `8080`). Check:
 
 ```bash
-curl http://<prover-ip>:<prover-port>/guest_data
+curl http://<prover-ip>:8080/guest_data
 ```
 
 You should get a JSON response with a `zisk.batch_vkey` field. If you get a connection error, see [Prover Setup](./provers) first.
 
-Once Raiko is ready:
+Add the prover endpoint to `.env`:
 
 ```bash
-RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
+RAIKO_HOST_ZKVM=http://<prover-ip>:8080
+```
+
+:::note
+Don't pass `RAIKO_HOST_ZKVM` inline — `deploy-surge-full.sh` sources `.env` on every run and inline exports get overridden.
+:::
+
+Once Raiko is ready and `.env` is set:
+
+```bash
+./deploy-surge-full.sh \
   --environment devnet \
   --deploy-devnet false \
   --deployment local \
@@ -191,7 +201,7 @@ RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
   --force
 ```
 
-The script deploys all L1 protocol contracts to your chosen chain, generates the L2 genesis, and starts the L2 stack. Test token deployment is automatically skipped on existing chains — you'll use real tokens (USDC, DAI, etc.) already available on the network.
+The script deploys all L1 protocol contracts to your chosen chain, generates the L2 genesis, and starts the L2 stack. The Cross-Chain DEX deploys a fresh SwapToken by default — set `SWAP_TOKEN` in `.env` to an existing ERC20 address (e.g. USDC) to use a real token instead.
 
 ---
 
@@ -211,10 +221,10 @@ You can also confirm the contracts deployed by checking your deployer address's 
 
 ## Remote VM
 
-If you're running the L2 stack on a remote machine (common for public L1 deployments), use `--deployment remote`. The script will use the machine's public IP for endpoint URLs instead of `localhost`:
+If you're running the L2 stack on a remote machine (common for public L1 deployments), use `--deployment remote`. The script will use the machine's public IP for endpoint URLs instead of `localhost`. With `RAIKO_HOST_ZKVM` already set in `.env`:
 
 ```bash
-RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
+./deploy-surge-full.sh \
   --environment devnet \
   --deploy-devnet false \
   --deployment remote \
@@ -228,6 +238,7 @@ Make sure these ports are open in your firewall:
 |------|---------|
 | 8547 | L2 RPC (HTTP) |
 | 8548 | L2 RPC (WebSocket) |
+| 5173 | DEX UI |
 | 30313 | L2 P2P discovery |
 
 ---
@@ -248,7 +259,7 @@ Gnosis doesn't have a beacon chain in the same sense as Ethereum. Set `L1_BEACON
 
 ### Wrong chain ID in genesis
 
-If you change `L2_CHAIN_ID` axfter genesis was generated, delete `deployment/surge_genesis.json` and re-run. A stale genesis with the wrong chain ID will cause the L2 node to reject all blocks.
+If you change `L2_CHAIN_ID` after genesis was generated, delete `deployment/surge_genesis.json` and re-run. A stale genesis with the wrong chain ID will cause the L2 node to reject all blocks.
 
 ---
 

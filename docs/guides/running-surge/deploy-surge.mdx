@@ -164,10 +164,27 @@ curl http://<prover-ip>:<prover-port>/guest_data
 
 You should get back a JSON response with a `zisk.batch_vkey` field. If you get a connection error, Raiko isn't up yet — see [Prover Setup](./provers).
 
-Once Raiko is ready:
+:::warning Set `RAIKO_HOST_ZKVM` in `.env`, not via inline export
+The deploy script sources `.env` on every run, which overwrites any inline `RAIKO_HOST_ZKVM=...` you prepend to the command. Edit `.env` directly:
 
 ```bash
-RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
+# In .env — use a URL reachable from inside the Catalyst container
+RAIKO_HOST_ZKVM=http://host.docker.internal:8080    # prover on same machine
+# or for a separate prover host:
+# RAIKO_HOST_ZKVM=http://<prover-lan-ip>:8080
+```
+
+Catalyst runs inside a Docker container, so `localhost` on the host machine is **not** the same address Catalyst sees. `host.docker.internal` works because the compose file maps it to the host gateway. Using a plain `localhost:8080` value will cause every proof request to fail and the L2 chain to reorg repeatedly.
+:::
+
+:::tip `--force` defaults to real prover
+With `--force` and **no** `--mock-prover` flag, the script auto-answers all three prover prompts (mock-vs-real → real, deploy provers → yes, run ZISK → yes). If you want mock prover instead, add `--mock-prover` explicitly.
+:::
+
+Once Raiko is ready and `.env` is set:
+
+```bash
+./deploy-surge-full.sh \
   --environment devnet \
   --deploy-devnet true \
   --deployment local \
@@ -175,6 +192,64 @@ RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port> ./deploy-surge-full.sh \
   --mode silence \
   --force
 ```
+
+:::info Built-in Raiko readiness check
+After the L2 stack is up but **before** any L2 transaction (DEX deployment is the first one), the script verifies Raiko is reachable.
+
+- **Mock prover** — Raiko is brought up alongside the L2 stack via `--profile prover` and exposed on `localhost:8082`. The check is a single `GET /health` ping; the mock image returns `{}` for `/guest_data` (no real ZisK setup) so the deeper checks would loop forever and add no value — mock proofs are instant anyway.
+- **Real prover** — Raiko runs on a separate machine. The check uses `$RAIKO_HOST_ZKVM` (transforming `host.docker.internal` → `localhost` for host-side reachability). It runs three sequential probes against the prover URL:
+  1. `GET /health` (basic liveness, must return 200)
+  2. `GET /guest_data` (must return a `zisk.batch_vkey` — first call takes 4–5 min on cold start)
+  3. `POST /v3/proof/batch/realtime` with `sources: []` (status-poll mode — verifies the proof endpoint's request handler is alive without triggering proof generation)
+
+The real-prover check has a 30-minute timeout to cover single-GPU first-cold-start scenarios. If Raiko isn't ready in that window, the script aborts before any L2 tx hits Catalyst — no premature proof requests, no L2 reorgs.
+
+The check is skipped only for `--stack-option 0` (no L2 stack at all).
+
+This **does not** fully warm the ZisK proofman pipeline on real prover. The first real proof request from Catalyst still triggers proofman init (~16 min on a single L40, ~1 min on multi-GPU).
+:::
+
+:::note Same-VM deploys
+If you're running Raiko and the L2 stack on the same VM, add `host.docker.internal` to your host's `/etc/hosts` so the script's host-side `curl` to Raiko also resolves:
+
+```bash
+echo "127.0.0.1 host.docker.internal" | sudo tee -a /etc/hosts
+```
+:::
+
+:::warning Two-VM (split host) deploys
+If Raiko runs on a separate machine from the L2 stack, three things differ from the docs' default flow:
+
+1. **`RAIKO_HOST_ZKVM` must be the prover's reachable IP**, not `host.docker.internal`. Set `RAIKO_HOST_ZKVM=http://<prover-public-or-lan-ip>:8080` in `simple-surge-node/.env`.
+2. **Open inbound TCP/8080 on the prover VM** so the L2 host's containers can reach it. Verify from the L2 host: `curl http://<prover-ip>:8080/guest_data` should return the vkey JSON.
+3. **The chain spec doesn't auto-sync.** `deploy-zisk-prover.sh --surge-dir ../simple-surge-node` assumes both repos are on the same machine. For two-VM, after `deploy-surge-full.sh` generates the chain spec, copy it to the prover and restart Raiko:
+
+   ```bash
+   # From the L2 host:
+   scp simple-surge-node/configs/chain_spec_list.json \
+       simple-surge-node/configs/config.json \
+       <prover-host>:/path/to/raiko/host/config/devnet/
+
+   # Then on the prover host:
+   docker compose -f docker/docker-compose-zk.yml restart
+   ```
+
+   Catalyst will start sending proof requests as soon as the L2 stack is up — restart Raiko *before* `deploy-surge-full.sh` reaches L2 stack startup, otherwise the first proof request hits a Raiko still configured against the default chain spec and either errors or returns a vkey for the wrong chain.
+:::
+
+:::warning Verify L2 advances before running DEX vault linking
+The deploy script's DEX setup (`Setting L2 vault on L1 vault...`) sends L2 transactions and waits for them to confirm. If the L2 chain hasn't progressed past block 1 (e.g., because Catalyst can't propose, or proofs aren't returning, or operator isn't registered), these txs time out and DEX verification fails with `transaction was not confirmed within the timeout`.
+
+Before troubleshooting DEX errors, check:
+
+```bash
+curl -s -X POST -H 'Content-Type: application/json' \
+  --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+  http://localhost:8547
+```
+
+If the result is `0x0` or `0x1` and not advancing, fix the L2 production path first. The DEX errors are downstream symptoms.
+:::
 
   </TabItem>
   <TabItem value="interactive" label="Interactive (step by step)">
@@ -192,9 +267,16 @@ If you prefer to answer each prompt manually:
 | 3 | Deploy new L1 devnet? | `true` for a fresh devnet |
 | 4 | Execution mode | `silence` (progress bars) or `debug` (full logs) |
 | 5 | Mock or real prover | `0` mock / `1` real |
-| 6 | L2 stack option | `2` — Driver + Catalyst |
-| 7 | Test token on L1? | `0` yes / `1` no (devnet only) |
-| 8 | Test token on L2? | `0` yes / `1` no (devnet only) |
+| 6 | L2 stack option | `2` — Driver + Catalyst (or `0` to skip; see below) |
+
+### L2 stack options
+
+| Option | Components |
+|--------|------------|
+| `0` | None. Skip the L2 stack, just verify the external L2 RPC is reachable. Dev-only — use when you're running your own L2 node and just want to deploy protocol + DEX contracts against it. |
+| `1` | Driver only |
+| `2` | Driver + Catalyst (default) |
+| `3` | Driver + Catalyst + Spammer |
 
   </TabItem>
 </Tabs>
@@ -204,7 +286,7 @@ The script saves a lock file after each phase. If something fails or you press `
 :::
 
 :::info What `--force` does
-`--force` skips all interactive prompts and uses sensible defaults: deploys test tokens (on devnet), uses silence mode, and skips confirmations. Combined with `--mock-prover` and `--mode`, you get a fully non-interactive one-shot deployment.
+`--force` skips every interactive prompt and uses sensible defaults: real prover (unless `--mock-prover` is set), deploy provers, register ZISK vkey, and suppresses the "Start a new deployment?" confirmation when locks exist.
 :::
 
 ### What gets deployed
@@ -256,6 +338,7 @@ Default service endpoints:
 | L2 RPC | `http://localhost:8547` |
 | L2 WebSocket | `ws://localhost:8548` |
 | L2 Blockscout | `http://localhost:3001` |
+| DEX UI | `http://localhost:5173` |
 
 :::note
 On a remote VM, replace `localhost` with the machine's public IP.
