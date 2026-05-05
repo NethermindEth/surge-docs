@@ -27,7 +27,7 @@ The mock prover skips real ZK proof generation. A dummy contract accepts any sig
 
 **Use this if:**
 - You're just exploring or developing locally
-- You don't have an NVIDIA GPU with 32 GB+ VRAM
+- You don't have an NVIDIA GPU with 24 GB+ VRAM
 - You want the fastest possible setup
 
 No extra setup required — the script handles everything.
@@ -39,7 +39,7 @@ The real prover generates actual ZK proofs using the ZisK GPU backend. Proof tim
 
 **Use this if:**
 - You're running a production or staging deployment
-- You have a dedicated GPU machine (NVIDIA RTX 5090 or L40 class, 32 GB+ VRAM)
+- You have a dedicated GPU machine (RTX 3090 24 GB minimum; RTX 5090 / L40 / multi-GPU recommended)
 
 You'll need to [set up Raiko](./provers) on the GPU machine **before** running the deploy script, then point the script at it with `RAIKO_HOST_ZKVM=http://<prover-ip>:<prover-port>`.
 
@@ -70,7 +70,7 @@ You'll need to [set up Raiko](./provers) on the GPU machine **before** running t
 
 ### Prover (separate machine, real prover only)
 
-See [Prover Setup](./provers) — you need an NVIDIA GPU with 32 GB+ VRAM.
+See [Prover Setup](./provers) — minimum 1x RTX 3090 (24 GB VRAM); multi-GPU L40 / RTX 5090 recommended for real-time-feel proof times.
 
 ---
 

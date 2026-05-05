@@ -23,11 +23,13 @@ No bonds, no proving windows, no on-chain prover registration.
 
 | Component | Minimum (prover only) | Recommended |
 |-----------|-----------------------|-------------|
-| GPU | 1x RTX 5090 | 8x RTX 5090 |
-| RAM | 128 GB | 256 GB |
+| GPU | 1x RTX 3090 (24 GB VRAM) | 8x RTX 5090 |
+| RAM | 64 GB | 256 GB |
 | CPU | 32 cores | 64 cores |
 | Disk | 150 GB SSD | 300 GB NVMe |
 | OS | Ubuntu 22.04+ (Docker) | Ubuntu 24.04 (bare metal needs GLIBC ≥ 2.36) |
+
+A single RTX 3090 is the floor — proofs will land but cold start is multi-minute and steady-state is much slower than the multi-GPU rows below. If you need real-time-feel devnet usage, plan for at least multi-GPU L40 / 5090.
 
 ## Performance
 
