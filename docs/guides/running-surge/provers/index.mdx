@@ -23,7 +23,7 @@ No bonds, no proving windows, no on-chain prover registration.
 
 | Component | Minimum (prover only) | Recommended |
 |-----------|-----------------------|-------------|
-| GPU | 1x L40 or 1x RTX 5090 | 4x L40 or 8x RTX 5090 |
+| GPU | 1x RTX 5090 | 8x RTX 5090 |
 | RAM | 128 GB | 256 GB |
 | CPU | 32 cores | 64 cores |
 | Disk | 150 GB SSD | 300 GB NVMe |
@@ -37,16 +37,6 @@ No bonds, no proving windows, no on-chain prover registration.
 | 4x L40 | ~15s |
 | 8x L40 | ~13–14s |
 | 8x RTX 5090 | ~10–11s |
-
-:::note
-The Gnosis deployment uses 8x RTX 5090 (~10–11s).
-:::
-
-:::warning Single-GPU configs require two VMs
-Catalyst reorgs preconfirmed L2 blocks if a proof doesn't come back in time. A single L40 (~27s steady-state) or single RTX 5090 plus the L2 stack's CPU/RAM load on the same machine means proofs miss Catalyst's preconf window and the chain can't advance past block 1.
-
-For one VM, use **4x L40 or 8x RTX 5090 minimum**. Anything smaller — split prover and L2 stack across two VMs (recommended). For devnets you don't care about finalizing on, use `--mock-prover`.
-:::
 
 :::warning Cold start on a single GPU is much longer than the table suggests
 The performance table measures **steady-state** proof time. The **first** proof after Raiko starts (or restarts with a new chain spec) goes through ZisK proofman init, fixed-poly loading, SNARK prover init, and ASM microservice startup before it can prove. On a single L40 this is **~16 minutes**, not the 70s older docs claimed. Subsequent proofs settle to ~3 min on the same hardware. Multi-GPU configs hit the steady-state numbers in the table much sooner because they parallelize the warm-up.
@@ -133,10 +123,20 @@ The script automatically:
 2. Registers it on the on-chain ZisK verifier
 3. Generates `configs/chain_spec_list.json` and `configs/config.json`
 4. Starts Catalyst configured to send proof requests to the prover
+5. Runs the **built-in Raiko readiness check** (see [deploy-surge.mdx](../deploy-surge.mdx))
+6. Sends DEX setup transactions on L1 and L2 (`setL1Vault`, resolver registration)
 
-### Step 3 — Sync configs back to the Prover VM
+:::warning Step 5 will halt the deploy on its own — that's by design
+After Catalyst is up, the script polls `<prover-ip>:8080/guest_data` and **aborts with a clear error before any DEX/L2 transaction** if Raiko isn't responding with the expected vkey. This is the proof gate: until you complete step 3 below (sync configs + restart Raiko), the prover is still running against its default chain spec and any L2 tx the deploy sent would reorg out.
 
-Raiko started with the default chain spec; replace it with the real one and restart:
+What you'll typically see:
+- **Multi-GPU** — step 3's restart can finish during the readiness window, the check passes, and the deploy continues straight through DEX setup.
+- **Single-GPU** — the cold start is longer than the 30-min readiness budget. Expect step 2's deploy to abort at the readiness check with the "sync configs + force-recreate" hint. Do step 3, then come back and re-run via step 4.
+:::
+
+### Step 3 — Sync configs back to the Prover VM (proof gate)
+
+Raiko started with the default chain spec; replace it with the real one, restart, and **wait for it to be warm again before doing anything else**:
 
 ```bash
 # From the L2 stack VM
@@ -146,9 +146,43 @@ scp configs/config.json         <prover-host>:~/raiko/host/config/devnet/config.
 # On the Prover VM
 cd ~/raiko
 docker compose -f docker/docker-compose-zk.yml up -d --force-recreate
+
+# Gate: do not proceed until the new vkey is back
+curl localhost:8080/guest_data
+# {"zisk":{"batch_vkey":"<64 hex>"}}  — must match the vkey deploy registered
 ```
 
-`--force-recreate` is needed so the container picks up the remounted config files. The first proof after this restart triggers another cold start (~16 min on single-GPU; quicker on multi-GPU).
+`--force-recreate` is needed so the container picks up the remounted config files. The first proof after this restart triggers another cold start (~16 min on single-GPU; quicker on multi-GPU). `/guest_data` returning the vkey only means Raiko is *listening* — for single-GPU configs, also wait for `nvidia-smi` to show GPU utilisation drop back to idle (the warm-up actually completes when the first proof request lands, ~16 min later).
+
+### Step 4 — Finish the L2 deploy (single-GPU only)
+
+If step 2's deploy aborted at the Raiko readiness check (single-GPU expected behaviour), re-run after step 3:
+
+```bash
+# On the L2 stack VM
+cd simple-surge-node
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet false \
+  --deployment remote \
+  --stack-option 2 \
+  --mode silence \
+  --force
+```
+
+`--deploy-devnet false` skips the Kurtosis L1 redeploy. The script picks up at the readiness check; with Raiko now on the right chain spec, the check passes, `setL1Vault` lands in an L2 block, Catalyst gets a real proof, and the DEX setup completes.
+
+:::warning Only delete locks if the readiness check ran AFTER DEX work started
+With the readiness check now ahead of DEX deployment, a step-2 abort halts before any DEX lock files are touched, so the re-run picks up cleanly. If you're recovering from an older deploy that failed *during* DEX linking, the link/dex `.lock` files may have been written before a `cast send` actually confirmed — delete them before retrying:
+
+```bash
+rm -f deployment/link_vaults_l1.lock \
+      deployment/link_vaults_l2.lock \
+      deployment/cross_chain_dex.lock
+```
+
+If `cast call <l2_vault> "l1Vault()(address)"` returns *"contract does not have any code"*, the L2 was reorged back to genesis and `cross-chain-dex-l2.json`'s addresses are now stale — tear down and redeploy the L2 stack instead of retrying.
+:::
 
 </TabItem>
 <TabItem value="bare-metal" label="Bare Metal">
@@ -175,7 +209,9 @@ TARGET=zisk make guest
 
 (Same as the Docker tab — clone simple-surge-node, edit `.env`, run `deploy-surge-full.sh`.)
 
-### Step 3 — Copy configs and run Raiko
+### Step 3 — Copy configs and run Raiko (proof gate)
+
+Same ordering rule as the Docker tab: Raiko has to be running on the new chain spec before any L2 transaction can finalize.
 
 ```bash
 # From the L2 stack VM
@@ -191,12 +227,16 @@ nohup env RUST_LOG=info \
     > raiko.log 2>&1 &
 ```
 
-Verify:
+Verify and wait for the gate:
 
 ```bash
-curl localhost:8080/guest_data
+curl localhost:8080/guest_data    # must return the vkey deploy already registered
 less -R raiko.log
 ```
+
+### Step 4 — Finish the L2 deploy (single-GPU only)
+
+Same as the Docker tab: if step 2 failed at "Failed to link DEX vaults", `rm -f deployment/link_vaults_*.lock deployment/cross_chain_dex.lock` and re-run `deploy-surge-full.sh` with `--deploy-devnet false`.
 
 </TabItem>
 </Tabs>

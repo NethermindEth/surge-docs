@@ -194,15 +194,13 @@ Once Raiko is ready and `.env` is set:
 ```
 
 :::info Built-in Raiko readiness check
-After the L2 stack is up but **before** any L2 transaction (DEX deployment is the first one), the script verifies Raiko is reachable.
+After the L2 stack is up but **before** any L2 transaction (DEX deployment is the first one), the script verifies Raiko is reachable. **If the check fails, the script aborts immediately** — no DEX deploy, no L2 txs, no Catalyst proof requests against an unready prover.
 
 - **Mock prover** — Raiko is brought up alongside the L2 stack via `--profile prover` and exposed on `localhost:8082`. The check is a single `GET /health` ping; the mock image returns `{}` for `/guest_data` (no real ZisK setup) so the deeper checks would loop forever and add no value — mock proofs are instant anyway.
 - **Real prover** — Raiko runs on a separate machine. The check uses `$RAIKO_HOST_ZKVM` (transforming `host.docker.internal` → `localhost` for host-side reachability). It runs three sequential probes against the prover URL:
-  1. `GET /health` (basic liveness, must return 200)
-  2. `GET /guest_data` (must return a `zisk.batch_vkey` — first call takes 4–5 min on cold start)
-  3. `POST /v3/proof/batch/realtime` with `sources: []` (status-poll mode — verifies the proof endpoint's request handler is alive without triggering proof generation)
-
-The real-prover check has a 30-minute timeout to cover single-GPU first-cold-start scenarios. If Raiko isn't ready in that window, the script aborts before any L2 tx hits Catalyst — no premature proof requests, no L2 reorgs.
+  1. `GET /health` (basic liveness, must return 200) — **90 second budget**: if Raiko isn't returning /health that fast, it isn't running at all on the prover VM. The script exits here with a checklist (container running? port 8080 open? configs scp'd + raiko-zk restarted with `--force-recreate`?).
+  2. `GET /guest_data` (must return a `zisk.batch_vkey` — first call takes 4–5 min on cold start) — full 30-minute budget. If Raiko answers `/guest_data` but never produces a vkey, the error explicitly calls out the most common cause: Raiko on the prover VM is still running against the default chain spec because the simple-surge-node-generated configs were never synced.
+  3. `POST /v3/proof/batch/realtime` with `sources: []` (status-poll mode — verifies the proof endpoint's request handler is alive without triggering proof generation).
 
 The check is skipped only for `--stack-option 0` (no L2 stack at all).
 
