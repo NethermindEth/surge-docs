@@ -246,7 +246,7 @@ const actions = [
     title: 'Deploy Surge',
     icon: Info,
     to: '/docs/guides/running-surge/',
-    text: 'Deploy your own Surge rollup with real-time proving',
+    text: 'Deploy your Surge rollup with real-time proving',
   },
   {
     title: 'Surge Architecture',
