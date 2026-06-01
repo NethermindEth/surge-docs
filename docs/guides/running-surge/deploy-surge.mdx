@@ -12,6 +12,10 @@ This guide walks you through spinning up a full Surge devnet on your local machi
 
 **Total time:** ~15 minutes for mock prover. Real prover setup takes longer — mainly waiting for ZisK keys to install.
 
+:::tip One-shot it with a LLM model subagent
+A subagent prompt at [`simple-surge-node/agent-prompts/deploy-mock-prover.md`](https://github.com/NethermindEth/simple-surge-node/blob/main/agent-prompts/deploy-mock-prover.md) runs this whole guide end-to-end — clone, env setup, deploy, verify. Fill in the placeholders at the top and paste the fenced block into LLM model. See the [running-surge index](..) for the full set of variants.
+:::
+
 ---
 
 ## Before you start
@@ -465,6 +469,7 @@ Wipe everything except the Kurtosis enclave and redeploy L1 contracts + L2 from 
 ## Next steps
 
 - [Set up the ZisK prover](./provers) if you want real ZK proofs
+- [Enable privacy mode](./privacy-mode) to encrypt blob payloads end-to-end
 - [Deploy a dApp](../deploy-on-surge) on your Surge network
 
 ---

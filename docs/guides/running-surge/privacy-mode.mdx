@@ -1,0 +1,309 @@
+---
+sidebar_position: 5
+title: "Privacy Mode"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Privacy Mode
+
+This is the **operator guide** for turning Surge privacy mode on and off, rotating keys, and debugging the runtime. For the cryptographic design — schemes, threat model, key management rationale — read [Privacy Mode (concept)](../../about/privacy-mode) first.
+
+Privacy mode is **orthogonal to the prover type**: it works with both the mock prover (fast local testing) and the real ZisK prover (staging/production). The mock path is the simpler one — no guest rebuild required.
+
+:::tip One-shot it with a LLM model subagent
+Every deploy prompt in [`simple-surge-node/agent-prompts/`](https://github.com/NethermindEth/simple-surge-node/tree/main/agent-prompts) has a `<privacy-mode>` placeholder — set it to `true` and the agent runs the keygen, the cross-host sync, and (for real ZisK) the guest rebuild in order. The prompts treat this page as the source of truth, so read it first when you need to debug or rotate.
+:::
+
+## What you actually do
+
+When you enable privacy mode, three things happen:
+
+1. `deploy-surge-full.sh` runs `surge-privacy-keygen.sh` and writes `.privacy.env` (six variables — see the [key bundle reference](#the-key-bundle) below).
+2. Catalyst and Driver pick up the runtime keys via docker compose env interpolation. Catalyst starts encrypting every blob with scheme `0x01`; Driver dispatches on the scheme byte and decrypts.
+3. **(Real prover only)** The ZisK guest ELFs need rebuilding with the new key hashes baked in — `keccak(key) == hash` is enforced at proof time. The helper script handles this in one command.
+
+Mock raiko doesn't touch blob contents — it signs an ECDSA proof on whatever it receives — so the guest-rebuild step is unnecessary in mock mode.
+
+---
+
+## When you need it
+
+- **Mock prover, local dev** — only if you're testing the encrypt/decrypt path itself. Otherwise skip it.
+- **Real ZisK prover, staging/production** — turn it on when you want blob privacy on a public L1.
+- **Switching from off → on, or rotating keys** — guest ELFs must be rebuilt with the new hashes. Plan for one deploy restart.
+
+---
+
+## Enable it
+
+You have two ways to opt in. Pick one — the CLI flag is easier for one-off runs; editing `.env` is better when you want privacy to be the default for every deploy on a host.
+
+<Tabs>
+  <TabItem value="cli" label="CLI flag (recommended)" default>
+
+```bash
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment local \
+  --stack-option 2 \
+  --mock-prover \
+  --privacy-mode \
+  --mode silence \
+  --force
+```
+
+`--privacy-mode` flips `SURGE_PRIVACY_MODE=true` in `.env` for you and persists the change, so subsequent runs and any docker compose interpolation see the same value. Drop `--mock-prover` for a real ZisK deploy.
+
+  </TabItem>
+  <TabItem value="env" label="Edit .env">
+
+```bash
+# Idempotent — works whether the line exists or not
+sed -i 's|^SURGE_PRIVACY_MODE=.*|SURGE_PRIVACY_MODE=true|' .env
+
+# Then deploy normally — no extra flag needed
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment local \
+  --stack-option 2 \
+  --mock-prover \
+  --mode silence \
+  --force
+```
+
+  </TabItem>
+</Tabs>
+
+:::tip Set it **before** the deploy
+`generate_privacy_bundle` is gated on the flag — it only runs when the value is `true` at startup. Flipping the flag after the deploy is too late: Catalyst is already running without the keys, and the container won't pick them up until you re-create it with the new env. If you forgot, just re-run the deploy with `--privacy-mode` and let it idempotently regenerate the bundle.
+:::
+
+---
+
+## Mock prover
+
+Just the CLI flag. The keygen runs, `.privacy.env` is written, docker compose interpolates the runtime keys into Catalyst's environment, and the embedded mock raiko bypasses the proof path entirely.
+
+```bash
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment local \
+  --stack-option 2 \
+  --mock-prover \
+  --privacy-mode \
+  --mode silence \
+  --force
+```
+
+That's it — no guest rebuild, no extra steps.
+
+---
+
+## Real ZisK prover
+
+The real prover needs the **runtime keys** on the raiko host **and** the **build-time hashes** baked into the guest ELFs. The script ships a helper that does both in one shot.
+
+<Tabs>
+  <TabItem value="two-vm" label="Two VMs (recommended)" default>
+
+Run the deploy on the L2 stack VM with `--privacy-mode`, then sync to the prover VM:
+
+```bash
+# On the L2 stack VM
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment remote \
+  --stack-option 2 \
+  --privacy-mode \
+  --mode silence \
+  --force
+
+# Still on the L2 stack VM, after deploy:
+./script/sync-privacy-to-prover.sh --rebuild user@<prover-host>
+```
+
+`sync-privacy-to-prover.sh --rebuild` scp's `.privacy.env` to the prover, flips `SURGE_PRIVACY_MODE=true` in the prover's `raiko/docker/.env`, runs `build-guest-with-hashes.sh` (pulls `nethermind/surge-raiko-zk-toolchain:latest`, recompiles only the three ZisK guest ELFs with the new hashes — ~30s on warm cache), and recreates the `raiko-zk` container.
+
+Then recreate Catalyst on the L2 VM so it picks up the new env:
+
+```bash
+docker compose -f docker-compose.yml --profile catalyst up -d --force-recreate catalyst
+```
+
+  </TabItem>
+  <TabItem value="same-vm" label="Same VM">
+
+The CLI flag and keygen are identical to two-VM. The only difference is the sync command — pass `--local` so the helper reads the prover's env from the same host:
+
+```bash
+./deploy-surge-full.sh \
+  --environment devnet \
+  --deploy-devnet true \
+  --deployment local \
+  --stack-option 2 \
+  --privacy-mode \
+  --mode silence \
+  --force
+
+./script/sync-privacy-to-prover.sh --local --rebuild
+
+docker compose -f docker-compose.yml --profile catalyst up -d --force-recreate catalyst
+```
+
+  </TabItem>
+  <TabItem value="prover-side" label="Prover-side alternative">
+
+If you'd rather drive the prover-side bring-up directly (skips the SSH dance):
+
+```bash
+# On the prover VM, after scp'ing .privacy.env from the L2 host:
+./deploy-prover.sh --privacy-mode --privacy-env /path/to/.privacy.env
+```
+
+This applies the bundle, flips `SURGE_PRIVACY_MODE=true`, rebuilds the guest, and recreates raiko-zk.
+
+  </TabItem>
+</Tabs>
+
+:::warning Hash mismatch on the real ZisK side panics raiko
+If you flip privacy on with a runtime key whose `keccak256` doesn't match the hash baked into the guest binary, you'll see `privacy dispatch failed: Truncated` in the raiko logs and proofs will never land. The fix is to rebuild the guest (`./script/sync-privacy-to-prover.sh --rebuild` or `./script/build-guest-with-hashes.sh`) so the hashes match the keys you actually deployed. The CI-published host image ships with empty hashes — only the guest needs rebuilding when keys change.
+:::
+
+:::tip Verify the hash binding before debugging proof failures
+```bash
+# On the prover VM
+docker exec l2-raiko-zk-client env | grep SURGE_PRIVACY
+docker logs l2-raiko-zk-client | grep -i privacy
+```
+Look for `privacy_mode: true, privacy_symmetric_key: Some(…)` on raiko startup. If the symmetric key is `None` despite the mode being on, the env didn't reach the container — re-run `docker compose up -d --force-recreate raiko-zk`.
+:::
+
+---
+
+## The key bundle
+
+`generate_privacy_bundle` writes six variables into `.privacy.env`:
+
+| Variable | Length | Used by | Lifecycle |
+|----------|--------|---------|-----------|
+| `SURGE_PRIVACY_MODE` | `true` / `false` | All components | Runtime toggle |
+| `SURGE_PRIVACY_SYMMETRIC_KEY` | 32 bytes (AES-256) | Catalyst, Driver, raiko host | Runtime |
+| `SURGE_PRIVACY_FI_PRIVKEY` | 32 bytes (secp256k1) | Driver, raiko host | Runtime |
+| `SURGE_PRIVACY_SYMMETRIC_KEY_HASH` | `keccak256` of `SURGE_PRIVACY_SYMMETRIC_KEY` | raiko guest ELFs | Build-time |
+| `SURGE_PRIVACY_FI_PRIVKEY_HASH` | `keccak256` of `SURGE_PRIVACY_FI_PRIVKEY` | raiko guest ELFs | Build-time |
+| `SURGE_PRIVACY_FI_PUBKEY` | 33 bytes (compressed secp256k1) | Public — share with FI submitters | Public |
+
+The bundle is **idempotent** — re-running the deploy with `--privacy-mode` reuses an existing `.privacy.env` if every required key is present. To force regeneration, delete the file first:
+
+```bash
+rm .privacy.env
+./deploy-surge-full.sh --privacy-mode ...
+```
+
+:::danger Treat `.privacy.env` like any other secret
+Anyone with the symmetric key can decrypt every historical blob. Don't commit it, don't paste it into chat, and rotate it (see below) if you suspect it's been exposed. `.gitignore` already lists it, but verify before pushing.
+:::
+
+---
+
+## Verify privacy mode is on
+
+Three places to look:
+
+**Catalyst startup log**:
+```
+Proposal blob privacy mode: enabled (AES-256-GCM, scheme 0x01)
+```
+
+**Raiko startup log** (real prover only):
+```
+privacy_mode: true, privacy_symmetric_key: Some(...)
+```
+
+**Blob inspection** — fetch any proposal blob from the beacon node and check the first byte after the version + size framing. `0x01` = AES-encrypted; `0x02` = ECIES (FI); `0x00` = plaintext (privacy off).
+
+If Catalyst shows the banner but Driver doesn't, the L2 chain will halt on the first proposal — the proposer is encrypting and the consumer can't decrypt. Fix the env on Driver and recreate the container.
+
+---
+
+## Disable privacy mode
+
+```bash
+# On the L2 VM
+sed -i 's|^SURGE_PRIVACY_MODE=.*|SURGE_PRIVACY_MODE=false|' .env
+docker compose -f docker-compose.yml --profile catalyst up -d --force-recreate catalyst
+
+# On the prover VM (real prover only)
+sed -i 's|^SURGE_PRIVACY_MODE=.*|SURGE_PRIVACY_MODE=false|' raiko/docker/.env
+cd raiko && docker compose -f docker/docker-compose-zk.yml up -d --force-recreate
+```
+
+The guest's `option_env!` hash check is bypassed when the runtime key isn't passed — you don't need to rebuild the guest to turn privacy off. Restoring the **image's default empty-hash ELFs** is only needed if you specifically want to drop back to a CI-fresh state:
+
+```bash
+# On the prover VM
+./script/build-guest-with-hashes.sh
+# Detects empty hashes and docker-cp's the defaults out of the runtime image
+# instead of recompiling.
+```
+
+---
+
+## Rotate keys
+
+Rotation is an ops event, not silent. Plan for ~5 min of Catalyst downtime.
+
+```bash
+# 1. On the L2 VM — regenerate
+rm .privacy.env
+./deploy-surge-full.sh --privacy-mode ... --force   # writes a fresh bundle
+
+# 2. (Real prover only) re-sync + rebuild guest with the new hashes
+./script/sync-privacy-to-prover.sh --rebuild user@<prover-host>
+
+# 3. Recreate Catalyst
+docker compose -f docker-compose.yml --profile catalyst up -d --force-recreate catalyst
+```
+
+Old blobs (proven under the previous vkey) remain decryptable by anyone holding the **old** symmetric key. Rotation doesn't retroactively re-encrypt history — it only changes the keys going forward. If your threat model needs the old keys destroyed, also rotate the L1 verifier's vkey by deploying a new `SurgeVerifier` and migrating the inbox to use it.
+
+---
+
+## Troubleshooting
+
+**`privacy dispatch failed: Truncated` in raiko logs**
+The guest's baked-in hash doesn't match the runtime key. Either:
+- Privacy mode was just flipped on without rebuilding the guest → run `./script/sync-privacy-to-prover.sh --rebuild ...`
+- Keys were rotated on the L2 side but the prover didn't get the new bundle → same fix
+
+**Catalyst logs `Proposal blob privacy mode: enabled` but Driver decrypt fails**
+The L2 VM has the keys, the L2 stack does too — but the Driver container started before the `.privacy.env` was written. Recreate it:
+```bash
+docker compose -f docker-compose.yml up -d --force-recreate l2-taiko-consensus-client
+```
+
+**`.privacy.env` exists but the keys aren't reaching Catalyst**
+docker compose only interpolates env values present at `docker compose up` time. After regenerating the bundle, recreate any container that consumes the keys:
+```bash
+docker compose -f docker-compose.yml --profile catalyst up -d --force-recreate catalyst
+```
+
+**Mock prover deploy fails the readiness check after enabling privacy**
+Privacy mode shouldn't affect the readiness check — mock raiko returns `{}` for `/guest_data` and the script just hits `/health`. If readiness fails post-privacy, the cause is elsewhere; check `docker logs l2-raiko-zk-client` for the actual error.
+
+**`SURGE_PRIVACY_MODE=true` but the keygen didn't run**
+Check the deploy log for `SURGE_PRIVACY_MODE=false in .env → skipping privacy keygen`. That message means `.env` was sourced before the flag was set — confirm `--privacy-mode` was actually on the command line, or that you edited `.env` and not `.env.devnet`.
+
+---
+
+## Next steps
+
+- [ZisK Prover Setup](./provers) — full prover setup if you haven't run it yet
+- [Deploy on an Existing L1](./deploy-on-existing-l1) — mainnet/Sepolia deploys with privacy enabled
+- [`PRIVACY_STACK.md`](https://github.com/NethermindEth/surge-taiko-mono/blob/main/PRIVACY_STACK.md) — cryptographic design reference

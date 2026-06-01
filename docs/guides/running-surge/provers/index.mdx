@@ -10,6 +10,10 @@ import TabItem from '@theme/TabItem';
 
 Raiko uses the ZisK GPU backend to generate ZK proofs for Surge blocks. This guide covers the two-VM setup (recommended), the same-VM setup (4x L40+ only), and how to wire it into a Surge devnet via simple-surge-node.
 
+:::tip One-shot it with a LLM model subagent
+For two-VM, paste [`deploy-real-zisk-two-vm.md`](https://github.com/NethermindEth/simple-surge-node/blob/main/agent-prompts/deploy-real-zisk-two-vm.md) into LLM model as a subagent. For same-VM use [`deploy-real-zisk-same-vm.md`](https://github.com/NethermindEth/simple-surge-node/blob/main/agent-prompts/deploy-real-zisk-same-vm.md). Both have privacy mode as a toggle and bake in the ~16 min single-GPU cold-start waits so the agent doesn't kill/retry.
+:::
+
 ## How real-time proving works
 
 1. **Catalyst** receives a new L2 block.
@@ -53,34 +57,31 @@ If `curl http://<prover-ip>:8080/guest_data` already returns the vkey, Raiko is 
 
 ### Step 1 — On the Prover VM
 
+raiko is now a submodule of [simple-surge-node](https://github.com/NethermindEth/simple-surge-node), so the prover-side and L2-side scripts ship from the same repo. Clone once and use `deploy-prover.sh` to set everything up:
+
 ```bash
-# Clone raiko
-git clone https://github.com/NethermindEth/raiko.git
-cd raiko
-
-# Install system dependencies (apt packages, Rust, CUDA 12.x with linker pinning).
-# Also detects and purges legacy CUDA 11.x leftovers that cause
-# "undefined symbol: cudaGetDeviceProperties_v2" on Hopper/Blackwell GPUs.
-./script/install-zisk-deps.sh
-
-# Install ZisK SDK + proving keys (~150 GB to ~/.zisk)
-TARGET=zisk make install
-# Or, on a small home dir:
-# ZISK_DIR=/path/to/large/disk TARGET=zisk make install
-
-# Start Raiko
-cp docker/.env.sample.zk docker/.env
-docker compose -f docker/docker-compose-zk.yml up -d
-
-# Wait for the vkey (~4–5 min multi-GPU; ~16 min single-GPU cold start)
-curl localhost:8080/guest_data
+git clone https://github.com/NethermindEth/simple-surge-node.git
+cd simple-surge-node
+git submodule update --init --recursive
+./deploy-prover.sh --force
 ```
 
-Expected vkey response:
+That handles, in order:
+
+1. NVIDIA + Docker pre-flight (exits cleanly if no GPU; recommends `--mock-prover` instead)
+2. `raiko/script/install-zisk-deps.sh` — apt deps, Rust, CUDA 12.x; detects/purges legacy CUDA 11.x leftovers
+3. `TARGET=zisk make install` inside raiko — downloads ZisK proving keys to `~/.zisk` (~150 GB; override with `ZISK_DIR=/path/to/large/disk` in the env)
+4. `cp docker/.env.sample.zk docker/.env` if not present
+5. `docker compose -f docker/docker-compose-zk.yml up -d`
+6. Polls `http://localhost:8080/guest_data` until the vkey returns (timeout 30 min)
+
+Expected vkey response when ready:
 
 ```json
 {"zisk":{"batch_vkey":"2ccafa601f5e29e4d61fc2d96474c98c3b752999b97af38c4c988c0fee24f0a0"}}
 ```
+
+For privacy mode add `--privacy-mode` (generates a bundle locally and rebuilds guest ELFs) — see Step 5.
 
 Open TCP/8080 to the L2 stack VM and verify reachability:
 
@@ -88,6 +89,10 @@ Open TCP/8080 to the L2 stack VM and verify reachability:
 # From the L2 stack VM
 curl http://<prover-ip>:8080/guest_data
 ```
+
+:::tip Re-runnable
+`deploy-prover.sh` is idempotent. Pass `--skip-install` and/or `--skip-zisk-sdk` to skip the heavy installs on re-runs (the script auto-detects an existing `~/.zisk/provingKey` and skips that one anyway).
+:::
 
 ### Step 2 — On the L2 stack VM
 
@@ -173,6 +178,10 @@ cd simple-surge-node
 ```
 
 `--deploy-devnet false` skips the Kurtosis L1 redeploy. The script picks up at the readiness check; with Raiko now on the right chain spec, the check passes, `setL1Vault` lands in an L2 block, Catalyst gets a real proof, and the DEX setup completes.
+
+### Step 5 — Privacy mode (optional)
+
+Privacy mode encrypts blob payloads end-to-end. It's orthogonal to the prover type, but the real ZisK guest needs key hashes baked in at compile time — the helper script (`./script/sync-privacy-to-prover.sh --rebuild user@<prover-host>`) does the scp + rebuild + recreate in one shot. See the full **[Privacy Mode](../privacy-mode.mdx)** guide for the workflow, key-rotation procedure, and troubleshooting.
 
 :::warning Only delete locks if the readiness check ran AFTER DEX work started
 With the readiness check now ahead of DEX deployment, a step-2 abort halts before any DEX lock files are touched, so the re-run picks up cleanly. If you're recovering from an older deploy that failed *during* DEX linking, the link/dex `.lock` files may have been written before a `cast send` actually confirmed — delete them before retrying:
