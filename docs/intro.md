@@ -102,12 +102,7 @@ Surge represents one component of Nethermind's broader rollup roadmap, which inc
 
 - [About section](./about) -- architecture, design choices, how things work under the hood.
 - [GitHub](https://github.com/NethermindEth/surge) -- all the code.
-- [Guides](./guides) -- deploy your own Surge network or deploy a dApp.
-- **Live deployment:**
-  - Bridge: [bridge.realtime.surge.wtf](https://bridge.realtime.surge.wtf/)
-  - Explorer: [explorer.realtime.surge.wtf](https://explorer.realtime.surge.wtf/)
-  - RPC: [rpc.realtime.surge.wtf](https://rpc.realtime.surge.wtf/)
-  - SyncCompose DEX: [synccomposedex.realtime.surge.wtf](https://synccomposedex.realtime.surge.wtf/)
+- [Guides](./guides) -- deploy your own Surge network.
 
 ## Component Versions
 
