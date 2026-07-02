@@ -274,11 +274,6 @@ const itemLinks = [
     to: '/docs/about/synchronous-composability',
   },
   {
-    title: 'Deploy a DApp',
-    description: 'Learn how to deploy your DApp on Surge',
-    to: '/docs/guides/deploy-on-surge',
-  },
-  {
     title: 'Components & Repos',
     description: 'All components, repositories, and branches in the Surge stack',
     to: '/docs/about/components',
